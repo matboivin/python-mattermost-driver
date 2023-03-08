@@ -1,9 +1,88 @@
+[tool.poetry]
+name = "mattermostdriver"
+version = "8.0.0"
+description = "A Python Mattermost Driver"
+authors = ["Christian Plümer <github@kuuku.net>"]
+license = "MIT"
+readme = "README.rst"
+repository = "https://github.com/Vaelor/python-mattermost-driver"
+
+packages = [
+    { include = "src" }
+]
+
+classifiers=[
+    'Development Status :: 5 - Production/Stable',
+    'Environment :: Web Environment',
+    'Intended Audience :: Developers',
+    'Programming Language :: Python',
+    'Programming Language :: Python :: 3',
+    'Programming Language :: Python :: 3.6',
+    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.8',
+    'Programming Language :: Python :: 3.9',
+    'Programming Language :: Python :: 3.10',
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiohttp = "^3.8.4"
+httpx = "^0.23.3"
+
+[tool.poetry.dev-dependencies]
+mdformat-gfm = "^0.3.5"
+pre-commit = "^3.1.1"
+pycodestyle = "^2.10.0"
+pylint = "^2.16.4"
+
 [tool.black]
-line-length = 120
-target-version = ['py36']
-include = 'src\/.*\.py$'
-extend-exclude = '''
-# A regex preceded with ^/ will apply only to files and directories
-# in the root of the project.
-^/foo.py  # exclude a file named foo.py in the root of the project (in addition to the defaults)
+target-version = ["py39"]
+line-length = 79
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
 '''
+
+[tool.isort]
+profile = "black"
+ensure_newline_before_comments = true
+force_grid_wrap = 0
+include_trailing_comma = true
+line_length = 79
+multi_line_output = 3
+use_parentheses = true
+
+[tool.mypy]
+allow_untyped_decorators = true
+allow_subclassing_any = true
+explicit_package_bases = true
+implicit_reexport = true
+ignore_missing_imports = true
+namespace_packages = true
+show_error_codes = true
+strict = true
+
+[tool.pylint]
+disable = [
+  "C0103", "E0401", "R0902", "R0903", "W0104", "W0702", "W1203", "W1514"
+]
+# C0103: Invalid %s name "%s"
+# E0401: Unable to import module -> false positive
+# R0902: Too many instance attributes
+# R0903: Too few public methods
+# W1203: false positive
+# W1514: Using open without explicitly specifying an encoding
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
