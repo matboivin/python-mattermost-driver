@@ -42,7 +42,7 @@ repos:
   #   hooks:
   #   - id: pydocstyle
   #     additional_dependencies: [ 'tomli']
-  #     args: ['--ignore=D213,D203,D204,D416']
+  #     args: ['--ignore=D105,D107,D213,D203,D204,D416']
 
   # - repo: local
   #   hooks:

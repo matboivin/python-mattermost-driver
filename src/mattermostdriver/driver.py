@@ -1,6 +1,10 @@
+"""Driver classes."""
+
 from asyncio import AbstractEventLoop, get_event_loop
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Dict
+
+from requests import Response
 
 from .client import AsyncClient, Client, ClientType
 from .endpoints import *
@@ -11,9 +15,27 @@ log.setLevel(INFO)
 
 
 class BaseDriver:
-    """
-    Contains the client, api and provides you with functions for
-    login, logout and initializing a websocket connection.
+    """Base for creating driver classes.
+
+    Contains the client, api and provides you with functions for login, logout
+    and initializing a websocket connection.
+
+    Attributes
+    ----------
+    options : dict
+        The options for driver and client.
+    driver : dict
+        The options for driver.
+    client : AsyncClient or Client
+        The underlying client object.
+    websocket : Websocket, default=None
+        The websocket to listen to Mattermost events.
+
+    Methods
+    -------
+    disconnect()
+        Disconnect the driver from the server.
+
     """
 
     default_options: Dict[str, Any] = {
@@ -64,9 +86,15 @@ class BaseDriver:
     def __init__(
         self, options: Dict[str, Any], client_cls: ClientType
     ) -> None:
-        """
-        :param options: A dict with the values from `default_options`
-        :type options: dict
+        """Initialize driver.
+
+        Parameters
+        ----------
+        options : dict
+            The options for driver and client.
+        client_cls : AsyncClient or Client
+            The underlying client class.
+
         """
         self.options: Dict[str, Any] = self.default_options.copy()
 
@@ -84,229 +112,298 @@ class BaseDriver:
         self.client: ClientType = client_cls(self.options)
         self.websocket: Websocket | None = None
 
-    def disconnect(self) -> None:
-        """Disconnects the driver from the server, stopping the websocket event loop."""
-        if self.websocket:
-            self.websocket.disconnect()
+    # ############################################################ Properties #
 
     @property
     def users(self) -> Users:
-        """
-        Api endpoint for users
+        """Get Api endpoint for users.
 
-        :return: Instance of :class:`~endpoints.users.Users`
+        Returns
+        -------
+        endpoints.users.Users
+
         """
         return Users(self.client)
 
     @property
     def teams(self) -> Teams:
-        """
-        Api endpoint for teams
+        """Get Api endpoint for teams.
 
-        :return: Instance of :class:`~endpoints.teams.Teams`
+        Returns
+        -------
+        endpoints.teams.Teams
+
         """
         return Teams(self.client)
 
     @property
     def channels(self) -> Channels:
-        """
-        Api endpoint for channels
+        """Get Api endpoint for channels.
 
-        :return: Instance of :class:`~endpoints.channels.Channels`
+        Returns
+        -------
+        endpoints.channels.Channels
+
         """
         return Channels(self.client)
 
     @property
     def posts(self) -> Posts:
-        """
-        Api endpoint for posts
+        """Get Api endpoint for posts.
 
-        :return: Instance of :class:`~endpoints.posts.Posts`
+        Returns
+        -------
+        endpoints.posts.Posts
+
         """
         return Posts(self.client)
 
     @property
     def files(self) -> Files:
-        """
-        Api endpoint for files
+        """Get Api endpoint for files.
 
-        :return: Instance of :class:`~endpoints.files.Files`
+        Returns
+        -------
+        endpoints.files.Files
+
         """
         return Files(self.client)
 
     @property
     def preferences(self) -> Preferences:
-        """
-        Api endpoint for preferences
+        """Get Api endpoint for preferences.
 
-        :return: Instance of :class:`~endpoints.preferences.Preferences`
+        Returns
+        -------
+        endpoints.preferences.Preferences
+
         """
         return Preferences(self.client)
 
     @property
     def emoji(self) -> Emoji:
-        """
-        Api endpoint for emoji
+        """Get Api endpoint for emoji.
 
-        :return: Instance of :class:`~endpoints.emoji.Emoji`
+        Returns
+        -------
+        endpoints.emoji.Emoji
+
         """
         return Emoji(self.client)
 
     @property
     def reactions(self) -> Reactions:
-        """
-        Api endpoint for posts' reactions
+        """Get Api endpoint for posts' reactions.
 
-        :return: Instance of :class:`~endpoints.reactions.Reactions`
+        Returns
+        -------
+        endpoints.reactions.Reactions
+
         """
         return Reactions(self.client)
 
     @property
     def system(self) -> System:
-        """
-        Api endpoint for system
+        """Get Api endpoint for system.
 
-        :return: Instance of :class:`~endpoints.system.System`
+        Returns
+        -------
+        endpoints.system.System
+
         """
         return System(self.client)
 
     @property
     def webhooks(self) -> Webhooks:
-        """
-        Api endpoint for webhooks
+        """Get Api endpoint for webhooks.
 
-        :return: Instance of :class:`~endpoints.webhooks.Webhooks`
+        Returns
+        -------
+        endpoints.webhooks.Webhooks
+
         """
         return Webhooks(self.client)
 
     @property
     def compliance(self) -> Compliance:
-        """
-        Api endpoint for compliance
+        """Get Api endpoint for compliance.
 
-        :return: Instance of :class:`~endpoints.compliance.Compliance`
+        Returns
+        -------
+        endpoints.compliance.Compliance
+
         """
         return Compliance(self.client)
 
     @property
     def cluster(self) -> Cluster:
-        """
-        Api endpoint for cluster
+        """Get Api endpoint for cluster.
 
-        :return: Instance of :class:`~endpoints.cluster.Cluster`
+        Returns
+        -------
+        endpoints.cluster.Cluster
+
         """
         return Cluster(self.client)
 
     @property
     def brand(self) -> Brand:
-        """
-        Api endpoint for brand
+        """Get Api endpoint for brand.
 
-        :return: Instance of :class:`~endpoints.brand.Brand`
+        Returns
+        -------
+        endpoints.brand.Brand
+
         """
         return Brand(self.client)
 
     @property
     def oauth(self) -> OAuth:
-        """
-        Api endpoint for oauth
+        """Get Api endpoint for oauth.
 
-        :return: Instance of :class:`~endpoints.oauth.OAuth`
+        Returns
+        -------
+        endpoints.oauth.OAuth
+
         """
         return OAuth(self.client)
 
     @property
     def saml(self) -> SAML:
-        """
-        Api endpoint for saml
+        """Get Api endpoint for SAML.
 
-        :return: Instance of :class:`~endpoints.saml.SAML`
+        Returns
+        -------
+        endpoints.saml.SAML
+
         """
         return SAML(self.client)
 
     @property
     def ldap(self) -> LDAP:
-        """
-        Api endpoint for ldap
+        """Get Api endpoint for LDAP.
 
-        :return: Instance of :class:`~endpoints.ldap.LDAP`
+        Returns
+        -------
+        endpoints.ldap.LDAP
+
         """
         return LDAP(self.client)
 
     @property
     def elasticsearch(self) -> Elasticsearch:
-        """
-        Api endpoint for elasticsearch
+        """Get Api endpoint for ElasticSearch.
 
-        :return: Instance of :class:`~endpoints.elasticsearch.Elasticsearch`
+        Returns
+        -------
+        endpoints.elasticsearch.Elasticsearch
+
         """
         return Elasticsearch(self.client)
 
     @property
     def data_retention(self) -> DataRetention:
-        """
-        Api endpoint for data_retention
+        """Get Api endpoint for data_retention.
 
-        :return: Instance of :class:`~endpoints.data_retention.DataRetention`
+        Returns
+        -------
+        endpoints.data_retention.DataRetention
+
         """
         return DataRetention(self.client)
 
     @property
     def status(self) -> Status:
-        """
-        Api endpoint for status
+        """Get Api endpoint for status.
 
-        :return: Instance of :class:`~endpoints.status.Status`
+        Returns
+        -------
+        endpoints.status.Status
+
         """
         return Status(self.client)
 
     @property
     def commands(self) -> Commands:
-        """
-        Api endpoint for commands
+        """Get Api endpoint for commands.
 
-        :return: Instance of :class:`~endpoints.commands.Commands`
+        Returns
+        -------
+        endpoints.commands.Commands
+
         """
         return Commands(self.client)
 
     @property
     def roles(self) -> Roles:
-        """
-        Api endpoint for roles
+        """Get Api endpoint for roles.
 
-        :return: Instance of :class:`~endpoints.roles.Roles`
+        Returns
+        -------
+        endpoints.roles.Roles
+
         """
         return Roles(self.client)
 
     @property
     def opengraph(self) -> Opengraph:
-        """
-        Api endpoint for opengraph
+        """Get Api endpoint for opengraph.
 
-        :return: Instance of :class:`~endpoints.opengraph.Opengraph`
+        Returns
+        -------
+        endpoints.opengraph.Opengraph
+
         """
         return Opengraph(self.client)
 
     @property
     def integration_actions(self) -> IntegrationActions:
-        """
-        Api endpoint for integration actions
+        """Get Api endpoint for integration actions.
 
-        :return: Instance of :class:`~endpoints.integration_actions.IntegrationActions`
+        Returns
+        -------
+        endpoints.integration_actions
+
         """
         return IntegrationActions(self.client)
 
     @property
     def bots(self) -> Bots:
-        """
-        Api endpoint for bots
+        """Get Api endpoint for bots.
 
-        :return: Instance of :class:`~endpoints.bots.Bots`
+        Returns
+        -------
+        endpoints.bots.Bots
+
         """
         return Bots(self.client)
 
+    # ############################################################### Methods #
+
+    def disconnect(self) -> None:
+        """Disconnect the driver from the server.
+
+        It stops the websocket event loop.
+
+        """
+        if self.websocket:
+            self.websocket.disconnect()
+
 
 class Driver(BaseDriver):
+    """Class defining a synchronous Mattermost driver.
+
+    Methods
+    -------
+    init_websocket(event_handler, websocket_cls)
+        Initialize the websocket connection to the Mattermost server.
+    login()
+        Log the user in.
+    logout()
+        Log the user out.
+
+    """
+
     def __init__(
         self,
         options: Dict[str, Any] | None = None,
@@ -325,8 +422,7 @@ class Driver(BaseDriver):
     def init_websocket(
         self, event_handler: Any, websocket_cls: Websocket = Websocket
     ) -> AbstractEventLoop:
-        """
-        Will initialize the websocket connection to the mattermost server.
+        """Initialize the websocket connection to the Mattermost server.
 
         This should be run after login(), because the websocket needs to make
         an authentification.
@@ -341,10 +437,18 @@ class Driver(BaseDriver):
                 async def my_event_handler(message):
                         print(message)
 
+        Parameters
+        ----------
+        event_handler : Function(message)
+            The function to handle the websocket events. Takes one argument.
+        websocket_cls : websocket.Websocket, default=websocket.Websocket
+            The Websocket class.
 
-        :param event_handler: The function to handle the websocket events. Takes one argument.
-        :type event_handler: Function(message)
-        :return: The event loop
+        Returns
+        -------
+        asyncio.AbstractEventLoop
+            The event loop.
+
         """
         self.websocket = websocket_cls(self.options, self.client.token)
         loop: AbstractEventLoop = get_event_loop()
@@ -357,23 +461,27 @@ class Driver(BaseDriver):
 
         return loop
 
-    def login(self) -> Any:
-        """
-        Logs the user in.
+    def login(self) -> Any | Response:
+        """Log the user in.
 
         The log in information is saved in the client
-                - userid
-                - username
-                - cookies
+        - userid
+        - username
+        - cookies
 
-        :return: The raw response from the request
+        Returns
+        -------
+        Any or requests.Response
+            The reponse in JSON format or the raw response if couldn't be
+            converted to JSON.
+
         """
         if self.options.get("token"):
             self.client.token = self.options["token"]
             result: Any = self.users.get_user("me")
 
         else:
-            response: Any = self.users.login_user(
+            response: Response = self.users.login_user(
                 {
                     "login_id": self.options["login_id"],
                     "password": self.options["password"],
@@ -386,6 +494,7 @@ class Driver(BaseDriver):
 
             try:
                 result = response.json()
+
             except ValueError:
                 log.debug(
                     "Could not convert response to json, returning raw response"
@@ -401,12 +510,16 @@ class Driver(BaseDriver):
         return result
 
     def logout(self) -> Any:
-        """
-        Log the user out.
+        """Log the user out.
 
-        :return: The JSON response from the server
+        Returns
+        -------
+        Any
+            The reponse in JSON format.
+
         """
         result: Any = self.users.logout_user()
+
         self.client.token = ""
         self.client.userid = ""
         self.client.username = ""
@@ -416,6 +529,19 @@ class Driver(BaseDriver):
 
 
 class AsyncDriver(BaseDriver):
+    """Class defining an asynchronous Mattermost driver.
+
+    Methods
+    -------
+    init_websocket(event_handler, websocket_cls)
+        Initialize the websocket connection to the Mattermost server.
+    login()
+        Log the user in.
+    logout()
+        Log the user out.
+
+    """
+
     def __init__(
         self,
         options: Dict[str, Any] | None = None,
@@ -434,9 +560,9 @@ class AsyncDriver(BaseDriver):
     def init_websocket(
         self, event_handler: Any, websocket_cls: Websocket = Websocket
     ) -> Any:
-        """
-        Will initialize the websocket connection to the mattermost server.
-        unlike the Driver.init_websocket, this one assumes you are async aware
+        """Initialize the websocket connection to the Mattermost server.
+
+        Unlike the Driver.init_websocket, this one assumes you are async aware
         and returns a coroutine that can be awaited.  It will not return
         until shutdown() is called.
 
@@ -453,25 +579,36 @@ class AsyncDriver(BaseDriver):
                 async def my_event_handler(message):
                         print(message)
 
+        Parameters
+        ----------
+        event_handler : Function(message)
+            The function to handle the websocket events. Takes one argument.
+        websocket_cls : websocket.Websocket, default=websocket.Websocket
+            The Websocket class.
 
-        :param event_handler: The function to handle the websocket events. Takes one argument.
-        :type event_handler: Function(message)
-        :return: coroutine
+        Returns
+        -------
+        Coroutine
+
         """
         self.websocket = websocket_cls(self.options, self.client.token)
 
         return self.websocket.connect(event_handler)
 
-    async def login(self) -> Any:
-        """
-        Logs the user in.
+    async def login(self) -> Any | Response:
+        """Log the user in.
 
         The log in information is saved in the client
-                - userid
-                - username
-                - cookies
+        - userid
+        - username
+        - cookies
 
-        :return: The raw response from the request
+        Returns
+        -------
+        Any or requests.Response
+            The reponse in JSON format or the raw response if couldn't be
+            converted to JSON.
+
         """
         if self.options.get("token"):
             self.client.token = self.options["token"]
@@ -508,12 +645,17 @@ class AsyncDriver(BaseDriver):
         return result
 
     async def logout(self) -> Any:
-        """
-        Log the user out.
+        """Log the user out.
 
-        :return: The JSON response from the server
+        Returns
+        -------
+        Any or requests.Response
+            The reponse in JSON format or the raw response if couldn't be
+            converted to JSON.
+
         """
         result: Any = await self.users.logout_user()
+
         self.client.token = ""
         self.client.userid = ""
         self.client.username = ""

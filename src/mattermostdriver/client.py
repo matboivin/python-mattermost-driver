@@ -97,7 +97,7 @@ class BaseClient:
 
     @property
     def userid(self) -> str:
-        """Get the user id of the logged-in user.
+        """Get the user ID of the logged-in user.
 
         Returns
         -------
@@ -108,41 +108,43 @@ class BaseClient:
 
     @userid.setter
     def userid(self, user_id: str) -> None:
-        """Set the user id of the logged-in user.
+        """Set the user ID of the logged-in user.
 
         Parameters
         ----------
         user_id : str
+            The new user ID value.
 
         """
         self._userid = user_id
 
     @property
     def username(self) -> str:
-        """Get the username of the logged in user.
+        """Get the username of the logged-in user.
 
         Returns
         -------
         str
-            The username is set. Otherwise an empty string.
+            The username set. Otherwise an empty string.
 
         """
         return self._username
 
     @username.setter
     def username(self, username: str) -> None:
-        """Set the username of the logged in user.
+        """Set the username of the logged-in user.
 
         Parameters
         ----------
         username : str
+            The new username value.
 
         """
         self._username = username
 
     @property
     def request_timeout(self) -> int | None:
-        """Get the configured timeout for the requests
+        """Get the configured timeout for the requests.
 
         Returns
         -------
@@ -180,6 +182,7 @@ class BaseClient:
         Parameters
         ----------
         cookies : Any
+            The new cookies value.
 
         """
         self._cookies = cookies
@@ -202,6 +205,7 @@ class BaseClient:
         Parameters
         ----------
         token : str
+            The new token value.
 
         """
         self._token = token
@@ -508,7 +512,7 @@ class Client(BaseClient):
         Returns
         -------
         Any or requests.Response
-            The reponse in JSON format or the response object if couldn't be
+            The reponse in JSON format or the raw response if couldn't be
             converted to JSON.
 
         """
@@ -743,7 +747,7 @@ class AsyncClient(BaseClient):
         Returns
         -------
         Any or requests.Response
-            The reponse in JSON format or the response object if couldn't be
+            The reponse in JSON format or the raw response if couldn't be
             converted to JSON.
 
         """
