@@ -69,7 +69,7 @@ class BaseDriver:
         if options is not None:
             self.options.update(options)
         self.driver = self.options
-        if self.options["debug"]:
+        if self.options.get("debug"):
             log.setLevel(logging.DEBUG)
             log.warning(
                 "Careful!!\nSetting debug to True, will reveal your password in the log output if you do driver.login()!\nThis is NOT for production!"
@@ -347,7 +347,7 @@ class Driver(BaseDriver):
 
         :return: The raw response from the request
         """
-        if self.options["token"]:
+        if self.options.get("token"):
             self.client.token = self.options["token"]
             result = self.users.get_user("me")
         else:
@@ -369,9 +369,9 @@ class Driver(BaseDriver):
 
         log.debug(result)
 
-        if "id" in result:
+        if result.get("id"):
             self.client.userid = result["id"]
-        if "username" in result:
+        if result.get("username"):
             self.client.username = result["username"]
 
         return result
@@ -440,7 +440,7 @@ class AsyncDriver(BaseDriver):
 
         :return: The raw response from the request
         """
-        if self.options["token"]:
+        if self.options.get("token"):
             self.client.token = self.options["token"]
             result = await self.users.get_user("me")
         else:
@@ -462,9 +462,9 @@ class AsyncDriver(BaseDriver):
 
         log.debug(result)
 
-        if "id" in result:
+        if result("id"):
             self.client.userid = result["id"]
-        if "username" in result:
+        if result.get("username"):
             self.client.username = result["username"]
 
         return result

@@ -1,7 +1,7 @@
-import json
-import ssl
 import asyncio
+import json
 import logging
+import ssl
 import time
 
 import aiohttp
@@ -13,7 +13,7 @@ log.setLevel(logging.INFO)
 class Websocket:
     def __init__(self, options, token):
         self.options = options
-        if options["debug"]:
+        if options.get("debug"):
             log.setLevel(logging.DEBUG)
         self._token = token
         self._alive = False
@@ -30,16 +30,17 @@ class Websocket:
         :return:
         """
         context = ssl.create_default_context(purpose=ssl.Purpose.SERVER_AUTH)
-        if not self.options["verify"]:
+        if not self.options.get("verify"):
             context.verify_mode = ssl.CERT_NONE
 
         scheme = "wss://"
-        if self.options["scheme"] != "https":
+        if self.options.get("scheme") != "https":
             scheme = "ws://"
             context = None
 
-        url = "{scheme:s}{url:s}:{port:s}{basepath:s}/websocket".format(
-            scheme=scheme, url=self.options["url"], port=str(self.options["port"]), basepath=self.options["basepath"]
+        url = (
+            f"{scheme}{self.options.get('url')}:{self.options.get('port')}"
+            f"{self.options.get('basepath')}/websocket"
         )
 
         self._alive = True
@@ -47,7 +48,7 @@ class Websocket:
         while True:
             try:
                 kw_args = {}
-                if self.options["websocket_kw_args"] is not None:
+                if self.options.get("websocket_kw_args"):
                     kw_args = self.options["websocket_kw_args"]
                 async with aiohttp.ClientSession() as session:
                     async with session.ws_connect(
@@ -62,7 +63,7 @@ class Websocket:
                                 await self._start_loop(websocket, event_handler)
                             except aiohttp.ClientError:
                                 break
-                        if (not self.options["keepalive"]) or (not self._alive):
+                        if not all([self.options.get("keepalive"), self._alive]):
                             break
             except Exception as e:
                 log.exception(f"Failed to establish websocket connection: {type(e)} thrown")
@@ -128,7 +129,7 @@ class Websocket:
             # We want to pass the events to the event_handler already
             # because the hello event could arrive before the authentication ok response
             await event_handler(message)
-            if ("event" in status and status["event"] == "hello") and ("seq" in status and status["seq"] == 0):
+            if status.get("event") == "hello" and status.get("seq") == 0:
                 log.info("Websocket authentification OK")
                 return True
             log.error("Websocket authentification failed")

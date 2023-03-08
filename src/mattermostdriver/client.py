@@ -4,16 +4,17 @@ and actually makes the requests to the mattermost server
 """
 
 import logging
+
 import httpx
 
 from .exceptions import (
+    ContentTooLarge,
+    FeatureDisabled,
     InvalidOrMissingParameters,
+    MethodNotAllowed,
     NoAccessTokenProvided,
     NotEnoughPermissions,
     ResourceNotFound,
-    MethodNotAllowed,
-    ContentTooLarge,
-    FeatureDisabled,
 )
 
 log = logging.getLogger("mattermostdriver.websocket")
@@ -27,7 +28,7 @@ class BaseClient:
         self._basepath = options["basepath"]
         self._port = options["port"]
         self._auth = options["auth"]
-        if options["debug"]:
+        if options.get("debug"):
             self.activate_verbose_logging()
 
         self._options = options
@@ -36,8 +37,8 @@ class BaseClient:
         self._userid = ""
         self._username = ""
         self._proxies = None
-        if options["proxy"]:
-            self._proxies = {"all://": options["proxy"]}
+        if options.get("proxy"):
+            self._proxies = {"all://": options.get("proxy")}
 
     @staticmethod
     def _make_url(scheme, url, port, basepath):
@@ -109,7 +110,7 @@ class BaseClient:
     def auth_header(self):
         if self._auth:
             return None
-        if self._token == "":
+        if not self._token:
             return {}
         return {"Authorization": "Bearer {token:s}".format(token=self._token)}
 
@@ -125,18 +126,18 @@ class BaseClient:
 
         request_params = {"headers": self.auth_header(), "timeout": self.request_timeout}
 
-        if params is not None:
+        if params:
             request_params["params"] = params
 
         if method in ("post", "put"):
-            if options is not None:
+            if options:
                 request_params["json"] = options
-            if data is not None:
+            if data:
                 request_params["data"] = data
-            if files is not None:
+            if files:
                 request_params["files"] = files
 
-        if self._auth is not None:
+        if self._auth:
             request_params["auth"] = self._auth()
 
         return self._get_request_method(method, self.client), url, request_params
@@ -212,7 +213,7 @@ class Client(BaseClient):
     def get(self, endpoint, options=None, params=None):
         response = self.make_request("get", endpoint, options=options, params=params)
 
-        if response.headers["Content-Type"] != "application/json":
+        if response.headers.get("Content-Type") != "application/json":
             log.debug("Response is not application/json, returning raw response")
             return response
 
@@ -258,7 +259,7 @@ class AsyncClient(BaseClient):
     async def get(self, endpoint, options=None, params=None):
         response = await self.make_request("get", endpoint, options=options, params=params)
 
-        if response.headers["Content-Type"] != "application/json":
+        if response.headers.get("Content-Type") != "application/json":
             log.debug("Response is not application/json, returning raw response")
             return response
 
