@@ -1,12 +1,13 @@
-import asyncio
-import logging
+from asyncio import AbstractEventLoop, get_event_loop
+from logging import DEBUG, INFO, Logger, getLogger
+from typing import Any, Dict
 
-from .client import AsyncClient, Client
+from .client import AsyncClient, Client, ClientType
 from .endpoints import *
 from .websocket import Websocket
 
-log = logging.getLogger("mattermostdriver.api")
-log.setLevel(logging.INFO)
+log: Logger = getLogger("mattermostdriver.api")
+log.setLevel(INFO)
 
 
 class BaseDriver:
@@ -15,7 +16,7 @@ class BaseDriver:
     login, logout and initializing a websocket connection.
     """
 
-    default_options = {
+    default_options: Dict[str, Any] = {
         "scheme": "https",
         "url": "localhost",
         "port": 8065,
@@ -36,54 +37,60 @@ class BaseDriver:
         "proxy": None,
     }
     """
-	Required options
-		- url
+    Required options
+        - url
 
-	Either
-		- login_id
-		- password
+    Either
+        - login_id
+        - password
 
-	Or
-		- token (https://docs.mattermost.com/developer/personal-access-tokens.html)
+    Or
+        - token (https://docs.mattermost.com/developer/personal-access-tokens.html)
 
-	Optional
-		- scheme ('https')
-		- port (8065)
-		- verify (True)
-		- timeout (30)
-		- request_timeout (None)
-		- mfa_token (None)
-		- auth (None)
-		- debug (False)
+    Optional
+        - scheme ('https')
+        - port (8065)
+        - verify (True)
+        - timeout (30)
+        - request_timeout (None)
+        - mfa_token (None)
+        - auth (None)
+        - debug (False)
 
-	Should not be changed
-		- basepath ('/api/v4') - unlikely this would do any good
-	"""
+    Should not be changed
+        - basepath ('/api/v4') - unlikely this would do any good
+    """
 
-    def __init__(self, options, client_cls):
+    def __init__(
+        self, options: Dict[str, Any], client_cls: ClientType
+    ) -> None:
         """
         :param options: A dict with the values from `default_options`
         :type options: dict
         """
-        self.options = self.default_options.copy()
-        if options is not None:
+        self.options: Dict[str, Any] = self.default_options.copy()
+
+        if options:
             self.options.update(options)
-        self.driver = self.options
+
+        self.driver: Dict[str, Any] = self.options
+
         if self.options.get("debug"):
-            log.setLevel(logging.DEBUG)
+            log.setLevel(DEBUG)
             log.warning(
                 "Careful!!\nSetting debug to True, will reveal your password in the log output if you do driver.login()!\nThis is NOT for production!"
             )
-        self.client = client_cls(self.options)
-        self.websocket = None
 
-    def disconnect(self):
+        self.client: ClientType = client_cls(self.options)
+        self.websocket: Websocket | None = None
+
+    def disconnect(self) -> None:
         """Disconnects the driver from the server, stopping the websocket event loop."""
         if self.websocket:
             self.websocket.disconnect()
 
     @property
-    def users(self):
+    def users(self) -> Users:
         """
         Api endpoint for users
 
@@ -92,7 +99,7 @@ class BaseDriver:
         return Users(self.client)
 
     @property
-    def teams(self):
+    def teams(self) -> Teams:
         """
         Api endpoint for teams
 
@@ -101,7 +108,7 @@ class BaseDriver:
         return Teams(self.client)
 
     @property
-    def channels(self):
+    def channels(self) -> Channels:
         """
         Api endpoint for channels
 
@@ -110,7 +117,7 @@ class BaseDriver:
         return Channels(self.client)
 
     @property
-    def posts(self):
+    def posts(self) -> Posts:
         """
         Api endpoint for posts
 
@@ -119,7 +126,7 @@ class BaseDriver:
         return Posts(self.client)
 
     @property
-    def files(self):
+    def files(self) -> Files:
         """
         Api endpoint for files
 
@@ -128,7 +135,7 @@ class BaseDriver:
         return Files(self.client)
 
     @property
-    def preferences(self):
+    def preferences(self) -> Preferences:
         """
         Api endpoint for preferences
 
@@ -137,7 +144,7 @@ class BaseDriver:
         return Preferences(self.client)
 
     @property
-    def emoji(self):
+    def emoji(self) -> Emoji:
         """
         Api endpoint for emoji
 
@@ -146,7 +153,7 @@ class BaseDriver:
         return Emoji(self.client)
 
     @property
-    def reactions(self):
+    def reactions(self) -> Reactions:
         """
         Api endpoint for posts' reactions
 
@@ -155,7 +162,7 @@ class BaseDriver:
         return Reactions(self.client)
 
     @property
-    def system(self):
+    def system(self) -> System:
         """
         Api endpoint for system
 
@@ -164,7 +171,7 @@ class BaseDriver:
         return System(self.client)
 
     @property
-    def webhooks(self):
+    def webhooks(self) -> Webhooks:
         """
         Api endpoint for webhooks
 
@@ -173,7 +180,7 @@ class BaseDriver:
         return Webhooks(self.client)
 
     @property
-    def compliance(self):
+    def compliance(self) -> Compliance:
         """
         Api endpoint for compliance
 
@@ -182,7 +189,7 @@ class BaseDriver:
         return Compliance(self.client)
 
     @property
-    def cluster(self):
+    def cluster(self) -> Cluster:
         """
         Api endpoint for cluster
 
@@ -191,7 +198,7 @@ class BaseDriver:
         return Cluster(self.client)
 
     @property
-    def brand(self):
+    def brand(self) -> Brand:
         """
         Api endpoint for brand
 
@@ -200,7 +207,7 @@ class BaseDriver:
         return Brand(self.client)
 
     @property
-    def oauth(self):
+    def oauth(self) -> OAuth:
         """
         Api endpoint for oauth
 
@@ -209,7 +216,7 @@ class BaseDriver:
         return OAuth(self.client)
 
     @property
-    def saml(self):
+    def saml(self) -> SAML:
         """
         Api endpoint for saml
 
@@ -218,7 +225,7 @@ class BaseDriver:
         return SAML(self.client)
 
     @property
-    def ldap(self):
+    def ldap(self) -> LDAP:
         """
         Api endpoint for ldap
 
@@ -227,7 +234,7 @@ class BaseDriver:
         return LDAP(self.client)
 
     @property
-    def elasticsearch(self):
+    def elasticsearch(self) -> Elasticsearch:
         """
         Api endpoint for elasticsearch
 
@@ -236,7 +243,7 @@ class BaseDriver:
         return Elasticsearch(self.client)
 
     @property
-    def data_retention(self):
+    def data_retention(self) -> DataRetention:
         """
         Api endpoint for data_retention
 
@@ -245,7 +252,7 @@ class BaseDriver:
         return DataRetention(self.client)
 
     @property
-    def status(self):
+    def status(self) -> Status:
         """
         Api endpoint for status
 
@@ -254,7 +261,7 @@ class BaseDriver:
         return Status(self.client)
 
     @property
-    def commands(self):
+    def commands(self) -> Commands:
         """
         Api endpoint for commands
 
@@ -263,7 +270,7 @@ class BaseDriver:
         return Commands(self.client)
 
     @property
-    def roles(self):
+    def roles(self) -> Roles:
         """
         Api endpoint for roles
 
@@ -272,7 +279,7 @@ class BaseDriver:
         return Roles(self.client)
 
     @property
-    def opengraph(self):
+    def opengraph(self) -> Opengraph:
         """
         Api endpoint for opengraph
 
@@ -281,7 +288,7 @@ class BaseDriver:
         return Opengraph(self.client)
 
     @property
-    def integration_actions(self):
+    def integration_actions(self) -> IntegrationActions:
         """
         Api endpoint for integration actions
 
@@ -290,7 +297,7 @@ class BaseDriver:
         return IntegrationActions(self.client)
 
     @property
-    def bots(self):
+    def bots(self) -> Bots:
         """
         Api endpoint for bots
 
@@ -300,17 +307,24 @@ class BaseDriver:
 
 
 class Driver(BaseDriver):
-    def __init__(self, options=None, client_cls=Client):
+    def __init__(
+        self,
+        options: Dict[str, Any] | None = None,
+        client_cls: ClientType = Client,
+    ) -> None:
         super().__init__(options, client_cls)
 
     def __enter__(self):
         self.client.__enter__()
+
         return self
 
-    def __exit__(self, *exc_info):
+    def __exit__(self, *exc_info) -> Any:
         return self.client.__exit__(*exc_info)
 
-    def init_websocket(self, event_handler, websocket_cls=Websocket):
+    def init_websocket(
+        self, event_handler: Any, websocket_cls: Websocket = Websocket
+    ) -> AbstractEventLoop:
         """
         Will initialize the websocket connection to the mattermost server.
 
@@ -333,11 +347,17 @@ class Driver(BaseDriver):
         :return: The event loop
         """
         self.websocket = websocket_cls(self.options, self.client.token)
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(self.websocket.connect(event_handler))
+        loop: AbstractEventLoop = get_event_loop()
+
+        try:
+            loop.run_until_complete(self.websocket.connect(event_handler))
+
+        except RuntimeError as err:
+            log.error(err)
+
         return loop
 
-    def login(self):
+    def login(self) -> Any:
         """
         Logs the user in.
 
@@ -350,9 +370,10 @@ class Driver(BaseDriver):
         """
         if self.options.get("token"):
             self.client.token = self.options["token"]
-            result = self.users.get_user("me")
+            result: Any = self.users.get_user("me")
+
         else:
-            response = self.users.login_user(
+            response: Any = self.users.login_user(
                 {
                     "login_id": self.options["login_id"],
                     "password": self.options["password"],
@@ -362,47 +383,57 @@ class Driver(BaseDriver):
             if response.status_code == 200:
                 self.client.token = response.headers["Token"]
                 self.client.cookies = response.cookies
+
             try:
                 result = response.json()
             except ValueError:
-                log.debug("Could not convert response to json, returning raw response")
+                log.debug(
+                    "Could not convert response to json, returning raw response"
+                )
                 result = response
-
-        log.debug(result)
 
         if result.get("id"):
             self.client.userid = result["id"]
+
         if result.get("username"):
             self.client.username = result["username"]
 
         return result
 
-    def logout(self):
+    def logout(self) -> Any:
         """
         Log the user out.
 
         :return: The JSON response from the server
         """
-        result = self.users.logout_user()
+        result: Any = self.users.logout_user()
         self.client.token = ""
         self.client.userid = ""
         self.client.username = ""
         self.client.cookies = None
+
         return result
 
 
 class AsyncDriver(BaseDriver):
-    def __init__(self, options=None, client_cls=AsyncClient):
+    def __init__(
+        self,
+        options: Dict[str, Any] | None = None,
+        client_cls: ClientType = AsyncClient,
+    ) -> None:
         super().__init__(options, client_cls)
 
     async def __aenter__(self):
         await self.client.__aenter__()
+
         return self
 
-    async def __aexit__(self, *exc_info):
+    async def __aexit__(self, *exc_info) -> Any:
         return await self.client.__aexit__(*exc_info)
 
-    def init_websocket(self, event_handler, websocket_cls=Websocket):
+    def init_websocket(
+        self, event_handler: Any, websocket_cls: Websocket = Websocket
+    ) -> Any:
         """
         Will initialize the websocket connection to the mattermost server.
         unlike the Driver.init_websocket, this one assumes you are async aware
@@ -428,9 +459,10 @@ class AsyncDriver(BaseDriver):
         :return: coroutine
         """
         self.websocket = websocket_cls(self.options, self.client.token)
+
         return self.websocket.connect(event_handler)
 
-    async def login(self):
+    async def login(self) -> Any:
         """
         Logs the user in.
 
@@ -443,42 +475,48 @@ class AsyncDriver(BaseDriver):
         """
         if self.options.get("token"):
             self.client.token = self.options["token"]
-            result = await self.users.get_user("me")
+            result: Any = await self.users.get_user("me")
+
         else:
-            response = await self.users.login_user(
+            response: Any = await self.users.login_user(
                 {
                     "login_id": self.options["login_id"],
                     "password": self.options["password"],
                     "token": self.options["mfa_token"],
                 }
             )
+
             if response.status_code == 200:
                 self.client.token = response.headers["Token"]
                 self.client.cookies = response.cookies
+
             try:
                 result = response.json()
-            except ValueError:
-                log.debug("Could not convert response to json, returning raw response")
-                result = response
 
-        log.debug(result)
+            except ValueError:
+                log.debug(
+                    "Could not convert response to json, returning raw response"
+                )
+                result = response
 
         if result("id"):
             self.client.userid = result["id"]
+
         if result.get("username"):
             self.client.username = result["username"]
 
         return result
 
-    async def logout(self):
+    async def logout(self) -> Any:
         """
         Log the user out.
 
         :return: The JSON response from the server
         """
-        result = await self.users.logout_user()
+        result: Any = await self.users.logout_user()
         self.client.token = ""
         self.client.userid = ""
         self.client.username = ""
         self.client.cookies = None
+
         return result

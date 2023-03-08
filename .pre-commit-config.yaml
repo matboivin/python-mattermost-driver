@@ -22,21 +22,18 @@ repos:
       ]
       exclude: "tests"
 
-  # - repo: https://github.com/psf/black
-  #   rev: 23.1.0
-  #   hooks:
-  #   - id: black
-  #     args: [--config=./pyproject.toml]
+  - repo: https://github.com/psf/black
+    rev: 23.1.0
+    hooks:
+    - id: black
+      args: [--config=./pyproject.toml]
 
   # - repo: https://github.com/pre-commit/mirrors-mypy
   #   rev: v1.0.1
   #   hooks:
   #   - id: mypy
   #     additional_dependencies: [
-  #       types-PyYAML,
-  #       types-pytz,
   #       types-requests,
-  #       types-retry,
   #     ]
   #     args: [--config-file=./pyproject.toml]
 
@@ -54,7 +51,7 @@ repos:
   #     entry: pycodestyle
   #     language: system
   #     args: [
-  #       '--exclude=*init*,test_*.py',
+  #       '--exclude=*init*',
   #       '--ignore=E722,E126,W503',
   #       '--max-line-length=79',
   #     ]
@@ -65,7 +62,6 @@ repos:
   #   hooks:
   #   - id: bandit
   #     args: ['--skip=B324,B501']
-  #     exclude: tests/
 
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.16
