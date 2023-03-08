@@ -1,33 +1,9 @@
 import asyncio
 import logging
-import warnings
 
 from .client import AsyncClient, Client
+from .endpoints import *
 from .websocket import Websocket
-from .endpoints.brand import Brand
-from .endpoints.channels import Channels
-from .endpoints.cluster import Cluster
-from .endpoints.commands import Commands
-from .endpoints.compliance import Compliance
-from .endpoints.files import Files
-from .endpoints.ldap import LDAP
-from .endpoints.oauth import OAuth
-from .endpoints.posts import Posts
-from .endpoints.preferences import Preferences
-from .endpoints.reactions import Reactions
-from .endpoints.saml import SAML
-from .endpoints.system import System
-from .endpoints.teams import Teams
-from .endpoints.users import Users
-from .endpoints.webhooks import Webhooks
-from .endpoints.elasticsearch import Elasticsearch
-from .endpoints.emoji import Emoji
-from .endpoints.data_retention import DataRetention
-from .endpoints.roles import Roles
-from .endpoints.status import Status
-from .endpoints.bots import Bots
-from .endpoints.opengraph import Opengraph
-from .endpoints.integration_actions import IntegrationActions
 
 log = logging.getLogger("mattermostdriver.api")
 log.setLevel(logging.INFO)
