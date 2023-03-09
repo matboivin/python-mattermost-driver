@@ -7,10 +7,6 @@ license = "MIT"
 readme = "README.rst"
 repository = "https://github.com/Vaelor/python-mattermost-driver"
 
-packages = [
-    { include = "src" }
-]
-
 classifiers=[
     'Development Status :: 5 - Production/Stable',
     'Environment :: Web Environment',
