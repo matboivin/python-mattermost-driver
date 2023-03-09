@@ -563,7 +563,7 @@ class AsyncDriver(BaseDriver):
     async def __aexit__(self, *exc_info) -> Any:
         return await self.client.__aexit__(*exc_info)
 
-    def init_websocket(
+    async def init_websocket(
         self,
         event_handler: Any,
         websocket_cls: Callable[..., Websocket] = Websocket,
@@ -601,7 +601,7 @@ class AsyncDriver(BaseDriver):
         """
         self.websocket = websocket_cls(self.options, self.client.token)
 
-        return self.websocket.connect(event_handler)
+        return await self.websocket.connect(event_handler)
 
     async def login(self) -> Any | Response:
         """Log the user in.
@@ -644,7 +644,7 @@ class AsyncDriver(BaseDriver):
                 )
                 result = response
 
-        if result("id"):
+        if result.get("id"):
             self.client.userid = result["id"]
 
         if result.get("username"):
