@@ -5,9 +5,7 @@ from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
 from time import time
 from typing import Any, Dict
 
-from aiohttp import ClientError, ClientSession
-
-from .websocket import Websocket
+from aiohttp import ClientError, ClientSession, ClientWebSocketResponse
 
 log: Logger = getLogger("mattermostdriver.websocket")
 log.setLevel(INFO)
@@ -91,7 +89,7 @@ class Websocket:
                 await sleep(self.options["keepalive_delay"])
 
     async def _start_loop(
-        self, websocket: Websocket, event_handler: Any
+        self, websocket: ClientWebSocketResponse, event_handler: Any
     ) -> None:
         """
         We will listen for websockets events, sending a heartbeats on a timer.
@@ -118,7 +116,7 @@ class Websocket:
         except CancelledError:
             pass
 
-    async def _do_heartbeats(self, websocket: Websocket) -> None:
+    async def _do_heartbeats(self, websocket: ClientWebSocketResponse) -> None:
         """
         This is a little complicated, but we only need to pong the websocket if
         we haven't recieved a message inside the timeout window.
@@ -150,7 +148,7 @@ class Websocket:
         self._alive = False
 
     async def _authenticate_websocket(
-        self, websocket: Websocket, event_handler: Any
+        self, websocket: ClientWebSocketResponse, event_handler: Any
     ) -> bool:
         """
         Sends a authentication challenge over a websocket.
