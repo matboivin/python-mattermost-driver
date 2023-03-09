@@ -1,3 +1,5 @@
+"""Custom exceptions."""
+
 from httpx import HTTPError
 
 
