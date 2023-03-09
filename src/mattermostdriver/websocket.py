@@ -183,18 +183,15 @@ class Websocket:
             The function to handle the websocket events. Takes one argument.
 
         """
-        context: SSLContext = create_default_context(
-            purpose=Purpose.SERVER_AUTH
-        )
+        context: SSLContext | None = None
+        scheme: str = "ws://"
 
-        if not self.options.get("verify"):
+        if self.options.get("scheme") == "https":
+            context = create_default_context(purpose=Purpose.SERVER_AUTH)
+            scheme = "wss://"
+
+        if context and not self.options.get("verify"):
             context.verify_mode = CERT_NONE
-
-        scheme: str = "wss://"
-
-        if self.options.get("scheme") != "https":
-            scheme = "ws://"
-            context = None
 
         url: str = (
             f"{scheme}{self.options.get('url')}:{self.options.get('port')}"

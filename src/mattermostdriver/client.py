@@ -35,7 +35,7 @@ class BaseClient:
     _scheme : str
     _basepath : str
     _port : int
-    _auth : str
+    _auth : Any
     _options : dict
     _token : str
     _cookies : Any, default=None
@@ -76,7 +76,7 @@ class BaseClient:
         self._scheme: str = options["scheme"]
         self._basepath: str = options["basepath"]
         self._port: int = options["port"]
-        self._auth: str = options["auth"]
+        self._auth: Any = options["auth"]
 
         if options.get("debug"):
             self.activate_verbose_logging()
@@ -271,13 +271,15 @@ class BaseClient:
             log.debug(response)
 
         except HTTPStatusError as err:
+            message: Any
+
             try:
                 data: Any = err.response.json()
                 message = data.get("message", data)
 
             except ValueError:
                 log.debug("Could not convert response to json.")
-                message: Any = response.text
+                message = response.text
 
             log.error(message)
 
