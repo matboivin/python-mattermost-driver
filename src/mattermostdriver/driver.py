@@ -2,7 +2,7 @@
 
 from asyncio import AbstractEventLoop, get_event_loop
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 from requests import Response
 
@@ -84,16 +84,18 @@ class BaseDriver:
     """
 
     def __init__(
-        self, options: Dict[str, Any], client_cls: ClientType
+        self,
+        options: Dict[str, Any] | None,
+        client_cls: Callable[..., ClientType],
     ) -> None:
         """Initialize driver.
 
         Parameters
         ----------
-        options : dict
+        options : dict, optional
             The options for driver and client.
-        client_cls : AsyncClient or Client
-            The underlying client class.
+        client_cls : Function()
+            Constructor for the underlying client class.
 
         """
         self.options: Dict[str, Any] = self.default_options.copy()
@@ -106,7 +108,9 @@ class BaseDriver:
         if self.options.get("debug"):
             log.setLevel(DEBUG)
             log.warning(
-                "Careful!!\nSetting debug to True, will reveal your password in the log output if you do driver.login()!\nThis is NOT for production!"
+                "Careful!!\nSetting debug to True, will reveal your password "
+                "in the log output if you do driver.login()!\nThis is NOT for "
+                "production!"
             )
 
         self.client: ClientType = client_cls(self.options)
@@ -407,7 +411,7 @@ class Driver(BaseDriver):
     def __init__(
         self,
         options: Dict[str, Any] | None = None,
-        client_cls: ClientType = Client,
+        client_cls: Callable[..., ClientType] = Client,
     ) -> None:
         super().__init__(options, client_cls)
 
@@ -420,7 +424,9 @@ class Driver(BaseDriver):
         return self.client.__exit__(*exc_info)
 
     def init_websocket(
-        self, event_handler: Any, websocket_cls: Websocket = Websocket
+        self,
+        event_handler: Any,
+        websocket_cls: Callable[..., Websocket] = Websocket,
     ) -> AbstractEventLoop:
         """Initialize the websocket connection to the Mattermost server.
 
@@ -441,7 +447,7 @@ class Driver(BaseDriver):
         ----------
         event_handler : Function(message)
             The function to handle the websocket events. Takes one argument.
-        websocket_cls : websocket.Websocket, default=websocket.Websocket
+        websocket_cls : Function(), default=websocket.Websocket
             The Websocket class.
 
         Returns
@@ -545,7 +551,7 @@ class AsyncDriver(BaseDriver):
     def __init__(
         self,
         options: Dict[str, Any] | None = None,
-        client_cls: ClientType = AsyncClient,
+        client_cls: Callable[..., ClientType] = AsyncClient,
     ) -> None:
         super().__init__(options, client_cls)
 
@@ -558,7 +564,9 @@ class AsyncDriver(BaseDriver):
         return await self.client.__aexit__(*exc_info)
 
     def init_websocket(
-        self, event_handler: Any, websocket_cls: Websocket = Websocket
+        self,
+        event_handler: Any,
+        websocket_cls: Callable[..., Websocket] = Websocket,
     ) -> Any:
         """Initialize the websocket connection to the Mattermost server.
 
