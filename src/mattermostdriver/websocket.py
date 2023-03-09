@@ -202,9 +202,10 @@ class Websocket:
 
         while True:
             try:
-                kw_args: Dict[str, Any] = self.options.get(
-                    "websocket_kw_args", {}
-                )
+                kw_args: Dict[str, Any] = {}
+
+                if self.options.get("websocket_kw_args"):
+                    kw_args = self.options.get("websocket_kw_args")
 
                 async with ClientSession() as session:
                     async with session.ws_connect(
