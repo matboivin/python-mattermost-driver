@@ -1,6 +1,6 @@
 """Driver classes."""
 
-from asyncio import AbstractEventLoop, get_event_loop
+from asyncio import AbstractEventLoop, get_event_loop, run
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Callable, Dict
 
@@ -459,11 +459,15 @@ class Driver(BaseDriver):
         self.websocket = websocket_cls(self.options, self.client.token)
         loop: AbstractEventLoop = get_event_loop()
 
-        try:
-            loop.run_until_complete(self.websocket.connect(event_handler))
+        if loop.is_running:
+            run(self.websocket.connect(event_handler))
 
-        except RuntimeError as err:
-            log.error(err)
+        else:
+            try:
+                loop.run_until_complete(self.websocket.connect(event_handler))
+
+            except RuntimeError as err:
+                log.error(err)
 
         return loop
 
