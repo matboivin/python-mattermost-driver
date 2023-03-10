@@ -333,7 +333,7 @@ class BaseClient:
         method : str
             Either 'GET', 'POST', 'PUT' or 'DELETE'.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -360,9 +360,6 @@ class BaseClient:
             "timeout": self.request_timeout,
         }
 
-        if params:
-            request_params["params"] = params
-
         if method in ["post", "put"]:
             if options:
                 request_params["json"] = options
@@ -370,6 +367,9 @@ class BaseClient:
                 request_params["data"] = data
             if files:
                 request_params["files"] = files
+
+        if params:
+            request_params["params"] = params
 
         if self._auth:
             request_params["auth"] = self._auth()
@@ -442,7 +442,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -484,7 +484,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -530,7 +530,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -567,7 +567,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -597,7 +597,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -675,7 +675,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -719,7 +719,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -765,7 +765,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -804,7 +804,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -836,7 +836,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
