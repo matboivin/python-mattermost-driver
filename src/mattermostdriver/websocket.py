@@ -95,10 +95,10 @@ class Websocket:
             await event_handler(message)
 
             if status.get("event") == "hello" and status.get("seq") == 0:
-                log.info("Websocket authentification OK")
+                log.info("Websocket authentication OK")
                 return True
 
-            log.error("Websocket authentification failed")
+            log.error("Websocket authentication failed")
 
     async def _do_heartbeats(self, websocket: ClientWebSocketResponse) -> None:
         """Keep connection alive.

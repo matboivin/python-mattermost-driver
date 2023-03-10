@@ -1,6 +1,6 @@
 """Driver classes."""
 
-from asyncio import AbstractEventLoop, get_event_loop
+from asyncio import AbstractEventLoop, get_event_loop, run
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Callable, Dict
 
@@ -430,8 +430,8 @@ class Driver(BaseDriver):
     ) -> AbstractEventLoop:
         """Initialize the websocket connection to the Mattermost server.
 
-        This should be run after login(), because the websocket needs to make
-        an authentification.
+        This should be run after login(), because the websocket needs to
+        authenticate.
 
         See https://api.mattermost.com/v4/#tag/WebSocket for which
         websocket events mattermost sends.
@@ -459,11 +459,15 @@ class Driver(BaseDriver):
         self.websocket = websocket_cls(self.options, self.client.token)
         loop: AbstractEventLoop = get_event_loop()
 
-        try:
-            loop.run_until_complete(self.websocket.connect(event_handler))
+        if loop.is_running:
+            run(self.websocket.connect(event_handler))
 
-        except RuntimeError as err:
-            log.error(err)
+        else:
+            try:
+                loop.run_until_complete(self.websocket.connect(event_handler))
+
+            except RuntimeError as err:
+                log.error(err)
 
         return loop
 
@@ -574,8 +578,8 @@ class AsyncDriver(BaseDriver):
         and returns a coroutine that can be awaited.  It will not return
         until shutdown() is called.
 
-        This should be run after login(), because the websocket needs to make
-        an authentification.
+        This should be run after login(), because the websocket needs to
+        authenticate.
 
         See https://api.mattermost.com/v4/#tag/WebSocket for which
         websocket events mattermost sends.
