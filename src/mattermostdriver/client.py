@@ -46,8 +46,6 @@ class BaseClient:
 
     Static methods
     --------------
-    _make_url(scheme, url, port, basepath)
-        Construct the Mattermost server's URL.
     _get_request_method(method, client)
         Get the client's method from request's name.
     _check_response(response)
@@ -67,11 +65,8 @@ class BaseClient:
     """
 
     def __init__(self, options: Dict[str, Any]) -> None:
-        self._url: str = self._make_url(
-            options["scheme"],
-            options["url"],
-            options["port"],
-            options["basepath"],
+        self._url: str = (
+            f"{options['scheme']}://{options['url']}:{options['port']}"
         )
         self._scheme: str = options["scheme"]
         self._basepath: str = options["basepath"]
@@ -94,6 +89,85 @@ class BaseClient:
         self.client: HttpxAsyncClient | HttpxClient | None = None
 
     # ############################################################ Properties #
+
+    @property
+    def url(self) -> str:
+        """Get the Mattermost server's URL.
+
+        Returns
+        -------
+        str
+
+        """
+        return self._url
+
+    @property
+    def basepath(self) -> str:
+        """Get the API basepath.
+
+        Returns
+        -------
+        str
+
+        """
+        return self._basepath
+
+    @property
+    def request_timeout(self) -> int | None:
+        """Get the configured timeout for the requests.
+
+        Returns
+        -------
+        int or None
+
+        """
+        return self._options.get("request_timeout")
+
+    @property
+    def token(self) -> str:
+        """Get the token for the login.
+
+        Returns
+        -------
+        str
+
+        """
+        return self._token
+
+    @token.setter
+    def token(self, token: str) -> None:
+        """Set the token for the login.
+
+        Parameters
+        ----------
+        token : str
+            The new token value.
+
+        """
+        self._token = token
+
+    @property
+    def cookies(self) -> Any | None:
+        """Get the cookies given on login.
+
+        Returns
+        -------
+        Any or None
+
+        """
+        return self._cookies
+
+    @cookies.setter
+    def cookies(self, cookies: Any) -> None:
+        """Set the cookies.
+
+        Parameters
+        ----------
+        cookies : Any
+            The new cookies value.
+
+        """
+        self._cookies = cookies
 
     @property
     def userid(self) -> str:
@@ -142,98 +216,7 @@ class BaseClient:
         """
         self._username = username
 
-    @property
-    def request_timeout(self) -> int | None:
-        """Get the configured timeout for the requests.
-
-        Returns
-        -------
-        int or None
-
-        """
-        return self._options.get("request_timeout")
-
-    @property
-    def url(self) -> str:
-        """Get the Mattermost server's URL.
-
-        Returns
-        -------
-        str
-
-        """
-        return self._url
-
-    @property
-    def cookies(self) -> Any | None:
-        """Get the cookies given on login.
-
-        Returns
-        -------
-        Any or None
-
-        """
-        return self._cookies
-
-    @cookies.setter
-    def cookies(self, cookies: Any) -> None:
-        """Set the cookies.
-
-        Parameters
-        ----------
-        cookies : Any
-            The new cookies value.
-
-        """
-        self._cookies = cookies
-
-    @property
-    def token(self) -> str:
-        """Get the token for the login.
-
-        Returns
-        -------
-        str
-
-        """
-        return self._token
-
-    @token.setter
-    def token(self, token: str) -> None:
-        """Set the token for the login.
-
-        Parameters
-        ----------
-        token : str
-            The new token value.
-
-        """
-        self._token = token
-
     # ######################################################## Static methods #
-
-    @staticmethod
-    def _make_url(scheme: str, url: str, port: int, basepath: str) -> str:
-        """Construct the Mattermost server's URL.
-
-        Parameters
-        ----------
-        scheme : str
-            The URI scheme.
-        url : str
-            The Mattermost server's URL.
-        port : int
-            The Mattermost server's port.
-        basepath : str
-            API path.
-
-        Returns
-        -------
-        str
-            The formatted URL.
-
-        """
-        return f"{scheme}://{url}:{port}{basepath}"
 
     @staticmethod
     def _get_request_method(
@@ -367,14 +350,9 @@ class BaseClient:
 
         """
         url: str = (
-            self._make_url(
-                self._options["scheme"],
-                self._options["url"],
-                self._options["port"],
-                basepath,
-            )
+            f"{self.url}{basepath}"
             if basepath
-            else self.url
+            else f"{self.url}{self.basepath}"
         )
 
         request_params: Dict[str, Any] = {
