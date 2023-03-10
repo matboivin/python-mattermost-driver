@@ -4,7 +4,7 @@ version = "8.0.0"
 description = "A Python Mattermost Driver"
 authors = ["Christian Plümer <github@kuuku.net>"]
 license = "MIT"
-readme = "README.rst"
+readme = "README.md"
 repository = "https://github.com/Vaelor/python-mattermost-driver"
 
 classifiers=[
