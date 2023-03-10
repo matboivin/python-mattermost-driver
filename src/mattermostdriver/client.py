@@ -31,16 +31,16 @@ class BaseClient:
 
     Attributes
     ----------
-    _url : str
-    _scheme : str
-    _basepath : str
-    _port : int
-    _auth : Any
-    _options : dict
-    _token : str
+    _scheme : str, default='https'
+    _basepath : str, default='/api/v4'
+    _port : int, default=8065
+    _url : str, default='https://localhost:8065'
+    _auth : Any, default=None
+    _request_timeout : int, default=30
+    _token : str, default=None
     _cookies : Any, default=None
-    _userid : str
-    _username : str
+    _userid : str, default=None
+    _username : str, default=None
     _proxies : dict, default=None
     client : httpx.AsyncClient or httpx.Client, default=None
 
@@ -65,18 +65,14 @@ class BaseClient:
     """
 
     def __init__(self, options: Dict[str, Any]) -> None:
+        self._scheme: str = options.get("scheme", "https")
+        self._basepath: str = options.get("basepath", "/api/v4")
+        self._port: int = options.get("port", 8065)
         self._url: str = (
-            f"{options['scheme']}://{options['url']}:{options['port']}"
+            f"{self._scheme}://{options.get('url', 'localhost')}:{self._port}"
         )
-        self._scheme: str = options["scheme"]
-        self._basepath: str = options["basepath"]
-        self._port: int = options["port"]
-        self._auth: Any = options["auth"]
-
-        if options.get("debug"):
-            self.activate_verbose_logging()
-
-        self._options: Dict[str, Any] = options
+        self._auth: Any = options.get("auth")
+        self._request_timeout: int = options.get("request_timeout", 30)
         self._token: str = ""
         self._cookies: Any | None = None
         self._userid: str = ""
@@ -87,6 +83,9 @@ class BaseClient:
             self._proxies = {"all://": options.get("proxy")}
 
         self.client: HttpxAsyncClient | HttpxClient | None = None
+
+        if options.get("debug"):
+            self.activate_verbose_logging()
 
     # ############################################################ Properties #
 
@@ -121,7 +120,7 @@ class BaseClient:
         int or None
 
         """
-        return self._options.get("request_timeout")
+        return self._request_timeout
 
     @property
     def token(self) -> str:
@@ -737,7 +736,7 @@ class AsyncClient(BaseClient):
 
         if response.headers.get("Content-Type") != "application/json":
             log.debug(
-                "Response is not application/json, returning raw response"
+                "Response is not application/json, returning raw response."
             )
             return response
 
@@ -746,7 +745,7 @@ class AsyncClient(BaseClient):
 
         except ValueError:
             log.debug(
-                "Could not convert response to json, returning raw response"
+                "Could not convert response to JSON, returning raw response."
             )
             return response
 

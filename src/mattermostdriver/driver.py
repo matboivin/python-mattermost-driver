@@ -36,29 +36,6 @@ class BaseDriver:
     disconnect()
         Disconnect the driver from the server.
 
-    """
-
-    default_options: Dict[str, Any] = {
-        "scheme": "https",
-        "url": "localhost",
-        "port": 8065,
-        "basepath": "/api/v4",
-        "verify": True,
-        "timeout": 30,
-        "request_timeout": None,
-        "login_id": None,
-        "password": None,
-        "token": None,
-        "mfa_token": None,
-        "auth": None,
-        "keepalive": False,
-        "keepalive_delay": 5,
-        "websocket_kw_args": None,
-        "debug": False,
-        "http2": False,
-        "proxy": None,
-    }
-    """
     Required options
         - url
 
@@ -98,14 +75,53 @@ class BaseDriver:
             Constructor for the underlying client class.
 
         """
-        self.options: Dict[str, Any] = self.default_options.copy()
+        # TODO: Clean duplicated options everywhere
+        self.options: Dict[str, Any] = options
+        # default_options: Dict[str, Any] = {
+        #     "scheme": "https",
+        #     "url": "localhost",
+        #     "port": 8065,
+        #     "basepath": "/api/v4",
+        #     "verify": True,
+        #     "timeout": 30,
+        #     "request_timeout": None,
+        #     "login_id": None,
+        #     "password": None,
+        #     "token": None,
+        #     "mfa_token": None,
+        #     "auth": None,
+        #     "keepalive": False,
+        #     "keepalive_delay": 5,
+        #     "websocket_kw_args": None,
+        #     "debug": False,
+        #     "http2": False,
+        #     "proxy": None,
+        # }
 
-        if options:
-            self.options.update(options)
+        self.scheme: str = options.get("scheme", "https")
+        self.basepath: str = options.get("basepath", "/api/v4")
+        self.port: int = options.get("port", 8065)
+        self.url: str = (
+            f"{self.scheme}://{options.get('url', 'localhost')}:{self.port}"
+        )
+        self.auth: Any | None = options.get("auth")
+        self.login_id: Any | None = options.get("login_id")
+        self.password: Any | None = options.get("password")
+        self.token: Any | None = options.get("token")
+        self.mfa_token: Any | None = options.get("mfa_token")
+        self.verify: Any = options.get("verify", True)
+        self.timeout: int = options.get("timeout", 30)
+        self.request_timeout: int = options.get("request_timeout", 30)
+        self.keepalive: bool = options.get("keepalive", False)
+        self.keepalive_delay: int = options.get("keepalive_delay", 5)
+        self.websocket_kw_args: Dict[str, Any] = options.get(
+            "websocket_kw_args", dict()
+        )
+        self.http2: bool = options.get("http2", False)
+        self.proxy: Dict[str, Any] | None = options.get("proxy")
+        self.debug: bool = options.get("debug", False)
 
-        self.driver: Dict[str, Any] = self.options
-
-        if self.options.get("debug"):
+        if self.debug:
             log.setLevel(DEBUG)
             log.warning(
                 "Careful!!\nSetting debug to True, will reveal your password "
@@ -486,16 +502,16 @@ class Driver(BaseDriver):
             converted to JSON.
 
         """
-        if self.options.get("token"):
-            self.client.token = self.options["token"]
+        if self.token:
+            self.client.token = self.token
             result: Any = self.users.get_user("me")
 
         else:
             response: Response = self.users.login_user(
                 {
-                    "login_id": self.options["login_id"],
-                    "password": self.options["password"],
-                    "token": self.options["mfa_token"],
+                    "login_id": self.login_id,
+                    "password": self.password,
+                    "token": self.mfa_token,
                 }
             )
             if response.status_code == 200:
@@ -622,16 +638,16 @@ class AsyncDriver(BaseDriver):
             converted to JSON.
 
         """
-        if self.options.get("token"):
-            self.client.token = self.options["token"]
+        if self.token:
+            self.client.token = self.token
             result: Any = await self.users.get_user("me")
 
         else:
             response: Any = await self.users.login_user(
                 {
-                    "login_id": self.options["login_id"],
-                    "password": self.options["password"],
-                    "token": self.options["mfa_token"],
+                    "login_id": self.login_id,
+                    "password": self.password,
+                    "token": self.mfa_token,
                 }
             )
 
