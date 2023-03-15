@@ -9,6 +9,8 @@ from typing import Any, Dict
 
 from aiohttp import ClientError, ClientSession, ClientWebSocketResponse
 
+from .options import DriverOptions
+
 log: Logger = getLogger("mattermostdriver.websocket")
 log.setLevel(INFO)
 
@@ -18,8 +20,14 @@ class Websocket:
 
     Attributes
     ----------
-    options : dict
-        The connection options.
+    _url : str
+    _context : SSLContext, optional
+    _websocket_kw_args : dict
+    _verify : bool
+    _timeout : int
+    _keepalive : bool
+    _keepalive_delay : int
+    _proxy : dict, optional
     _token : str
         The session token.
     _alive : bool, default=False
@@ -42,15 +50,29 @@ class Websocket:
 
     """
 
-    def __init__(self, options: Dict[str, Any], token: str) -> None:
-        self.options: Dict[str, Any] = options
-
-        if options.get("debug"):
-            log.setLevel(DEBUG)
-
+    def __init__(self, options: DriverOptions, token: str) -> None:
+        scheme: str = "wss" if options.scheme == "https" else "ws"
+        self._url: str = (
+            f"{scheme}://{options.hostname}:{options.port}{options.basepath}"
+            "/websocket"
+        )
+        self._context: SSLContext | None = (
+            create_default_context(purpose=Purpose.SERVER_AUTH)
+            if options.scheme == "https"
+            else None
+        )
+        self._websocket_kw_args: Dict[str, Any] = options.websocket_kw_args
+        self._verify: bool = options.verify
+        self._timeout: int = options.timeout
+        self._keepalive: bool = options.keepalive
+        self._keepalive_delay: int = options.keepalive_delay
+        self._proxy: Dict[str, Any] | None = options.proxy
         self._token: str = token
         self._alive: bool = False
         self._last_msg: float = 0
+
+        if options.debug:
+            log.setLevel(DEBUG)
 
     async def _authenticate_websocket(
         self, websocket: ClientWebSocketResponse, event_handler: Any
@@ -115,7 +137,7 @@ class Websocket:
             Object for handling client-side websockets.
 
         """
-        timeout: float = self.options.get("timeout")
+        timeout: float = self._timeout
 
         while True:
             since_last_msg: float = time() - self._last_msg
@@ -160,6 +182,7 @@ class Websocket:
         while self._alive:
             message: Any = await websocket.receive_str()
             self._last_msg = time()
+
             await event_handler(message)
 
         log.debug("cancelling heartbeat task")
@@ -183,36 +206,19 @@ class Websocket:
             The function to handle the websocket events. Takes one argument.
 
         """
-        context: SSLContext | None = None
-        scheme: str = "ws://"
-
-        if self.options.get("scheme") == "https":
-            context = create_default_context(purpose=Purpose.SERVER_AUTH)
-            scheme = "wss://"
-
-        if context and not self.options.get("verify"):
-            context.verify_mode = CERT_NONE
-
-        url: str = (
-            f"{scheme}{self.options.get('url')}:{self.options.get('port')}"
-            f"{self.options.get('basepath')}/websocket"
-        )
+        if self._context and not self._verify:
+            self._context.verify_mode = CERT_NONE
 
         self._alive = True
 
         while True:
             try:
-                kw_args: Dict[str, Any] = {}
-
-                if self.options.get("websocket_kw_args"):
-                    kw_args = self.options.get("websocket_kw_args")
-
                 async with ClientSession() as session:
                     async with session.ws_connect(
-                        url,
-                        ssl=context,
-                        proxy=self.options.get("proxy"),
-                        **kw_args,
+                        self._url,
+                        ssl=self._context,
+                        proxy=self._proxy,
+                        **self._websocket_kw_args,
                     ) as websocket:
                         await self._authenticate_websocket(
                             websocket, event_handler
@@ -226,9 +232,7 @@ class Websocket:
                             except ClientError:
                                 break
 
-                        if not all(
-                            [self.options.get("keepalive"), self._alive]
-                        ):
+                        if not all([self._keepalive, self._alive]):
                             break
 
             except Exception as err:  # FIXME
@@ -236,7 +240,7 @@ class Websocket:
                     f"Failed to establish websocket connection: {type(err)}"
                     " thrown"
                 )
-                await sleep(self.options["keepalive_delay"])
+                await sleep(self._keepalive_delay)
 
     def disconnect(self) -> None:
         """Disconnect the websocket.

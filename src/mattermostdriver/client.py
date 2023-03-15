@@ -5,7 +5,7 @@ requests to the Mattermost server.
 """
 
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Dict, Tuple, TypeAlias
+from typing import Any, Callable, Dict, Tuple, TypeAlias
 
 from httpx import AsyncClient as HttpxAsyncClient
 from httpx import Client as HttpxClient
@@ -21,6 +21,7 @@ from .exceptions import (
     NotEnoughPermissions,
     ResourceNotFound,
 )
+from .options import DriverOptions
 
 log: Logger = getLogger("mattermostdriver.websocket")
 log.setLevel(INFO)
@@ -32,22 +33,17 @@ class BaseClient:
     Attributes
     ----------
     _url : str
-    _scheme : str
-    _basepath : str
-    _port : int
-    _auth : Any
-    _options : dict
-    _token : str
+    _auth : Any, default=None
+    _user_id : str, default=None
+    _username : str, default=None
+    _token : str, default=None
     _cookies : Any, default=None
-    _userid : str
-    _username : str
     _proxies : dict, default=None
+    _request_timeout : int
     client : httpx.AsyncClient or httpx.Client, default=None
 
     Static methods
     --------------
-    _make_url(scheme, url, port, basepath)
-        Construct the Mattermost server's URL.
     _get_request_method(method, client)
         Get the client's method from request's name.
     _check_response(response)
@@ -59,44 +55,47 @@ class BaseClient:
     -------
     auth_header()
         Get Authorization header.
-    _build_request(
-        method, options=None, params=None, data=None, files=None, basepath=None
-    )
+    _build_request(method, options=None, params=None, data=None, files=None)
         Build request to Mattermost API.
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
-        self._url: str = self._make_url(
-            options["scheme"],
-            options["url"],
-            options["port"],
-            options["basepath"],
+    def __init__(self, options: DriverOptions) -> None:
+        self._url: str = (
+            f"{options.scheme}://"
+            f"{options.hostname}:{options.port}{options.basepath}"
         )
-        self._scheme: str = options["scheme"]
-        self._basepath: str = options["basepath"]
-        self._port: int = options["port"]
-        self._auth: Any = options["auth"]
-
-        if options.get("debug"):
-            self.activate_verbose_logging()
-
-        self._options: Dict[str, Any] = options
+        self._auth: Any = options.auth
+        self._user_id: str = ""
+        self._username: str = ""
         self._token: str = ""
         self._cookies: Any | None = None
-        self._userid: str = ""
-        self._username: str = ""
         self._proxies: Dict[str, Any] | None = None
+        self._request_timeout: int = options.request_timeout
 
-        if options.get("proxy"):
-            self._proxies = {"all://": options.get("proxy")}
+        if options.proxy:
+            self._proxies = {"all://": options.proxy}
 
         self.client: HttpxAsyncClient | HttpxClient | None = None
+
+        if options.debug:
+            self.activate_verbose_logging()
 
     # ############################################################ Properties #
 
     @property
-    def userid(self) -> str:
+    def url(self) -> str:
+        """Get the Mattermost server's URL.
+
+        Returns
+        -------
+        str
+
+        """
+        return self._url
+
+    @property
+    def user_id(self) -> str:
         """Get the user ID of the logged-in user.
 
         Returns
@@ -104,10 +103,10 @@ class BaseClient:
         str
 
         """
-        return self._userid
+        return self._user_id
 
-    @userid.setter
-    def userid(self, user_id: str) -> None:
+    @user_id.setter
+    def user_id(self, user_id: str) -> None:
         """Set the user ID of the logged-in user.
 
         Parameters
@@ -116,7 +115,7 @@ class BaseClient:
             The new user ID value.
 
         """
-        self._userid = user_id
+        self._user_id = user_id
 
     @property
     def username(self) -> str:
@@ -143,26 +142,27 @@ class BaseClient:
         self._username = username
 
     @property
-    def request_timeout(self) -> int | None:
-        """Get the configured timeout for the requests.
-
-        Returns
-        -------
-        int or None
-
-        """
-        return self._options.get("request_timeout")
-
-    @property
-    def url(self) -> str:
-        """Get the Mattermost server's URL.
+    def token(self) -> str:
+        """Get the token for the login.
 
         Returns
         -------
         str
 
         """
-        return self._url
+        return self._token
+
+    @token.setter
+    def token(self, token: str) -> None:
+        """Set the token for the login.
+
+        Parameters
+        ----------
+        token : str
+            The new token value.
+
+        """
+        self._token = token
 
     @property
     def cookies(self) -> Any | None:
@@ -188,52 +188,17 @@ class BaseClient:
         self._cookies = cookies
 
     @property
-    def token(self) -> str:
-        """Get the token for the login.
+    def request_timeout(self) -> int | None:
+        """Get the configured timeout for the requests.
 
         Returns
         -------
-        str
+        int or None
 
         """
-        return self._token
-
-    @token.setter
-    def token(self, token: str) -> None:
-        """Set the token for the login.
-
-        Parameters
-        ----------
-        token : str
-            The new token value.
-
-        """
-        self._token = token
+        return self._request_timeout
 
     # ######################################################## Static methods #
-
-    @staticmethod
-    def _make_url(scheme: str, url: str, port: int, basepath: str) -> str:
-        """Construct the Mattermost server's URL.
-
-        Parameters
-        ----------
-        scheme : str
-            The URI scheme.
-        url : str
-            The Mattermost server's URL.
-        port : int
-            The Mattermost server's port.
-        basepath : str
-            API path.
-
-        Returns
-        -------
-        str
-            The formatted URL.
-
-        """
-        return f"{scheme}://{url}:{port}{basepath}"
 
     @staticmethod
     def _get_request_method(
@@ -341,7 +306,6 @@ class BaseClient:
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        basepath: str | None = None,
     ) -> Tuple[Any, str, Dict[str, Any]]:
         """Build request to Mattermost API.
 
@@ -350,40 +314,24 @@ class BaseClient:
         method : str
             Either 'GET', 'POST', 'PUT' or 'DELETE'.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        basepath : str, default=None
-            API path.
 
         Returns
         -------
         tuple
-            The method, URL and parameters.
+            The request's method and parameters.
 
         """
-        url: str = (
-            self._make_url(
-                self._options["scheme"],
-                self._options["url"],
-                self._options["port"],
-                basepath,
-            )
-            if basepath
-            else self.url
-        )
-
         request_params: Dict[str, Any] = {
             "headers": self.auth_header(),
             "timeout": self.request_timeout,
         }
-
-        if params:
-            request_params["params"] = params
 
         if method in ["post", "put"]:
             if options:
@@ -393,12 +341,14 @@ class BaseClient:
             if files:
                 request_params["files"] = files
 
+        if params:
+            request_params["params"] = params
+
         if self._auth:
             request_params["auth"] = self._auth()
 
         return (
             self._get_request_method(method, self.client),
-            url,
             request_params,
         )
 
@@ -413,8 +363,7 @@ class Client(BaseClient):
     Methods
     -------
     make_request(
-        method, endpoint, options=None, params=None, data=None, files=None,
-        basepath=None
+        method, endpoint, options=None, params=None, data=None, files=None
     )
         Make request to Mattermost API.
     get(endpoint, options=None, params=None)
@@ -428,13 +377,13 @@ class Client(BaseClient):
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: DriverOptions) -> None:
         super().__init__(options)
 
         self.client = HttpxClient(
-            http2=options.get("http2", False),
+            http2=options.http2,
             proxies=self._proxies,
-            verify=options.get("verify", True),
+            verify=options.verify,
         )
 
     def __enter__(self):
@@ -453,7 +402,6 @@ class Client(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        basepath: str | None = None,
     ) -> Response:
         """Make request to Mattermost API.
 
@@ -464,15 +412,13 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        basepath : str, default=None
-            API path.
 
         Returns
         -------
@@ -480,14 +426,13 @@ class Client(BaseClient):
             Response to the HTTP request.
 
         """
-        request: Any
-        url: str
+        request: Callable[..., Response]
         request_params: Dict[str, Any]
 
-        request, url, request_params = self._build_request(
-            method, options, params, data, files, basepath
+        request, request_params = self._build_request(
+            method, options, params, data, files
         )
-        response: Response = request(f"{url}{endpoint}", **request_params)
+        response: Response = request(f"{self.url}{endpoint}", **request_params)
 
         self._check_response(response)
 
@@ -506,7 +451,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -552,7 +497,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -589,7 +534,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -619,7 +564,7 @@ class Client(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -647,7 +592,6 @@ class AsyncClient(BaseClient):
     -------
     make_request(
         method, endpoint, options=None, params=None, data=None, files=None,
-        basepath=None
     )
         Make request to Mattermost API.
     get(endpoint, options=None, params=None)
@@ -661,13 +605,13 @@ class AsyncClient(BaseClient):
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: DriverOptions) -> None:
         super().__init__(options)
 
         self.client = HttpxAsyncClient(
-            http2=options.get("http2", False),
+            http2=options.http2,
             proxies=self._proxies,
-            verify=options.get("verify", True),
+            verify=options.verify,
         )
 
     async def __aenter__(self):
@@ -686,7 +630,6 @@ class AsyncClient(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        basepath: str | None = None,
     ) -> Response:
         """Make request to Mattermost API.
 
@@ -697,15 +640,13 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        basepath : str, default=None
-            API path.
 
         Returns
         -------
@@ -713,15 +654,14 @@ class AsyncClient(BaseClient):
             Response to the HTTP request.
 
         """
-        request: Any
-        url: str
+        request: Callable[..., Response]
         request_params: Dict[str, Any]
 
-        request, url, request_params = self._build_request(
-            method, options, params, data, files, basepath
+        request, request_params = self._build_request(
+            method, options, params, data, files
         )
         response: Response = await request(
-            f"{url}{endpoint}", **request_params
+            f"{self._url}{endpoint}", **request_params
         )
 
         self._check_response(response)
@@ -741,7 +681,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -759,7 +699,7 @@ class AsyncClient(BaseClient):
 
         if response.headers.get("Content-Type") != "application/json":
             log.debug(
-                "Response is not application/json, returning raw response"
+                "Response is not application/json, returning raw response."
             )
             return response
 
@@ -768,7 +708,7 @@ class AsyncClient(BaseClient):
 
         except ValueError:
             log.debug(
-                "Could not convert response to json, returning raw response"
+                "Could not convert response to JSON, returning raw response."
             )
             return response
 
@@ -787,7 +727,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -826,7 +766,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
@@ -858,7 +798,7 @@ class AsyncClient(BaseClient):
         endpoint : str
             The API endpoint to make the request to.
         options : dict, default=None
-            Client settings to use to make URL.
+            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
         data : dict, default=None
