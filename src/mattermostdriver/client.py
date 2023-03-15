@@ -5,7 +5,7 @@ requests to the Mattermost server.
 """
 
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Dict, Tuple, TypeAlias
+from typing import Any, Callable, Dict, Tuple, TypeAlias
 
 from httpx import AsyncClient as HttpxAsyncClient
 from httpx import Client as HttpxClient
@@ -21,6 +21,7 @@ from .exceptions import (
     NotEnoughPermissions,
     ResourceNotFound,
 )
+from .options import DriverOptions
 
 log: Logger = getLogger("mattermostdriver.websocket")
 log.setLevel(INFO)
@@ -31,17 +32,14 @@ class BaseClient:
 
     Attributes
     ----------
-    _scheme : str, default='https'
-    _basepath : str, default='/api/v4'
-    _port : int, default=8065
-    _url : str, default='https://localhost:8065'
+    _url : str
     _auth : Any, default=None
-    _request_timeout : int, default=30
+    _user_id : str, default=None
+    _username : str, default=None
     _token : str, default=None
     _cookies : Any, default=None
-    _userid : str, default=None
-    _username : str, default=None
     _proxies : dict, default=None
+    _request_timeout : int
     client : httpx.AsyncClient or httpx.Client, default=None
 
     Static methods
@@ -57,34 +55,30 @@ class BaseClient:
     -------
     auth_header()
         Get Authorization header.
-    _build_request(
-        method, options=None, params=None, data=None, files=None, basepath=None
-    )
+    _build_request(method, options=None, params=None, data=None, files=None)
         Build request to Mattermost API.
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
-        self._scheme: str = options.get("scheme", "https")
-        self._basepath: str = options.get("basepath", "/api/v4")
-        self._port: int = options.get("port", 8065)
+    def __init__(self, options: DriverOptions) -> None:
         self._url: str = (
-            f"{self._scheme}://{options.get('url', 'localhost')}:{self._port}"
+            f"{options.scheme}://"
+            f"{options.hostname}:{options.port}{options.basepath}"
         )
-        self._auth: Any = options.get("auth")
-        self._request_timeout: int = options.get("request_timeout", 30)
+        self._auth: Any = options.auth
+        self._user_id: str = ""
+        self._username: str = ""
         self._token: str = ""
         self._cookies: Any | None = None
-        self._userid: str = ""
-        self._username: str = ""
         self._proxies: Dict[str, Any] | None = None
+        self._request_timeout: int = options.request_timeout
 
-        if options.get("proxy"):
-            self._proxies = {"all://": options.get("proxy")}
+        if options.proxy:
+            self._proxies = {"all://": options.proxy}
 
         self.client: HttpxAsyncClient | HttpxClient | None = None
 
-        if options.get("debug"):
+        if options.debug:
             self.activate_verbose_logging()
 
     # ############################################################ Properties #
@@ -101,26 +95,51 @@ class BaseClient:
         return self._url
 
     @property
-    def basepath(self) -> str:
-        """Get the API basepath.
+    def user_id(self) -> str:
+        """Get the user ID of the logged-in user.
 
         Returns
         -------
         str
 
         """
-        return self._basepath
+        return self._user_id
+
+    @user_id.setter
+    def user_id(self, user_id: str) -> None:
+        """Set the user ID of the logged-in user.
+
+        Parameters
+        ----------
+        user_id : str
+            The new user ID value.
+
+        """
+        self._user_id = user_id
 
     @property
-    def request_timeout(self) -> int | None:
-        """Get the configured timeout for the requests.
+    def username(self) -> str:
+        """Get the username of the logged-in user.
 
         Returns
         -------
-        int or None
+        str
+            The username set. Otherwise an empty string.
 
         """
-        return self._request_timeout
+        return self._username
+
+    @username.setter
+    def username(self, username: str) -> None:
+        """Set the username of the logged-in user.
+
+        Parameters
+        ----------
+        username : str
+            The new username value.
+
+        """
+        self._username = username
 
     @property
     def token(self) -> str:
@@ -169,51 +188,15 @@ class BaseClient:
         self._cookies = cookies
 
     @property
-    def userid(self) -> str:
-        """Get the user ID of the logged-in user.
+    def request_timeout(self) -> int | None:
+        """Get the configured timeout for the requests.
 
         Returns
         -------
-        str
+        int or None
 
         """
-        return self._userid
-
-    @userid.setter
-    def userid(self, user_id: str) -> None:
-        """Set the user ID of the logged-in user.
-
-        Parameters
-        ----------
-        user_id : str
-            The new user ID value.
-
-        """
-        self._userid = user_id
-
-    @property
-    def username(self) -> str:
-        """Get the username of the logged-in user.
-
-        Returns
-        -------
-        str
-            The username set. Otherwise an empty string.
-
-        """
-        return self._username
-
-    @username.setter
-    def username(self, username: str) -> None:
-        """Set the username of the logged-in user.
-
-        Parameters
-        ----------
-        username : str
-            The new username value.
-
-        """
-        self._username = username
+        return self._request_timeout
 
     # ######################################################## Static methods #
 
@@ -323,7 +306,6 @@ class BaseClient:
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        basepath: str | None = None,
     ) -> Tuple[Any, str, Dict[str, Any]]:
         """Build request to Mattermost API.
 
@@ -339,21 +321,13 @@ class BaseClient:
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        basepath : str, default=None
-            API path.
 
         Returns
         -------
         tuple
-            The method, URL and parameters.
+            The request's method and parameters.
 
         """
-        url: str = (
-            f"{self.url}{basepath}"
-            if basepath
-            else f"{self.url}{self.basepath}"
-        )
-
         request_params: Dict[str, Any] = {
             "headers": self.auth_header(),
             "timeout": self.request_timeout,
@@ -375,7 +349,6 @@ class BaseClient:
 
         return (
             self._get_request_method(method, self.client),
-            url,
             request_params,
         )
 
@@ -390,8 +363,7 @@ class Client(BaseClient):
     Methods
     -------
     make_request(
-        method, endpoint, options=None, params=None, data=None, files=None,
-        basepath=None
+        method, endpoint, options=None, params=None, data=None, files=None
     )
         Make request to Mattermost API.
     get(endpoint, options=None, params=None)
@@ -405,13 +377,13 @@ class Client(BaseClient):
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: DriverOptions) -> None:
         super().__init__(options)
 
         self.client = HttpxClient(
-            http2=options.get("http2", False),
+            http2=options.http2,
             proxies=self._proxies,
-            verify=options.get("verify", True),
+            verify=options.verify,
         )
 
     def __enter__(self):
@@ -430,7 +402,6 @@ class Client(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        basepath: str | None = None,
     ) -> Response:
         """Make request to Mattermost API.
 
@@ -448,8 +419,6 @@ class Client(BaseClient):
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        basepath : str, default=None
-            API path.
 
         Returns
         -------
@@ -457,14 +426,13 @@ class Client(BaseClient):
             Response to the HTTP request.
 
         """
-        request: Any
-        url: str
+        request: Callable[..., Response]
         request_params: Dict[str, Any]
 
-        request, url, request_params = self._build_request(
-            method, options, params, data, files, basepath
+        request, request_params = self._build_request(
+            method, options, params, data, files
         )
-        response: Response = request(f"{url}{endpoint}", **request_params)
+        response: Response = request(f"{self.url}{endpoint}", **request_params)
 
         self._check_response(response)
 
@@ -624,7 +592,6 @@ class AsyncClient(BaseClient):
     -------
     make_request(
         method, endpoint, options=None, params=None, data=None, files=None,
-        basepath=None
     )
         Make request to Mattermost API.
     get(endpoint, options=None, params=None)
@@ -638,13 +605,13 @@ class AsyncClient(BaseClient):
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: DriverOptions) -> None:
         super().__init__(options)
 
         self.client = HttpxAsyncClient(
-            http2=options.get("http2", False),
+            http2=options.http2,
             proxies=self._proxies,
-            verify=options.get("verify", True),
+            verify=options.verify,
         )
 
     async def __aenter__(self):
@@ -663,7 +630,6 @@ class AsyncClient(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        basepath: str | None = None,
     ) -> Response:
         """Make request to Mattermost API.
 
@@ -681,8 +647,6 @@ class AsyncClient(BaseClient):
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        basepath : str, default=None
-            API path.
 
         Returns
         -------
@@ -690,15 +654,14 @@ class AsyncClient(BaseClient):
             Response to the HTTP request.
 
         """
-        request: Any
-        url: str
+        request: Callable[..., Response]
         request_params: Dict[str, Any]
 
-        request, url, request_params = self._build_request(
-            method, options, params, data, files, basepath
+        request, request_params = self._build_request(
+            method, options, params, data, files
         )
         response: Response = await request(
-            f"{url}{endpoint}", **request_params
+            f"{self._url}{endpoint}", **request_params
         )
 
         self._check_response(response)

@@ -8,6 +8,7 @@ from requests import Response
 
 from .client import AsyncClient, Client, ClientType
 from .endpoints import *
+from .options import DriverOptions
 from .websocket import Websocket
 
 log: Logger = getLogger("mattermostdriver.api")
@@ -22,10 +23,8 @@ class BaseDriver:
 
     Attributes
     ----------
-    options : dict
+    options : DriverOptions
         The options for driver and client.
-    driver : dict
-        The options for driver.
     client : AsyncClient or Client
         The underlying client object.
     websocket : Websocket, default=None
@@ -36,28 +35,6 @@ class BaseDriver:
     disconnect()
         Disconnect the driver from the server.
 
-    Required options
-        - url
-
-    Either
-        - login_id
-        - password
-
-    Or
-        - token (https://docs.mattermost.com/developer/personal-access-tokens.html)
-
-    Optional
-        - scheme ('https')
-        - port (8065)
-        - verify (True)
-        - timeout (30)
-        - request_timeout (None)
-        - mfa_token (None)
-        - auth (None)
-        - debug (False)
-
-    Should not be changed
-        - basepath ('/api/v4') - unlikely this would do any good
     """
 
     def __init__(
@@ -75,53 +52,9 @@ class BaseDriver:
             Constructor for the underlying client class.
 
         """
-        # TODO: Clean duplicated options everywhere
-        self.options: Dict[str, Any] = options
-        # default_options: Dict[str, Any] = {
-        #     "scheme": "https",
-        #     "url": "localhost",
-        #     "port": 8065,
-        #     "basepath": "/api/v4",
-        #     "verify": True,
-        #     "timeout": 30,
-        #     "request_timeout": None,
-        #     "login_id": None,
-        #     "password": None,
-        #     "token": None,
-        #     "mfa_token": None,
-        #     "auth": None,
-        #     "keepalive": False,
-        #     "keepalive_delay": 5,
-        #     "websocket_kw_args": None,
-        #     "debug": False,
-        #     "http2": False,
-        #     "proxy": None,
-        # }
+        self.options: DriverOptions = DriverOptions(options)
 
-        self.scheme: str = options.get("scheme", "https")
-        self.basepath: str = options.get("basepath", "/api/v4")
-        self.port: int = options.get("port", 8065)
-        self.url: str = (
-            f"{self.scheme}://{options.get('url', 'localhost')}:{self.port}"
-        )
-        self.auth: Any | None = options.get("auth")
-        self.login_id: Any | None = options.get("login_id")
-        self.password: Any | None = options.get("password")
-        self.token: Any | None = options.get("token")
-        self.mfa_token: Any | None = options.get("mfa_token")
-        self.verify: Any = options.get("verify", True)
-        self.timeout: int = options.get("timeout", 30)
-        self.request_timeout: int = options.get("request_timeout", 30)
-        self.keepalive: bool = options.get("keepalive", False)
-        self.keepalive_delay: int = options.get("keepalive_delay", 5)
-        self.websocket_kw_args: Dict[str, Any] = options.get(
-            "websocket_kw_args", dict()
-        )
-        self.http2: bool = options.get("http2", False)
-        self.proxy: Dict[str, Any] | None = options.get("proxy")
-        self.debug: bool = options.get("debug", False)
-
-        if self.debug:
+        if self.options.debug:
             log.setLevel(DEBUG)
             log.warning(
                 "Careful!!\nSetting debug to True, will reveal your password "
@@ -491,7 +424,7 @@ class Driver(BaseDriver):
         """Log the user in.
 
         The log in information is saved in the client
-        - userid
+        - user_id
         - username
         - cookies
 
@@ -502,16 +435,16 @@ class Driver(BaseDriver):
             converted to JSON.
 
         """
-        if self.token:
-            self.client.token = self.token
+        if self.options.token:
+            self.client.token = self.options.token
             result: Any = self.users.get_user("me")
 
         else:
             response: Response = self.users.login_user(
                 {
-                    "login_id": self.login_id,
-                    "password": self.password,
-                    "token": self.mfa_token,
+                    "login_id": self.options.login_id,
+                    "password": self.options.password,
+                    "token": self.options.mfa_token,
                 }
             )
             if response.status_code == 200:
@@ -528,7 +461,7 @@ class Driver(BaseDriver):
                 result = response
 
         if result.get("id"):
-            self.client.userid = result["id"]
+            self.client.user_id = result["id"]
 
         if result.get("username"):
             self.client.username = result["username"]
@@ -547,7 +480,7 @@ class Driver(BaseDriver):
         result: Any = self.users.logout_user()
 
         self.client.token = ""
-        self.client.userid = ""
+        self.client.user_id = ""
         self.client.username = ""
         self.client.cookies = None
 
@@ -627,7 +560,7 @@ class AsyncDriver(BaseDriver):
         """Log the user in.
 
         The log in information is saved in the client
-        - userid
+        - user_id
         - username
         - cookies
 
@@ -638,16 +571,16 @@ class AsyncDriver(BaseDriver):
             converted to JSON.
 
         """
-        if self.token:
-            self.client.token = self.token
+        if self.options.token:
+            self.client.token = self.options.token
             result: Any = await self.users.get_user("me")
 
         else:
             response: Any = await self.users.login_user(
                 {
-                    "login_id": self.login_id,
-                    "password": self.password,
-                    "token": self.mfa_token,
+                    "login_id": self.options.login_id,
+                    "password": self.options.password,
+                    "token": self.options.mfa_token,
                 }
             )
 
@@ -665,7 +598,7 @@ class AsyncDriver(BaseDriver):
                 result = response
 
         if result.get("id"):
-            self.client.userid = result["id"]
+            self.client.user_id = result["id"]
 
         if result.get("username"):
             self.client.username = result["username"]
@@ -685,7 +618,7 @@ class AsyncDriver(BaseDriver):
         result: Any = await self.users.logout_user()
 
         self.client.token = ""
-        self.client.userid = ""
+        self.client.user_id = ""
         self.client.username = ""
         self.client.cookies = None
 
