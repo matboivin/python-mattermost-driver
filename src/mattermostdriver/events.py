@@ -119,13 +119,13 @@ class Posted(PostEdited):
 
     """
 
-    def __init__(self, event: str) -> None:
+    def __init__(self, event: Any) -> None:
         """Initialize the attributes.
 
         Parameters
         ----------
-        event : str
-            The websocket event as string.
+        event : Any
+            The websocket event as a JSON.
 
         Raises
         ------
@@ -133,10 +133,9 @@ class Posted(PostEdited):
             If a key is missing from event.
 
         """
-        event_json: Any = loads(event)
-        data: Dict[str, Any] = event_json["data"]
+        data: Dict[str, Any] = event["data"]
 
-        super().__init__(event_json, loads(data["post"]))
+        super().__init__(event, loads(data["post"]))
 
         self.channel_display_name: str = data["channel_display_name"]
         self.channel_name: str = data["channel_name"]
