@@ -333,7 +333,7 @@ class BaseClient:
             "timeout": self.request_timeout,
         }
 
-        if method in ["post", "put"]:
+        if method in ("post", "put"):
             if options:
                 request_params["json"] = options
             if data:
