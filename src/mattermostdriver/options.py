@@ -19,15 +19,28 @@ class DriverOptions:
     basepath : str, default='/api/v4'
         The path to the API endoint.
     login_id : str, default=None
+        The user account's email address or username.
     password : str, default=None
+        The user's password.
     token : str, default=None
+        The user's token.
     mfa_token : Any, default=None
+        The Multi-Factor Authentication token. If MFA is enabled, the user has
+        to provide a secure one-time code.
     auth : Any, default=None
-    proxy : dict, default=None
+        An authentication class used by the httpx client when sending requests.
     verify : bool, default=True
+        Whether instantiating a httpx client with SSL verification enabled.
     http2 : bool, default=False
-    timeout : int, default=30
+        Whether instantiating a httpx client with HTTP/2.
+    proxies : dict, default=None
+        Map of URL patterns (proxy keys) to proxy URLs. Example:
+        {'all://': 'http://localhost:8030'}
     request_timeout : int, default=None
+        The timeout configuration used by the httpx client when sending request.
+        If none, use default httpx client timeout (5 seconds).
+    timeout : int, default=30
+        The timeout configuration used by the Mattermost websocket.
     keepalive : bool, default=False
     keepalive_delay : int, default=5
     websocket_kw_args : dict, default=None
@@ -47,12 +60,14 @@ class DriverOptions:
         self.password: str | None = options.get("password")
         self.token: str | None = options.get("token")
         self.mfa_token: Any | None = options.get("mfa_token")
+        # httpx client options
         self.auth: Any | None = options.get("auth")
-        self.proxy: Dict[str, Any] | None = options.get("proxy")
         self.verify: bool = options.get("verify", True)
         self.http2: bool = options.get("http2", False)
+        self.proxies: Dict[str, str] | None = options.get("proxies")
+        self.request_timeout: int | None = options.get("request_timeout")
+        # websocket options
         self.timeout: int = options.get("timeout", 30)
-        self.request_timeout: int = options.get("request_timeout", 30)
         self.keepalive: bool = options.get("keepalive", False)
         self.keepalive_delay: int = options.get("keepalive_delay", 5)
         self.websocket_kw_args: Dict[str, Any] = options.get(
