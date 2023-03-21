@@ -1,42 +1,8 @@
-"""Mattermost event classes."""
+"""Class defining the 'post_edited' event."""
 
-from json import loads
 from typing import Any, Dict
 
-
-class WebsocketEvent:
-    """Class defining a websocket event.
-
-    Attributes
-    ----------
-    event_type : str
-        The event type.
-    data : dict
-        The event data.
-    broadcast : dict
-        Information about who the event was sent to.
-    seq : int
-        Sequence number set by the client.
-
-    """
-
-    def __init__(self, event: Any) -> None:
-        """Initialize the attributes.
-
-        Parameters
-        ----------
-        event : Any
-            The websocket event as a JSON.
-
-        Raises
-        ------
-        KeyError
-            If either event, data, broadcast or seq is missing.
-
-        """
-        self.event_type: str = event["event"]
-        self.broadcast: Dict[str, Any] = event["broadcast"]
-        self.seq: int = event["seq"]
+from .base import WebsocketEvent
 
 
 class PostEdited(WebsocketEvent):
@@ -103,43 +69,3 @@ class PostEdited(WebsocketEvent):
         self.last_reply_at: int = post["last_reply_at"]
         self.participants: Any = post["participants"]
         self.metadata: Dict[str, Any] = post["metadata"]
-
-
-class Posted(PostEdited):
-    """Class defining the 'posted' event: a new message was posted.
-
-    Attributes
-    ----------
-    channel_display_name : str
-    channel_name : str
-    channel_type : str
-    sender_name : str
-    set_online : bool
-    team_id : str
-
-    """
-
-    def __init__(self, event: Any) -> None:
-        """Initialize the attributes.
-
-        Parameters
-        ----------
-        event : Any
-            The websocket event as a JSON.
-
-        Raises
-        ------
-        KeyError
-            If a key is missing from event.
-
-        """
-        data: Dict[str, Any] = event["data"]
-
-        super().__init__(event, loads(data["post"]))
-
-        self.channel_display_name: str = data["channel_display_name"]
-        self.channel_name: str = data["channel_name"]
-        self.channel_type: str = data["channel_type"]
-        self.sender_name: str = data["sender_name"]
-        self.set_online: bool = data["set_online"]
-        self.team_id: str = data["team_id"]
