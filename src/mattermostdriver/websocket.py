@@ -21,15 +21,17 @@ class Websocket:
     Attributes
     ----------
     _url : str
-    _context : SSLContext, optional
-    _websocket_kw_args : dict
-    _verify : bool
-    _timeout : int
-    _keepalive : bool
-    _keepalive_delay : int
-    _proxy : dict, optional
+        Websocket server URL.
     _token : str
         The session token.
+    _websocket_kw_args : dict
+        Dict of websocket parameters for aiohttp.ClientSession.ws_connect().
+    _timeout : float
+        Timeout in seconds for websocket to close.
+    _keepalive : bool
+        Whether to keep the websocket connection alive.
+    _keepalive_delay : float
+        Duration in seconds between two keepalive transmissions.
     _alive : bool, default=False
         Whether the websocket is connected.
     _last_msg : float, default=0
@@ -56,23 +58,65 @@ class Websocket:
             f"{scheme}://{options.hostname}:{options.port}{options.basepath}"
             "/websocket"
         )
-        self._context: SSLContext | None = (
+
+        ssl_context: SSLContext | None = None
+        if options.scheme == "https":
             create_default_context(purpose=Purpose.SERVER_AUTH)
-            if options.scheme == "https"
-            else None
-        )
-        self._websocket_kw_args: Dict[str, Any] = options.websocket_kw_args
-        self._verify: bool = options.verify
-        self._timeout: int = options.timeout
-        self._keepalive: bool = options.keepalive
-        self._keepalive_delay: int = options.keepalive_delay
-        self._proxy: Dict[str, Any] | None = options.proxy
+            if not options.verify:
+                ssl_context.verify_mode = CERT_NONE
+
+        self._websocket_kw_args: Dict[str, Any] = {
+            "proxy": options.proxy,
+            "ssl": ssl_context,
+            **options.websocket_kw_args,
+        }
         self._token: str = token
+        self._timeout: float = options.timeout
+        self._keepalive: bool = options.keepalive
+        self._keepalive_delay: float = options.keepalive_delay
         self._alive: bool = False
         self._last_msg: float = 0
 
         if options.debug:
             log.setLevel(DEBUG)
+
+    # ############################################################ Properties #
+
+    @property
+    def timeout(self) -> float:
+        """Get the websocket connection timeout in seconds.
+
+        Returns
+        -------
+        float
+
+        """
+        return self._timeout
+
+    @property
+    def last_msg(self) -> float:
+        """Get the time of the last message received.
+
+        Returns
+        -------
+        float
+
+        """
+        return self._last_msg
+
+    @last_msg.setter
+    def last_msg(self, last_msg: float) -> None:
+        """Set the time of the last message received.
+
+        Parameters
+        ----------
+        last_msg : float
+            The new time of the last message received.
+
+        """
+        self._last_msg = last_msg
+
+    # ############################################################### Methods #
 
     async def _authenticate_websocket(
         self, websocket: ClientWebSocketResponse, event_handler: Any
@@ -137,23 +181,20 @@ class Websocket:
             Object for handling client-side websockets.
 
         """
-        timeout: float = self._timeout
-
         while True:
-            since_last_msg: float = time() - self._last_msg
-            next_timeout: float = (
-                timeout - since_last_msg
-                if since_last_msg <= timeout
-                else timeout
-            )
+            since_last_msg: float = time() - self.last_msg
+            next_timeout: float = self.timeout
+
+            if since_last_msg <= self.timeout:
+                next_timeout -= since_last_msg
 
             await sleep(next_timeout)
 
-            if time() - self._last_msg >= timeout:
-                log.debug("sending heartbeat...")
+            if time() - self._last_msg >= self.timeout:
+                log.debug("Sending heartbeat...")
                 await websocket.pong()
 
-                self._last_msg = time()
+                self.last_msg = time()
 
     async def _start_loop(
         self, websocket: ClientWebSocketResponse, event_handler: Any
@@ -181,11 +222,11 @@ class Websocket:
 
         while self._alive:
             message: Any = await websocket.receive_str()
-            self._last_msg = time()
+            self.last_msg = time()
 
             await event_handler(message)
 
-        log.debug("cancelling heartbeat task")
+        log.debug("Cancelling heartbeat task")
         keep_alive.cancel()
 
         try:
@@ -206,9 +247,6 @@ class Websocket:
             The function to handle the websocket events. Takes one argument.
 
         """
-        if self._context and not self._verify:
-            self._context.verify_mode = CERT_NONE
-
         self._alive = True
 
         while True:
@@ -216,8 +254,6 @@ class Websocket:
                 async with ClientSession() as session:
                     async with session.ws_connect(
                         self._url,
-                        ssl=self._context,
-                        proxy=self._proxy,
                         **self._websocket_kw_args,
                     ) as websocket:
                         await self._authenticate_websocket(
@@ -250,4 +286,5 @@ class Websocket:
 
         """
         log.info("Disconnecting websocket")
+
         self._alive = False

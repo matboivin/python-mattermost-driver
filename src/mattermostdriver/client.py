@@ -38,6 +38,8 @@ class BaseClient:
         Mattermost user ID.
     _username : str, default=None
         Mattermost username.
+    _auth : Any, default=None
+        An authentication class used by the httpx client when sending requests.
     _token : str, default=None
         Mattermost user token.
     _cookies : Any, default=None
@@ -60,7 +62,7 @@ class BaseClient:
 
     Methods
     -------
-    get_auth_header(auth, token)
+    get_auth_header()
         Get Authorization header.
 
     """
@@ -72,9 +74,9 @@ class BaseClient:
         )
         self._user_id: str = ""
         self._username: str = ""
+        self._auth: Any | None = options.auth
         self._token: str = ""
         self._cookies: Any | None = None
-
         self.client: HttpxAsyncClient | HttpxClient | None = None
 
         if options.debug:
@@ -139,6 +141,17 @@ class BaseClient:
 
         """
         self._username = username
+
+    @property
+    def auth(self) -> Any | None:
+        """Get the authentication class used by the httpx client.
+
+        Returns
+        -------
+        Any or None
+
+        """
+        return self._auth
 
     @property
     def token(self) -> str:
@@ -316,30 +329,20 @@ class BaseClient:
 
     # ############################################################### Methods #
 
-    def get_auth_header(
-        self, auth: Any | None, token: str | None
-    ) -> Dict[str, str] | None:
+    def get_auth_header(self) -> Dict[str, str] | None:
         """Get Authorization header.
-
-        Parameters
-        ----------
-        auth : Any, optional
-            An authentication class used by the httpx client when sending
-            requests.
-        token : str, optional
-            The user's token.
 
         Returns
         -------
         dict or None
 
         """
-        if auth:
+        if self.auth:
             return None
-        if not token:
+        if not self.token:
             return {}
 
-        return {"Authorization": f"Bearer {token}"}
+        return {"Authorization": f"Bearer {self.token}"}
 
 
 class Client(BaseClient):
@@ -371,10 +374,9 @@ class Client(BaseClient):
 
         self.client = HttpxClient(
             auth=options.auth,
-            headers=self.get_auth_header(options.auth, options.token),
             verify=options.verify,
             http2=options.http2,
-            proxies=options.proxies,
+            proxies={"all://": options.proxy},
             timeout=options.request_timeout,
         )
 
@@ -424,6 +426,7 @@ class Client(BaseClient):
         request_params: Dict[str, Any] = self._get_request_params(
             method, options, params, data, files
         )
+        request_params["headers"] = self.get_auth_header()
 
         response: Response = request(f"{self.url}{endpoint}", **request_params)
 
@@ -603,10 +606,9 @@ class AsyncClient(BaseClient):
 
         self.client = HttpxAsyncClient(
             auth=options.auth,
-            headers=self.get_auth_header(options.auth, options.token),
             verify=options.verify,
             http2=options.http2,
-            proxies=options.proxies,
+            proxies={"all://": options.proxy},
             timeout=options.request_timeout,
         )
 
@@ -656,6 +658,7 @@ class AsyncClient(BaseClient):
         request_params: Dict[str, Any] = self._get_request_params(
             method, options, params, data, files
         )
+        request_params["headers"] = self.get_auth_header()
 
         response: Response = await request(
             f"{self._url}{endpoint}", **request_params

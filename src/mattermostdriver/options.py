@@ -33,16 +33,17 @@ class DriverOptions:
         Whether instantiating a httpx client with SSL verification enabled.
     http2 : bool, default=False
         Whether instantiating a httpx client with HTTP/2.
-    proxies : dict, default=None
-        Map of URL patterns (proxy keys) to proxy URLs. Example:
-        {'all://': 'http://localhost:8030'}
+    proxy : str, default=None
+        Proxy URL for every request.
     request_timeout : int, default=None
         The timeout configuration used by the httpx client when sending request.
         If none, use default httpx client timeout (5 seconds).
-    timeout : int, default=30
-        The timeout configuration used by the Mattermost websocket.
+    timeout : float, default=30
+        The Mattermost websocket connection's timeout in seconds.
     keepalive : bool, default=False
-    keepalive_delay : int, default=5
+        Whether to keep the websocket connection alive.
+    keepalive_delay : float, default=5
+        Duration in seconds between two keepalive transmissions.
     websocket_kw_args : dict, default=None
 
     """
@@ -64,12 +65,12 @@ class DriverOptions:
         self.auth: Any | None = options.get("auth")
         self.verify: bool = options.get("verify", True)
         self.http2: bool = options.get("http2", False)
-        self.proxies: Dict[str, str] | None = options.get("proxies")
+        self.proxy: str | None = options.get("proxy")
         self.request_timeout: int | None = options.get("request_timeout")
         # websocket options
-        self.timeout: int = options.get("timeout", 30)
+        self.timeout: float = options.get("timeout", 30)
         self.keepalive: bool = options.get("keepalive", False)
-        self.keepalive_delay: int = options.get("keepalive_delay", 5)
+        self.keepalive_delay: float = options.get("keepalive_delay", 5)
         self.websocket_kw_args: Dict[str, Any] = options.get(
-            "websocket_kw_args", dict()
+            "websocket_kw_args", {}
         )
