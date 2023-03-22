@@ -1,5 +1,6 @@
 """Class defining the 'post_edited' event."""
 
+from json import loads
 from typing import Any, Dict
 
 from .base import WebsocketEvent
@@ -32,15 +33,13 @@ class PostEdited(WebsocketEvent):
 
     """
 
-    def __init__(self, event: Any, post: Dict[str, Any]) -> None:
+    def __init__(self, event: Any) -> None:
         """Initialize the attributes.
 
         Parameters
         ----------
         event : Any
             The websocket event as a JSON.
-        post : dict
-            The Post data.
 
         Raises
         ------
@@ -49,6 +48,8 @@ class PostEdited(WebsocketEvent):
 
         """
         super().__init__(event)
+
+        post: Dict[str, Any] = loads(event["data"]["post"])
 
         self.id: str = post["id"]
         self.create_at: int = post["create_at"]

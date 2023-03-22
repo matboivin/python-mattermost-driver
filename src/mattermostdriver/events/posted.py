@@ -1,6 +1,5 @@
 """Class defining the 'posted' event."""
 
-from json import loads
 from typing import Any, Dict
 
 from .post_edited import PostEdited
@@ -34,9 +33,9 @@ class Posted(PostEdited):
             If a key is missing from event.
 
         """
-        data: Dict[str, Any] = event["data"]
+        super().__init__(event)
 
-        super().__init__(event, loads(data["post"]))
+        data: Dict[str, Any] = event["data"]
 
         self.channel_display_name: str = data["channel_display_name"]
         self.channel_name: str = data["channel_name"]
