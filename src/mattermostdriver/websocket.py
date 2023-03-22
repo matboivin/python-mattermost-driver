@@ -1,6 +1,6 @@
 """Websocket class to listen to Mattermost events."""
 
-from asyncio import CancelledError, Task, ensure_future, sleep
+from asyncio import CancelledError, Task, create_task, sleep
 from json import dumps, loads
 from logging import DEBUG, INFO, Logger, getLogger
 from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
@@ -36,15 +36,19 @@ class Websocket:
         Whether the websocket is connected.
     _last_msg : float, default=0
         Time of the last message received.
+    websocket : aiohttp.ClientWebSocketResponse, default=None
+        Client-side websocket.
 
     Methods
     -------
-    _authenticate_websocket(websocket, event_handler)
-        Send a authentication challenge over a websocket.
-    _do_heartbeats(websocket)
+    _do_heartbeats()
         Keep connection alive.
-    _start_loop(websocket, event_handler)
+    _start_loop(event_handler)
         Start main coroutine.
+    _authenticate_websocket(event_handler)
+        Send a authentication challenge over a websocket.
+    _connect_websocket(session)
+        Create a websocket connection.
     connect(event_handler)
         Connect to the websocket and authenticate it.
     disconnect()
@@ -76,6 +80,8 @@ class Websocket:
         self._keepalive_delay: float = options.keepalive_delay
         self._alive: bool = False
         self._last_msg: float = 0
+
+        self.websocket: ClientWebSocketResponse | None = None
 
         if options.debug:
             log.setLevel(DEBUG)
@@ -118,55 +124,7 @@ class Websocket:
 
     # ############################################################### Methods #
 
-    async def _authenticate_websocket(
-        self, websocket: ClientWebSocketResponse, event_handler: Any
-    ) -> bool:
-        """Send a authentication challenge over a websocket.
-
-        This is not needed when we just send the cookie we got on login
-        when connecting to the websocket.
-
-        Parameters
-        ----------
-        websocket : aiohttp.ClientWebSocketResponse
-            Object for handling client-side websockets.
-        event_handler : Function(message)
-            The function to handle the websocket events. Takes one argument.
-
-        Returns
-        -------
-        bool
-            Whether the connection was successful.
-
-        """
-        log.debug("Authenticating websocket")
-        json_data: str = dumps(
-            {
-                "seq": 1,
-                "action": "authentication_challenge",
-                "data": {"token": self._token},
-            }
-        )
-
-        await websocket.send_str(json_data)
-
-        while True:
-            message: Any = await websocket.receive_str()
-            status: Any = loads(message)
-
-            log.debug(status)
-            # We want to pass the events to the event_handler already because
-            # the hello event could arrive before the authentication ok
-            # response
-            await event_handler(message)
-
-            if status.get("event") == "hello" and status.get("seq") == 0:
-                log.info("Websocket authentication OK")
-                return True
-
-            log.error("Websocket authentication failed")
-
-    async def _do_heartbeats(self, websocket: ClientWebSocketResponse) -> None:
+    async def _do_heartbeats(self) -> None:
         """Keep connection alive.
 
         This is a little complicated, but we only need to pong the websocket if
@@ -174,11 +132,6 @@ class Websocket:
 
         Since messages can be received, while we are waiting we need to check
         after sleep.
-
-        Parameters
-        ----------
-        websocket : aiohttp.ClientWebSocketResponse
-            Object for handling client-side websockets.
 
         """
         while True:
@@ -192,13 +145,16 @@ class Websocket:
 
             if time() - self._last_msg >= self.timeout:
                 log.debug("Sending heartbeat...")
-                await websocket.pong()
 
-                self.last_msg = time()
+                try:
+                    await self.websocket.pong()
 
-    async def _start_loop(
-        self, websocket: ClientWebSocketResponse, event_handler: Any
-    ) -> None:
+                    self.last_msg = time()
+
+                except ConnectionResetError as err:
+                    log.error(err)
+
+    async def _start_loop(self, event_handler: Any) -> None:
         """Start main coroutine.
 
         We will listen for websockets events, sending a heartbeats on a timer.
@@ -207,26 +163,26 @@ class Websocket:
 
         Parameters
         ----------
-        websocket : aiohttp.ClientWebSocketResponse
-            Object for handling client-side websockets.
         event_handler : Function(message)
             The function to handle the websocket events. Takes one argument.
 
         """
-        log.debug("Starting websocket loop")
-        # TODO: move to create_task when cpython 3.7 is minimum supported
-        # python version
-        keep_alive: Task[None] = ensure_future(self._do_heartbeats(websocket))
+        log.debug("Starting websocket loop.")
+        keep_alive: Task[None] = create_task(self._do_heartbeats())
 
-        log.debug("Waiting for messages on websocket")
+        log.debug("Waiting for messages on websocket.")
 
         while self._alive:
-            message: Any = await websocket.receive_str()
-            self.last_msg = time()
+            try:
+                message: Any = await self.websocket.receive_str()
 
-            await event_handler(message)
+                self.last_msg = time()
+                await event_handler(message)
 
-        log.debug("Cancelling heartbeat task")
+            except TypeError as err:
+                log.error(err)
+
+        log.debug("Cancelling heartbeat task...")
         keep_alive.cancel()
 
         try:
@@ -234,6 +190,65 @@ class Websocket:
 
         except CancelledError:
             pass
+
+    async def _authenticate_websocket(self, event_handler: Any) -> None:
+        """Send a authentication challenge over a websocket.
+
+        This is not needed when we just send the cookie we got on login
+        when connecting to the websocket.
+
+        Parameters
+        ----------
+        event_handler : Function(message)
+            The function to handle the websocket events. Takes one argument.
+
+        """
+        log.debug("Authenticating websocket")
+        json_data: str = dumps(
+            {
+                "seq": 1,
+                "action": "authentication_challenge",
+                "data": {"token": self._token},
+            }
+        )
+
+        await self.websocket.send_str(json_data)
+
+        while True:
+            try:
+                message: Any = await self.websocket.receive_str()
+
+            except TypeError as err:
+                log.error(err)
+
+            else:
+                status: Dict[str, Any] = loads(message)
+
+                log.debug(status)
+                # We want to pass the events to the event_handler already
+                # because the 'hello' event could arrive before the
+                # authentication ok response
+                await event_handler(message)
+
+                if status.get("event") == "hello" and status.get("seq") == 0:
+                    log.info("Websocket authentication OK")
+                    return
+
+                log.error("Websocket authentication failed")
+
+    async def _connect_websocket(self, session: ClientSession) -> None:
+        """Create a websocket connection.
+
+        Parameters
+        ----------
+        session : aiohttp.ClientSession
+            The client session object.
+
+        """
+        self.websocket = await session.ws_connect(
+            self._url,
+            **self._websocket_kw_args,
+        )
 
     async def connect(self, event_handler: Any) -> None:
         """Connect to the websocket and authenticate it.
@@ -252,39 +267,35 @@ class Websocket:
         while True:
             try:
                 async with ClientSession() as session:
-                    async with session.ws_connect(
-                        self._url,
-                        **self._websocket_kw_args,
-                    ) as websocket:
-                        await self._authenticate_websocket(
-                            websocket, event_handler
-                        )
+                    await self._connect_websocket(session)
+                    await self._authenticate_websocket(event_handler)
 
-                        while self._alive:
-                            try:
-                                await self._start_loop(
-                                    websocket, event_handler
-                                )
-                            except ClientError:
-                                break
+                    while self._alive:
+                        try:
+                            await self._start_loop(event_handler)
 
-                        if not all([self._keepalive, self._alive]):
+                        except ClientError:
                             break
+
+                    if not all([self._keepalive, self._alive]):
+                        break
 
             except Exception as err:  # FIXME
                 log.exception(
                     f"Failed to establish websocket connection: {type(err)}"
-                    " thrown"
+                    " thrown."
                 )
+
                 await sleep(self._keepalive_delay)
+
+        await self.websocket.close()
 
     def disconnect(self) -> None:
         """Disconnect the websocket.
 
-        Set `self._alive` to False so the loop in `self._start_loop` will
-        finish.
+        Set `self._alive` to False so the loop in `self._start_loop` ends.
 
         """
-        log.info("Disconnecting websocket")
+        log.info("Disconnecting websocket...")
 
         self._alive = False
