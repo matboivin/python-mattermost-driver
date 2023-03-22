@@ -5,7 +5,7 @@ requests to the Mattermost server.
 """
 
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Callable, Dict, Tuple, TypeAlias
+from typing import Any, Callable, Dict, TypeAlias
 
 from httpx import AsyncClient as HttpxAsyncClient
 from httpx import Client as HttpxClient
@@ -33,17 +33,26 @@ class BaseClient:
     Attributes
     ----------
     _url : str
-    _auth : Any, default=None
+        URL to make API requests. Example: 'https://server.com/api/v4'.
     _user_id : str, default=None
+        Mattermost user ID.
     _username : str, default=None
+        Mattermost username.
+    _auth : Any, default=None
+        An authentication class used by the httpx client when sending requests.
     _token : str, default=None
+        Mattermost user token.
     _cookies : Any, default=None
-    _proxies : dict, default=None
-    _request_timeout : int
+        The cookies given when the driver login to the Mattermost server.
     client : httpx.AsyncClient or httpx.Client, default=None
+        The Mattermost client.
 
     Static methods
     --------------
+    _get_request_params(
+        method, options=None, params=None, data=None, files=None
+    )
+        Get request parameters as a dict.
     _get_request_method(method, client)
         Get the client's method from request's name.
     _check_response(response)
@@ -53,10 +62,8 @@ class BaseClient:
 
     Methods
     -------
-    auth_header()
+    get_auth_header()
         Get Authorization header.
-    _build_request(method, options=None, params=None, data=None, files=None)
-        Build request to Mattermost API.
 
     """
 
@@ -65,17 +72,11 @@ class BaseClient:
             f"{options.scheme}://"
             f"{options.hostname}:{options.port}{options.basepath}"
         )
-        self._auth: Any = options.auth
         self._user_id: str = ""
         self._username: str = ""
+        self._auth: Any | None = options.auth
         self._token: str = ""
         self._cookies: Any | None = None
-        self._proxies: Dict[str, Any] | None = None
-        self._request_timeout: int = options.request_timeout
-
-        if options.proxy:
-            self._proxies = {"all://": options.proxy}
-
         self.client: HttpxAsyncClient | HttpxClient | None = None
 
         if options.debug:
@@ -142,6 +143,17 @@ class BaseClient:
         self._username = username
 
     @property
+    def auth(self) -> Any | None:
+        """Get the authentication class used by the httpx client.
+
+        Returns
+        -------
+        Any or None
+
+        """
+        return self._auth
+
+    @property
     def token(self) -> str:
         """Get the token for the login.
 
@@ -187,18 +199,51 @@ class BaseClient:
         """
         self._cookies = cookies
 
-    @property
-    def request_timeout(self) -> int | None:
-        """Get the configured timeout for the requests.
+    # ######################################################## Static methods #
+
+    @staticmethod
+    def _get_request_params(
+        method: str,
+        options: Dict[str, Any] | None = None,
+        params: Dict[str, Any] | None = None,
+        data: Dict[str, Any] | None = None,
+        files: Dict[str, Any] | None = None,
+    ) -> Dict[str, Any]:
+        """Get request parameters as a dict.
+
+        Parameters
+        ----------
+        method : str
+            Either 'GET', 'POST', 'PUT' or 'DELETE'.
+        options : dict, default=None
+            A JSON serializable object to include in the body of the request.
+        params : dict, default=None
+            Query parameters to include in the URL.
+        data : dict, default=None
+            Form data to include in the body of the request.
+        files : dict, default=None
+            Upload files to include in the body of the request.
 
         Returns
         -------
-        int or None
+        dict
+            The request parameters.
 
         """
-        return self._request_timeout
+        request_params: Dict[str, Any] = {}
 
-    # ######################################################## Static methods #
+        if method in ("post", "put"):
+            if options:
+                request_params["json"] = options
+            if data:
+                request_params["data"] = data
+            if files:
+                request_params["files"] = files
+
+        if params:
+            request_params["params"] = params
+
+        return request_params
 
     @staticmethod
     def _get_request_method(
@@ -284,7 +329,7 @@ class BaseClient:
 
     # ############################################################### Methods #
 
-    def auth_header(self) -> Dict[str, str] | None:
+    def get_auth_header(self) -> Dict[str, str] | None:
         """Get Authorization header.
 
         Returns
@@ -292,65 +337,12 @@ class BaseClient:
         dict or None
 
         """
-        if self._auth:
+        if self.auth:
             return None
-        if not self._token:
+        if not self.token:
             return {}
 
-        return {"Authorization": f"Bearer {self._token}"}
-
-    def _build_request(
-        self,
-        method: str,
-        options: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
-        files: Dict[str, Any] | None = None,
-    ) -> Tuple[Any, str, Dict[str, Any]]:
-        """Build request to Mattermost API.
-
-        Parameters
-        ----------
-        method : str
-            Either 'GET', 'POST', 'PUT' or 'DELETE'.
-        options : dict, default=None
-            A JSON serializable object to include in the body of the request.
-        params : dict, default=None
-            Query parameters to include in the URL.
-        data : dict, default=None
-            Form data to include in the body of the request.
-        files : dict, default=None
-            Upload files to include in the body of the request.
-
-        Returns
-        -------
-        tuple
-            The request's method and parameters.
-
-        """
-        request_params: Dict[str, Any] = {
-            "headers": self.auth_header(),
-            "timeout": self.request_timeout,
-        }
-
-        if method in ("post", "put"):
-            if options:
-                request_params["json"] = options
-            if data:
-                request_params["data"] = data
-            if files:
-                request_params["files"] = files
-
-        if params:
-            request_params["params"] = params
-
-        if self._auth:
-            request_params["auth"] = self._auth()
-
-        return (
-            self._get_request_method(method, self.client),
-            request_params,
-        )
+        return {"Authorization": f"Bearer {self.token}"}
 
 
 class Client(BaseClient):
@@ -381,9 +373,11 @@ class Client(BaseClient):
         super().__init__(options)
 
         self.client = HttpxClient(
-            http2=options.http2,
-            proxies=self._proxies,
+            auth=options.auth,
             verify=options.verify,
+            http2=options.http2,
+            proxies={"all://": options.proxy},
+            timeout=options.request_timeout,
         )
 
     def __enter__(self):
@@ -426,12 +420,14 @@ class Client(BaseClient):
             Response to the HTTP request.
 
         """
-        request: Callable[..., Response]
-        request_params: Dict[str, Any]
-
-        request, request_params = self._build_request(
+        request: Callable[..., Response] = self._get_request_method(
+            method, self.client
+        )
+        request_params: Dict[str, Any] = self._get_request_params(
             method, options, params, data, files
         )
+        request_params["headers"] = self.get_auth_header()
+
         response: Response = request(f"{self.url}{endpoint}", **request_params)
 
         self._check_response(response)
@@ -609,9 +605,11 @@ class AsyncClient(BaseClient):
         super().__init__(options)
 
         self.client = HttpxAsyncClient(
-            http2=options.http2,
-            proxies=self._proxies,
+            auth=options.auth,
             verify=options.verify,
+            http2=options.http2,
+            proxies={"all://": options.proxy},
+            timeout=options.request_timeout,
         )
 
     async def __aenter__(self):
@@ -654,12 +652,14 @@ class AsyncClient(BaseClient):
             Response to the HTTP request.
 
         """
-        request: Callable[..., Response]
-        request_params: Dict[str, Any]
-
-        request, request_params = self._build_request(
+        request: Callable[..., Response] = self._get_request_method(
+            method, self.client
+        )
+        request_params: Dict[str, Any] = self._get_request_params(
             method, options, params, data, files
         )
+        request_params["headers"] = self.get_auth_header()
+
         response: Response = await request(
             f"{self._url}{endpoint}", **request_params
         )

@@ -1,52 +1,53 @@
-"""Custom exceptions."""
+"""Custom HTTP exceptions."""
 
 from httpx import HTTPError
 
 
 class InvalidOrMissingParameters(HTTPError):
-    """
-    Raised when mattermost returns a
-    400 Invalid or missing parameters in URL or request body
+    """Invalid Or Missing Parameters.
+
+    Raised when mattermost returns a 400 Invalid or missing parameters in
+    URL or request body.
     """
 
 
 class NoAccessTokenProvided(HTTPError):
-    """
-    Raised when mattermost returns a
-    401 No access token provided
+    """No Access Token Provided.
+
+    Raised when mattermost returns a 401 No access token provided.
     """
 
 
 class NotEnoughPermissions(HTTPError):
-    """
-    Raised when mattermost returns a
-    403 Do not have appropriate permissions
+    """Not Enough Permissions.
+
+    Raised when mattermost returns a 403 Do not have appropriate permissions.
     """
 
 
 class ResourceNotFound(HTTPError):
-    """
-    Raised when mattermost returns a
-    404 Resource not found
+    """Resource Not Found.
+
+    Raised when mattermost returns a 404 Resource not found.
     """
 
 
 class MethodNotAllowed(HTTPError):
-    """
-    Raised when mattermost returns a
-    405 Method Not Allowed
+    """Method Not Allowed.
+
+    Raised when mattermost returns a 405 Method Not Allowed.
     """
 
 
 class ContentTooLarge(HTTPError):
-    """
-    Raised when mattermost returns a
-    413 Content too large
+    """Content Too Large
+
+    Raised when mattermost returns a 413 Content too large.
     """
 
 
 class FeatureDisabled(HTTPError):
-    """
-    Raised when mattermost returns a
-    501 Feature is disabled
+    """Feature Disabled.
+
+    Raised when mattermost returns a 501 Feature is disabled.
     """
