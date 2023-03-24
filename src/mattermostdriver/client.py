@@ -23,8 +23,8 @@ from .exceptions import (
 )
 from .options import DriverOptions
 
-log: Logger = getLogger("mattermostdriver.websocket")
-log.setLevel(INFO)
+logger: Logger = getLogger("mattermostdriver.websocket")
+logger.setLevel(INFO)
 
 
 class BaseClient:
@@ -57,7 +57,7 @@ class BaseClient:
         Get the client's method from request's name.
     _check_response(response)
         Raise custom exception from response status code.
-    activate_verbose_logging(level =DEBUG)
+    activate_verbose_logging()
         Enable trace level logging in httpx.
 
     Methods
@@ -80,6 +80,7 @@ class BaseClient:
         self.client: HttpxAsyncClient | HttpxClient | None = None
 
         if options.debug:
+            logger.setLevel(DEBUG)
             self.activate_verbose_logging()
 
     # ############################################################ Properties #
@@ -278,7 +279,7 @@ class BaseClient:
         """
         try:
             response.raise_for_status()
-            log.debug(response)
+            logger.debug(response)
 
         except HTTPStatusError as err:
             message: Any
@@ -288,10 +289,10 @@ class BaseClient:
                 message = data.get("message", data)
 
             except ValueError:
-                log.debug("Could not convert response to json.")
+                logger.debug("Could not convert response to json.")
                 message = response.text
 
-            log.error(message)
+            logger.error(message)
 
             if err.response.status_code == 400:
                 raise InvalidOrMissingParameters(message) from err
@@ -311,17 +312,8 @@ class BaseClient:
                 raise
 
     @staticmethod
-    def activate_verbose_logging(level: int = DEBUG) -> None:
-        """Enable trace level logging in httpx.
-
-        Parameters
-        ----------
-        level : int, default=logging.DEBUG
-            Log level to set.
-
-        """
-        log.setLevel(level)
-
+    def activate_verbose_logging() -> None:
+        """Enable trace level logging in httpx."""
         httpx_log: Logger = getLogger("httpx")
 
         httpx_log.setLevel("TRACE")
@@ -464,7 +456,7 @@ class Client(BaseClient):
         )
 
         if response.headers.get("Content-Type") != "application/json":
-            log.debug(
+            logger.debug(
                 "Response is not application/json, returning raw response"
             )
             return response
@@ -473,7 +465,7 @@ class Client(BaseClient):
             return response.json()
 
         except ValueError:
-            log.debug(
+            logger.debug(
                 "Could not convert response to json, returning raw response"
             )
             return response
@@ -698,7 +690,7 @@ class AsyncClient(BaseClient):
         )
 
         if response.headers.get("Content-Type") != "application/json":
-            log.debug(
+            logger.debug(
                 "Response is not application/json, returning raw response."
             )
             return response
@@ -707,7 +699,7 @@ class AsyncClient(BaseClient):
             return response.json()
 
         except ValueError:
-            log.debug(
+            logger.debug(
                 "Could not convert response to JSON, returning raw response."
             )
             return response

@@ -2,7 +2,7 @@
 
 from asyncio import AbstractEventLoop, get_event_loop, run
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, Literal
 
 from requests import Response
 
@@ -11,8 +11,8 @@ from .endpoints import *
 from .options import DriverOptions
 from .websocket import Websocket
 
-log: Logger = getLogger("mattermostdriver.api")
-log.setLevel(INFO)
+logger: Logger = getLogger("mattermostdriver.api")
+logger.setLevel(INFO)
 
 
 class BaseDriver:
@@ -53,17 +53,16 @@ class BaseDriver:
 
         """
         self.options: DriverOptions = DriverOptions(options)
+        self.client: ClientType = client_cls(self.options)
+        self.websocket: Websocket | None = None
 
         if self.options.debug:
-            log.setLevel(DEBUG)
-            log.warning(
+            logger.setLevel(DEBUG)
+            logger.warning(
                 "Careful!!\nSetting debug to True, will reveal your password "
                 "in the log output if you do driver.login()!\nThis is NOT for "
                 "production!"
             )
-
-        self.client: ClientType = client_cls(self.options)
-        self.websocket: Websocket | None = None
 
     # ############################################################ Properties #
 
@@ -348,7 +347,7 @@ class Driver(BaseDriver):
 
     Methods
     -------
-    init_websocket(event_handler, websocket_cls)
+    init_websocket(event_handler, websocket_cls, data_format='json')
         Initialize the websocket connection to the Mattermost server.
     login()
         Log the user in.
@@ -374,30 +373,25 @@ class Driver(BaseDriver):
 
     def init_websocket(
         self,
-        event_handler: Any,
+        event_handler: Callable[[str | Dict[str, Any]], None],
         websocket_cls: Callable[..., Websocket] = Websocket,
+        data_format: Literal["text", "json"] = "json",
     ) -> AbstractEventLoop:
         """Initialize the websocket connection to the Mattermost server.
 
         This should be run after login(), because the websocket needs to
         authenticate.
 
-        See https://api.mattermost.com/v4/#tag/WebSocket for which
-        websocket events mattermost sends.
-
-        Example of a really simple event_handler function
-
-        .. code:: python
-
-                async def my_event_handler(message):
-                        print(message)
+        Documentation: https://api.mattermost.com/v4/#tag/WebSocket
 
         Parameters
         ----------
-        event_handler : Function(message)
-            The function to handle the websocket events. Takes one argument.
+        event_handler : function(str or dict) -> None
+            The function to handle the websocket events.
         websocket_cls : Function(), default=websocket.Websocket
             The Websocket class.
+        data_format : 'text' or 'json', default='json'
+            Whether to receive the websocket data as text or JSON.
 
         Returns
         -------
@@ -409,14 +403,16 @@ class Driver(BaseDriver):
         loop: AbstractEventLoop = get_event_loop()
 
         if loop.is_running:
-            run(self.websocket.connect(event_handler))
+            run(self.websocket.connect(event_handler, data_format))
 
         else:
             try:
-                loop.run_until_complete(self.websocket.connect(event_handler))
+                loop.run_until_complete(
+                    self.websocket.connect(event_handler, data_format)
+                )
 
             except RuntimeError as err:
-                log.error(err)
+                logger.error(err)
 
         return loop
 
@@ -455,7 +451,7 @@ class Driver(BaseDriver):
                 result = response.json()
 
             except ValueError:
-                log.debug(
+                logger.debug(
                     "Could not convert response to json, returning raw response"
                 )
                 result = response
@@ -492,7 +488,7 @@ class AsyncDriver(BaseDriver):
 
     Methods
     -------
-    init_websocket(event_handler, websocket_cls)
+    init_websocket(event_handler, websocket_cls, data_format='json')
         Initialize the websocket connection to the Mattermost server.
     login()
         Log the user in.
@@ -518,34 +514,29 @@ class AsyncDriver(BaseDriver):
 
     async def init_websocket(
         self,
-        event_handler: Any,
+        event_handler: Callable[[str | Dict[str, Any]], None],
         websocket_cls: Callable[..., Websocket] = Websocket,
+        data_format: Literal["text", "json"] = "json",
     ) -> Any:
         """Initialize the websocket connection to the Mattermost server.
 
         Unlike the Driver.init_websocket, this one assumes you are async aware
-        and returns a coroutine that can be awaited.  It will not return
-        until shutdown() is called.
+        and returns a coroutine that can be awaited. It will not return until
+        shutdown() is called.
 
         This should be run after login(), because the websocket needs to
         authenticate.
 
-        See https://api.mattermost.com/v4/#tag/WebSocket for which
-        websocket events mattermost sends.
-
-        Example of a really simple event_handler function
-
-        .. code:: python
-
-                async def my_event_handler(message):
-                        print(message)
+        Documentation: https://api.mattermost.com/v4/#tag/WebSocket
 
         Parameters
         ----------
-        event_handler : Function(message)
-            The function to handle the websocket events. Takes one argument.
+        event_handler : function(str or dict) -> None
+            The function to handle the websocket events.
         websocket_cls : websocket.Websocket, default=websocket.Websocket
             The Websocket class.
+        data_format : 'text' or 'json', default='json'
+            Whether to receive the websocket data as text or JSON.
 
         Returns
         -------
@@ -554,7 +545,7 @@ class AsyncDriver(BaseDriver):
         """
         self.websocket = websocket_cls(self.options, self.client.token)
 
-        return await self.websocket.connect(event_handler)
+        return await self.websocket.connect(event_handler, data_format)
 
     async def login(self) -> Any | Response:
         """Log the user in.
@@ -592,7 +583,7 @@ class AsyncDriver(BaseDriver):
                 result = response.json()
 
             except ValueError:
-                log.debug(
+                logger.debug(
                     "Could not convert response to json, returning raw response"
                 )
                 result = response
