@@ -1,18 +1,17 @@
 """Websocket class to listen to Mattermost events."""
 
 from asyncio import CancelledError, Task, create_task, sleep
-from json import dumps, loads
 from logging import DEBUG, INFO, Logger, getLogger
 from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
 from time import time
-from typing import Any, Dict
+from typing import Any, Callable, Dict, Literal
 
 from aiohttp import ClientError, ClientSession, ClientWebSocketResponse
 
 from .options import DriverOptions
 
-log: Logger = getLogger("mattermostdriver.websocket")
-log.setLevel(INFO)
+logger: Logger = getLogger("mattermostdriver.websocket")
+logger.setLevel(INFO)
 
 
 class Websocket:
@@ -43,13 +42,13 @@ class Websocket:
     -------
     _do_heartbeats()
         Keep connection alive.
-    _start_loop(event_handler)
+    _start_loop(event_handler, data_format='json')
         Start main coroutine.
     _authenticate_websocket(event_handler)
         Send a authentication challenge over a websocket.
     _connect_websocket(session)
         Create a websocket connection.
-    connect(event_handler)
+    connect(event_handler, data_format='json')
         Connect to the websocket and authenticate it.
     disconnect()
         Disconnect the websocket.
@@ -84,7 +83,7 @@ class Websocket:
         self.websocket: ClientWebSocketResponse | None = None
 
         if options.debug:
-            log.setLevel(DEBUG)
+            logger.setLevel(DEBUG)
 
     # ############################################################ Properties #
 
@@ -144,7 +143,7 @@ class Websocket:
             await sleep(next_timeout)
 
             if time() - self._last_msg >= self.timeout:
-                log.debug("Sending heartbeat...")
+                logger.debug("Sending heartbeat...")
 
                 try:
                     await self.websocket.pong()
@@ -152,9 +151,13 @@ class Websocket:
                     self.last_msg = time()
 
                 except ConnectionResetError as err:
-                    log.error(err)
+                    logger.error(err)
 
-    async def _start_loop(self, event_handler: Any) -> None:
+    async def _start_loop(
+        self,
+        event_handler: Callable[[str | Dict[str, Any]], None],
+        data_format: Literal["text", "json"] = "json",
+    ) -> None:
         """Start main coroutine.
 
         We will listen for websockets events, sending a heartbeats on a timer.
@@ -163,26 +166,32 @@ class Websocket:
 
         Parameters
         ----------
-        event_handler : Function(message)
-            The function to handle the websocket events. Takes one argument.
+        event_handler : function(str or dict) -> None
+            The function to handle the websocket events.
+        data_format : 'text' or 'json', default='json'
+            Whether to receive the websocket data as text or JSON.
 
         """
-        log.debug("Starting websocket loop.")
+        logger.debug("Starting websocket loop.")
         keep_alive: Task[None] = create_task(self._do_heartbeats())
 
-        log.debug("Waiting for messages on websocket.")
+        logger.debug("Waiting for messages on websocket.")
 
         while self._alive:
             try:
-                message: Any = await self.websocket.receive_str()
-
+                message: str | Dict[str, Any] = (
+                    await self.websocket.receive_json()
+                    if data_format == "json"
+                    else await self.websocket.receive_str()
+                )
                 self.last_msg = time()
+
                 await event_handler(message)
 
-            except TypeError as err:
-                log.error(err)
+            except (TypeError, ValueError) as err:
+                logger.error(err)
 
-        log.debug("Cancelling heartbeat task...")
+        logger.debug("Cancelling heartbeat task...")
         keep_alive.cancel()
 
         try:
@@ -191,7 +200,9 @@ class Websocket:
         except CancelledError:
             pass
 
-    async def _authenticate_websocket(self, event_handler: Any) -> None:
+    async def _authenticate_websocket(
+        self, event_handler: Callable[[str | Dict[str, Any]], None]
+    ) -> None:
         """Send a authentication challenge over a websocket.
 
         This is not needed when we just send the cookie we got on login
@@ -199,42 +210,42 @@ class Websocket:
 
         Parameters
         ----------
-        event_handler : Function(message)
-            The function to handle the websocket events. Takes one argument.
+        event_handler : function(str or dict) -> None
+            The function to handle the websocket events.
 
         """
-        log.debug("Authenticating websocket")
-        json_data: str = dumps(
-            {
-                "seq": 1,
-                "action": "authentication_challenge",
-                "data": {"token": self._token},
-            }
-        )
+        logger.debug("Authenticating websocket")
+        # Send the following JSON to authenticate
+        auth_challenge: Dict[str, Any] = {
+            "seq": 1,
+            "action": "authentication_challenge",
+            "data": {"token": self._token},
+        }
 
-        await self.websocket.send_str(json_data)
+        await self.websocket.send_json(auth_challenge)
 
         while True:
             try:
-                message: Any = await self.websocket.receive_str()
+                message: Dict[str, Any] = await self.websocket.receive_json()
 
-            except TypeError as err:
-                log.error(err)
+            except (TypeError, ValueError) as err:
+                logger.error(err)
 
             else:
-                status: Dict[str, Any] = loads(message)
-
-                log.debug(status)
-                # We want to pass the events to the event_handler already
-                # because the 'hello' event could arrive before the
-                # authentication ok response
+                # Pass the events to the event_handler already because the
+                # 'hello' event is sometimes received before the authentication
+                # ok response
                 await event_handler(message)
 
-                if status.get("event") == "hello" and status.get("seq") == 0:
-                    log.info("Websocket authentication OK")
+                if (
+                    message.get("status") == "OK" and message.get("seq") == 1
+                ) or (
+                    message.get("event") == "hello" and message.get("seq") == 0
+                ):
+                    logger.info("Websocket authentication OK")
                     return
 
-                log.error("Websocket authentication failed")
+                logger.error("Websocket authentication failed")
 
     async def _connect_websocket(self, session: ClientSession) -> None:
         """Create a websocket connection.
@@ -250,7 +261,11 @@ class Websocket:
             **self._websocket_kw_args,
         )
 
-    async def connect(self, event_handler: Any) -> None:
+    async def connect(
+        self,
+        event_handler: Callable[[str | Dict[str, Any]], None],
+        data_format: Literal["text", "json"] = "json",
+    ) -> None:
         """Connect to the websocket and authenticate it.
 
         When the authentication has finished, start the loop listening for
@@ -258,8 +273,10 @@ class Websocket:
 
         Parameters
         ----------
-        event_handler : Function(message)
-            The function to handle the websocket events. Takes one argument.
+        event_handler : function(str or dict) -> None
+            The function to handle the websocket events.
+        data_format : 'text' or 'json', default='json'
+            Whether to receive the websocket data as text or JSON.
 
         """
         self._alive = True
@@ -272,7 +289,7 @@ class Websocket:
 
                     while self._alive:
                         try:
-                            await self._start_loop(event_handler)
+                            await self._start_loop(event_handler, data_format)
 
                         except ClientError:
                             break
@@ -281,7 +298,7 @@ class Websocket:
                         break
 
             except Exception as err:  # FIXME
-                log.exception(
+                logger.exception(
                     f"Failed to establish websocket connection: {type(err)}"
                     " thrown."
                 )
@@ -296,6 +313,6 @@ class Websocket:
         Set `self._alive` to False so the loop in `self._start_loop` ends.
 
         """
-        log.info("Disconnecting websocket...")
+        logger.info("Disconnecting websocket...")
 
         self._alive = False
