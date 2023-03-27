@@ -64,7 +64,7 @@ class Websocket:
 
         ssl_context: SSLContext | None = None
         if options.scheme == "https":
-            create_default_context(purpose=Purpose.SERVER_AUTH)
+            ssl_context = create_default_context(purpose=Purpose.SERVER_AUTH)
             if not options.verify:
                 ssl_context.verify_mode = CERT_NONE
 
@@ -305,7 +305,8 @@ class Websocket:
 
                 await sleep(self._keepalive_delay)
 
-        await self.websocket.close()
+            finally:
+                await self.websocket.close()
 
     def disconnect(self) -> None:
         """Disconnect the websocket.
