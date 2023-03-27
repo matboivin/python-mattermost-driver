@@ -19,20 +19,25 @@ class Posted(PostEdited):
 
     """
 
-    def __init__(self, event: Any) -> None:
+    def __init__(self, event: Dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
         ----------
-        event : Any
+        event : dict
             The websocket event as a JSON.
 
         Raises
         ------
         KeyError
             If a key is missing from event.
+        TypeError
+            If the wrong event type was passed as parameter.
 
         """
+        if event.get("event") != "posted":
+            raise TypeError(f"Event type '{event.get('event')}' was passed.")
+
         super().__init__(event)
 
         data: Dict[str, Any] = event["data"]

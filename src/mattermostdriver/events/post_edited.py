@@ -30,7 +30,17 @@ class PostEdited(WebsocketEvent):
         ------
         KeyError
             If a key is missing from event.
+        TypeError
+            If the wrong event type was passed as parameter.
 
         """
+        if event.get("event") != "post_edited":
+            raise TypeError(f"Event type '{event.get('event')}' was passed.")
+
         super().__init__(event)
-        self.post: Post = Post(loads(event["data"]["post"]))
+
+        self.post: Post = (
+            Post(loads(event["data"]["post"]))
+            if isinstance(event["data"]["post"], str)
+            else Post(event["data"]["post"])
+        )
