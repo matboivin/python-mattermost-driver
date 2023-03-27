@@ -1,21 +1,30 @@
 """Class defining the 'posted' event."""
 
+from json import loads
 from typing import Any, Dict
 
-from .post_edited import PostEdited
+from mattermostdriver.classes import Post
 
 
-class Posted(PostEdited):
+class Posted(WebsocketEvent):
     """Class defining the 'posted' event: a new message was posted.
 
     Attributes
     ----------
+    post : Post
+        The post data.
     channel_display_name : str
+        The display name of the channel in which the message was posted.
     channel_name : str
+        The name of the channel in which the message was posted.
     channel_type : str
+        The type of the channel in which the message was posted.
     sender_name : str
+        The name of the message sender.
     set_online : bool
+        Whether the user status is online or not.
     team_id : str
+        The team ID in which the message was posted.
 
     """
 
@@ -39,6 +48,11 @@ class Posted(PostEdited):
             raise TypeError(f"Event type '{event.get('event')}' was passed.")
 
         super().__init__(event)
+
+        if isinstance(event["data"]["post"], str):
+            self.post: Post = Post(loads(event["data"]["post"]))
+        else:
+            self.post: Post = Post(event["data"]["post"])
 
         data: Dict[str, Any] = event["data"]
 
