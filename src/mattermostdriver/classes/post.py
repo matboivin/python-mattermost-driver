@@ -11,24 +11,44 @@ class Post:
     Attributes
     ----------
     id : str
+        The post ID.
     create_at : int
+        Date and time the post was created in milliseconds.
     update_at : int
+        Date and time the post was updated in milliseconds.
     edit_at : int
+        Date and time the post was edited in milliseconds.
     delete_at : int
+        Date and time the post was deleted in milliseconds.
     is_pinned : bool
+        Whether the post is pinned.
     user_id : str
+        The sender's user ID.
     channel_id : str
+        The ID of the channel in which the message was posted.
     root_id : str
+        If the post is a reply, ID of the replied-to post.
+        If the post is in a thread, ID of the thread's first message.
     original_id : str
+        No idea.
     message : str
+        The post's content.
     type : str
+        No idea.
     props : dict
+        No idea.
     hashtags : str
+        Hashtags contained in message, separated by a space.
     pending_post_id : str
+        No idea.
     reply_count : int
+        Count of replies from the root post.
     last_reply_at : int
+        Date and time of the last reply.
     participants : Any
+        No idea.
     metadata : Metadata
+        Embedded links, emojis, reactions, and files metadata.
 
     """
 

@@ -11,7 +11,9 @@ class Hello(WebsocketEvent):
     Attributes
     ----------
     connection_id : str
+        The connection ID.
     server_version : str
+        The version of the server the user connected to.
 
     """
 

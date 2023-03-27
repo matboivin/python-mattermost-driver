@@ -5,6 +5,8 @@ from typing import Any, Dict
 
 from mattermostdriver.classes import Post
 
+from .base import WebsocketEvent
+
 
 class Posted(WebsocketEvent):
     """Class defining the 'posted' event: a new message was posted.

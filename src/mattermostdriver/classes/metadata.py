@@ -39,22 +39,39 @@ class FileMetadata:
     Attributes
     ----------
     id : str
+        The file ID.
     user_id : str
+        The sender's user ID.
     post_id : str
+        The file's post ID.
     channel_id : str
+        The ID of the channel in which the file was posted.
     create_at : int
+        Date and time the file was created in milliseconds.
     update_at : int
+        Date and time the file was updated in milliseconds.
     delete_at : int
+        Date and time the file was deleted in milliseconds.
     name : str
+        Filename.
     extension : str
+        The file extension.
     size : int
+        The filesize.
     mime_type : str
+        The file MIME type.
     width : int
+        The file width in pixels.
     height : int
+        The file height in pixels.
     has_preview_image : bool
+        Whether the file has a preview.
     mini_preview : str
+        The file bytes as string.
     remote_id : str
+        No idea.
     archived : bool
+        Whether the file is archived.
 
     """
 
