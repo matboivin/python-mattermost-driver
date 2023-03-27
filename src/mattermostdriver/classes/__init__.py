@@ -1,6 +1,6 @@
 """Object classes."""
 
-from .file import File
+from .metadata import EmbedMetadata, FileMetadata
 from .post import Post
 
-__all__ = ["File", "Post"]
+__all__ = ["EmbedMetadata", "FileMetadata", "Post"]

@@ -1,10 +1,40 @@
-"""Class defining a file."""
+"""Class defining metadata."""
 
 from typing import Any, Dict
 
 
-class File:
-    """Class defining a file.
+class EmbedMetadata:
+    """Class defining an embedded link.
+
+    Attributes
+    ----------
+    type : str
+    url : str
+    data : dict
+
+    """
+
+    def __init__(self, attr: Dict[str, Any]) -> None:
+        """Initialize the attributes.
+
+        Parameters
+        ----------
+        attr : dict
+            The attributes as a dict.
+
+        Raises
+        ------
+        KeyError
+            If a key is missing from event.
+
+        """
+        self.type: str = attr["type"]
+        self.url: str = attr["url"]
+        self.data: Dict[str, Any] = attr.get("data", {})
+
+
+class FileMetadata:
+    """Class defining file's metadata.
 
     Attributes
     ----------

@@ -2,7 +2,7 @@
 
 from typing import Any, Dict, List
 
-from .file import File
+from .metadata import EmbedMetadata, FileMetadata
 
 
 class Post:
@@ -28,7 +28,7 @@ class Post:
     reply_count : int
     last_reply_at : int
     participants : Any
-    metadata : dict
+    metadata : Metadata
 
     """
 
@@ -66,10 +66,13 @@ class Post:
         self.participants: Any = attr["participants"]
         self.metadata: Dict[str, List[Any]] = {}
 
-        # tmp test
-        metadata: Dict[str, Any] = attr["metadata"]
+        metadata: Dict[str, Any] = attr.get("metadata", {})
 
-        if metadata and metadata.get("files"):
+        if metadata.get("embeds"):
+            self.metadata["embeds"] = [
+                EmbedMetadata(file) for file in metadata.get("embeds")
+            ]
+        if metadata.get("files"):
             self.metadata["files"] = [
-                File(file) for file in metadata.get("files")
+                FileMetadata(file) for file in metadata.get("files")
             ]
