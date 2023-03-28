@@ -1,8 +1,28 @@
-from .base import Base
+"""Class defining the /data_retention API endpoint."""
+
+from dataclasses import dataclass
+from typing import Any, Awaitable
+
+from requests import Response
+
+from .base import APIEndpoint
 
 
-class DataRetention(Base):
-    endpoint = "/data_retention"
+@dataclass
+class DataRetention(APIEndpoint):
+    """Class defining the /data_retention API endpoint.
 
-    def get_data_retention_policy(self):
-        return self.client.get(self.endpoint + "/policy")
+    Attributes
+    ----------
+
+    Methods
+    -------
+
+    """
+
+    endpoint: str = "/data_retention"
+
+    def get_data_retention_policy(
+        self,
+    ) -> Any | Response | Awaitable[Any | Response]:
+        return self.client.get(f"{self.endpoint}/policy")

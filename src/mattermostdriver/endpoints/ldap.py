@@ -1,11 +1,27 @@
-from .base import Base
+"""Class defining the /ldap API endpoint."""
+
+from dataclasses import dataclass
+from typing import Any, Awaitable
+
+from .base import APIEndpoint
 
 
-class LDAP(Base):
-    endpoint = "/ldap"
+@dataclass
+class LDAP(APIEndpoint):
+    """Class defining the /ldap API endpoint.
 
-    def sync_ldap(self):
-        return self.client.post(self.endpoint + "/sync")
+    Attributes
+    ----------
 
-    def test_ldap_config(self):
-        return self.client.post(self.endpoint + "/test")
+    Methods
+    -------
+
+    """
+
+    endpoint: str = "/ldap"
+
+    def sync_ldap(self) -> Any | Awaitable[Any]:
+        return self.client.post(f"{self.endpoint}/sync")
+
+    def test_ldap_config(self) -> Any | Awaitable[Any]:
+        return self.client.post(f"{self.endpoint}/test")
