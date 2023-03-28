@@ -62,12 +62,12 @@ class DriverOptions:
             If 'login_id' and 'password' or 'token' are missing.
 
         """
-        if not all(
-            [options.get("login_id"), options.get("password")]
-        ) or not options.get("token"):
-            raise RuntimeError(
-                "Required options are 'login_id' and 'password', or 'token.'"
-            )
+        if not all([options.get("login_id"), options.get("password")]):
+            if not options.get("token"):
+                raise RuntimeError(
+                    "Required options are 'login_id' and 'password', "
+                    "or 'token.'"
+                )
 
         self.debug: bool = options.get("debug", False)
         self.scheme: str = options.get("scheme", "https")
