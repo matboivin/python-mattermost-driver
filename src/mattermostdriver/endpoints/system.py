@@ -1,64 +1,105 @@
-from .base import Base
+"""Class defining the system API endpoint."""
+
+from dataclasses import dataclass
+from typing import Any, Awaitable, Dict
+
+from requests import Response
+
+from .base import APIEndpoint
 
 
-class System(Base):
+@dataclass
+class System(APIEndpoint):
+    """Class defining the system API endpoint.
+
+    This endpoint has a mix of different endpoints, not only /system
+
+    Attributes
+    ----------
+
+    Methods
+    -------
+
     """
-    This endpoint has a mix of different
-    endpoints, not only /system
-    """
 
-    def check_system_health(self):
+    def check_system_health(
+        self,
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/system/ping")
 
-    def recycle_database_connection(self):
+    def recycle_database_connection(self) -> Any | Awaitable[Any]:
         return self.client.post("/database/recycle")
 
-    def send_test_email(self, options=None):
+    def send_test_email(
+        self, options: Dict[str, Any] | None = None
+    ) -> Any | Awaitable[Any]:
         return self.client.post("/email/test", options=options)
 
-    def get_configuration(self):
+    def get_configuration(
+        self,
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/config")
 
-    def update_configuration(self, options):
+    def update_configuration(
+        self, options: Dict[str, Any] | None
+    ) -> Any | Awaitable[Any]:
         return self.client.put("/config", options=options)
 
-    def reload_configuration(self):
+    def reload_configuration(self) -> Any | Awaitable[Any]:
         return self.client.post("/config/reload")
 
-    def get_client_configuration(self, params):
+    def get_client_configuration(
+        self, params: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/config/client", params=params)
 
-    def upload_license_file(self, files):
+    def upload_license_file(
+        self, files: Dict[str, Any] | None
+    ) -> Any | Awaitable[Any]:
         return self.client.post("/license", files=files)
 
-    def remove_license_file(self):
+    def remove_license_file(self) -> Any | Awaitable[Any]:
         return self.client.delete("/license")
 
-    def get_client_license(self, params):
+    def get_client_license(
+        self, params: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/license/client", params=params)
 
-    def get_audits(self, params):
+    def get_audits(
+        self, params: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/audits", params=params)
 
-    def invalidate_all_caches(self):
-        return self.client.post(
-            "/caches/invalidate",
-        )
+    def invalidate_all_caches(self) -> Any | Awaitable[Any]:
+        return self.client.post("/caches/invalidate")
 
-    def get_logs(self, params):
+    def get_logs(
+        self, params: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/logs", params=params)
 
-    def add_log_message(self, options):
+    def add_log_message(
+        self, options: Dict[str, Any] | None
+    ) -> Any | Awaitable[Any]:
         return self.client.post("/logs", options=options)
 
-    def get_webrtc_token(self):
+    def get_webrtc_token(
+        self,
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/webrtc/token")
 
-    def get_analytics(self, params):
+    def get_analytics(
+        self, params: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/analytics/old", params=params)
 
-    def get_configuration_environment(self):
+    def get_configuration_environment(
+        self,
+    ) -> Any | Response | Awaitable[Any | Response]:
         return self.client.get("/config/environment")
 
-    def test_aws_s3_connection(self, options=None):
+    def test_aws_s3_connection(
+        self, options: Dict[str, Any] | None = None
+    ) -> Any | Awaitable[Any]:
         return self.client.post("/file/s3_test", options=options)

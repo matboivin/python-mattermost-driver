@@ -11,24 +11,31 @@ class Hello(WebsocketEvent):
     Attributes
     ----------
     connection_id : str
+        The connection ID.
     server_version : str
+        The version of the server the user connected to.
 
     """
 
-    def __init__(self, event: Any) -> None:
+    def __init__(self, event: Dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
         ----------
-        event : Any
+        event : dict
             The websocket event as a JSON.
 
         Raises
         ------
         KeyError
             If a key is missing from event.
+        TypeError
+            If the wrong event type was passed as parameter.
 
         """
+        if event.get("event") != "hello":
+            raise TypeError(f"Event type '{event.get('event')}' was passed.")
+
         data: Dict[str, Any] = event["data"]
 
         super().__init__(event)

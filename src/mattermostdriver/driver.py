@@ -2,7 +2,7 @@
 
 from asyncio import AbstractEventLoop, get_event_loop, run
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Callable, Dict, Literal
+from typing import Any, Awaitable, Callable, Dict, Literal, Tuple
 
 from requests import Response
 
@@ -25,7 +25,7 @@ class BaseDriver:
     ----------
     options : DriverOptions
         The options for driver and client.
-    client : AsyncClient or Client
+    client : AsyncClient or Client or None
         The underlying client object.
     websocket : Websocket, default=None
         The websocket to listen to Mattermost events.
@@ -43,14 +43,12 @@ class BaseDriver:
         client_cls: Callable[..., ClientType],
     ) -> None:
         """Initialize driver.
-
         Parameters
         ----------
         options : dict, optional
             The options for driver and client.
         client_cls : Function()
             Constructor for the underlying client class.
-
         """
         self.options: DriverOptions = DriverOptions(options)
         self.client: ClientType = client_cls(self.options)
@@ -358,22 +356,24 @@ class Driver(BaseDriver):
 
     def __init__(
         self,
-        options: Dict[str, Any] | None = None,
+        options: Dict[str, Any],
         client_cls: Callable[..., ClientType] = Client,
     ) -> None:
         super().__init__(options, client_cls)
 
-    def __enter__(self):
-        self.client.__enter__()
+    def __enter__(self) -> Any:
+        if isinstance(self.client, Client):  # FIXME
+            self.client.__enter__()
 
         return self
 
-    def __exit__(self, *exc_info) -> Any:
-        return self.client.__exit__(*exc_info)
+    def __exit__(self, *exc_info: Tuple[Any]) -> Any:
+        if isinstance(self.client, Client):  # FIXME
+            return self.client.__exit__(*exc_info)
 
     def init_websocket(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], None],
+        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
         websocket_cls: Callable[..., Websocket] = Websocket,
         data_format: Literal["text", "json"] = "json",
     ) -> AbstractEventLoop:
@@ -386,7 +386,7 @@ class Driver(BaseDriver):
 
         Parameters
         ----------
-        event_handler : function(str or dict) -> None
+        event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
         websocket_cls : Function(), default=websocket.Websocket
             The Websocket class.
@@ -402,7 +402,7 @@ class Driver(BaseDriver):
         self.websocket = websocket_cls(self.options, self.client.token)
         loop: AbstractEventLoop = get_event_loop()
 
-        if loop.is_running:
+        if loop.is_running():
             run(self.websocket.connect(event_handler, data_format))
 
         else:
@@ -433,10 +433,10 @@ class Driver(BaseDriver):
         """
         if self.options.token:
             self.client.token = self.options.token
-            result: Any = self.users.get_user("me")
+            result: Any | Response = self.users.get_user("me")
 
         else:
-            response: Response = self.users.login_user(
+            response: Any = self.users.login_user(
                 {
                     "login_id": self.options.login_id,
                     "password": self.options.password,
@@ -452,15 +452,17 @@ class Driver(BaseDriver):
 
             except ValueError:
                 logger.debug(
-                    "Could not convert response to json, returning raw response"
+                    "Could not convert response to JSON. "
+                    "Returning raw response."
                 )
                 result = response
 
-        if result.get("id"):
-            self.client.user_id = result["id"]
+        if not isinstance(result, Response):
+            if result.get("id"):
+                self.client.user_id = result["id"]
 
-        if result.get("username"):
-            self.client.username = result["username"]
+            if result.get("username"):
+                self.client.username = result["username"]
 
         return result
 
@@ -499,22 +501,24 @@ class AsyncDriver(BaseDriver):
 
     def __init__(
         self,
-        options: Dict[str, Any] | None = None,
+        options: Dict[str, Any],
         client_cls: Callable[..., ClientType] = AsyncClient,
     ) -> None:
         super().__init__(options, client_cls)
 
-    async def __aenter__(self):
-        await self.client.__aenter__()
+    async def __aenter__(self) -> Any:
+        if isinstance(self.client, AsyncClient):  # FIXME
+            await self.client.__aenter__()
 
         return self
 
-    async def __aexit__(self, *exc_info) -> Any:
-        return await self.client.__aexit__(*exc_info)
+    async def __aexit__(self, *exc_info: Tuple[Any]) -> Any:
+        if isinstance(self.client, AsyncClient):  # FIXME
+            return await self.client.__aexit__(*exc_info)
 
     async def init_websocket(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], None],
+        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
         websocket_cls: Callable[..., Websocket] = Websocket,
         data_format: Literal["text", "json"] = "json",
     ) -> Any:
@@ -531,7 +535,7 @@ class AsyncDriver(BaseDriver):
 
         Parameters
         ----------
-        event_handler : function(str or dict) -> None
+        event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
         websocket_cls : websocket.Websocket, default=websocket.Websocket
             The Websocket class.
@@ -564,10 +568,10 @@ class AsyncDriver(BaseDriver):
         """
         if self.options.token:
             self.client.token = self.options.token
-            result: Any = await self.users.get_user("me")
+            result: Any | Response = await self.users.get_user("me")
 
         else:
-            response: Any = await self.users.login_user(
+            response: Response = await self.users.login_user(
                 {
                     "login_id": self.options.login_id,
                     "password": self.options.password,
@@ -584,15 +588,17 @@ class AsyncDriver(BaseDriver):
 
             except ValueError:
                 logger.debug(
-                    "Could not convert response to json, returning raw response"
+                    "Could not convert response to JSON. "
+                    "Returning raw response."
                 )
                 result = response
 
-        if result.get("id"):
-            self.client.user_id = result["id"]
+        if not isinstance(result, Response):
+            if result.get("id"):
+                self.client.user_id = result["id"]
 
-        if result.get("username"):
-            self.client.username = result["username"]
+            if result.get("username"):
+                self.client.username = result["username"]
 
         return result
 

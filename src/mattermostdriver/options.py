@@ -36,8 +36,8 @@ class DriverOptions:
     proxy : str, default=None
         Proxy URL for every request.
     request_timeout : int, default=None
-        The timeout configuration used by the httpx client when sending request.
-        If none, use default httpx client timeout (5 seconds).
+        The timeout configuration used by the httpx client when sending
+        request. If none, use default httpx client timeout (5 seconds).
     timeout : float, default=30
         The Mattermost websocket connection's timeout in seconds.
     keepalive : bool, default=False
@@ -48,10 +48,27 @@ class DriverOptions:
 
     """
 
-    def __init__(
-        self,
-        options: Dict[str, Any] | None,
-    ) -> None:
+    def __init__(self, options: Dict[str, Any]) -> None:
+        """Send a DELETE request.
+
+        Parameters
+        ----------
+        options : dict
+            The driver options as a dict.
+
+        Raises
+        ------
+        RuntimeError
+            If 'login_id' and 'password' or 'token' are missing.
+
+        """
+        if not all([options.get("login_id"), options.get("password")]):
+            if not options.get("token"):
+                raise RuntimeError(
+                    "Required options are 'login_id' and 'password', "
+                    "or 'token.'"
+                )
+
         self.debug: bool = options.get("debug", False)
         self.scheme: str = options.get("scheme", "https")
         self.hostname: str = options.get("hostname", "localhost")

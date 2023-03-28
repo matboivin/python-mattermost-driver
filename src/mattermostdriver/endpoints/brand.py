@@ -1,11 +1,31 @@
-from .base import Base
+"""Class defining the /brand API endpoint."""
+
+from dataclasses import dataclass
+from typing import Any, Awaitable, Dict
+
+from requests import Response
+
+from .base import APIEndpoint
 
 
-class Brand(Base):
-    endpoint = "/brand"
+@dataclass
+class Brand(APIEndpoint):
+    """Class defining the /brand API endpoint.
 
-    def get_brand_image(self):
-        return self.client.get(self.endpoint + "/image")
+    Attributes
+    ----------
 
-    def upload_brand_image(self, files):
-        return self.client.post(self.endpoint + "/image", files=files)
+    Methods
+    -------
+
+    """
+
+    endpoint: str = "/brand"
+
+    def get_brand_image(self) -> Any | Response | Awaitable[Any | Response]:
+        return self.client.get(f"{self.endpoint}/image")
+
+    def upload_brand_image(
+        self, files: Dict[str, Any] | None
+    ) -> Any | Awaitable[Any]:
+        return self.client.post(f"{self.endpoint}/image", files=files)

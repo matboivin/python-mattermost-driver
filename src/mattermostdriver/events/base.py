@@ -19,12 +19,12 @@ class WebsocketEvent:
 
     """
 
-    def __init__(self, event: Any) -> None:
+    def __init__(self, event: Dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
         ----------
-        event : Any
+        event : dict
             The websocket event as a JSON.
 
         Raises

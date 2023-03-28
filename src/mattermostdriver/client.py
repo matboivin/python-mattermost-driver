@@ -5,7 +5,7 @@ requests to the Mattermost server.
 """
 
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Callable, Dict, TypeAlias
+from typing import Any, Awaitable, Callable, Dict, Tuple, TypeAlias
 
 from httpx import AsyncClient as HttpxAsyncClient
 from httpx import Client as HttpxClient
@@ -372,13 +372,15 @@ class Client(BaseClient):
             timeout=options.request_timeout,
         )
 
-    def __enter__(self):
-        self.client.__enter__()
+    def __enter__(self) -> Any:
+        if self.client:
+            self.client.__enter__()
 
         return self
 
-    def __exit__(self, *exc_info) -> Any:
-        return self.client.__exit__(*exc_info)
+    def __exit__(self, *exc_info: Tuple[Any]) -> Any:
+        if self.client:
+            return self.client.__exit__(*exc_info)
 
     def make_request(
         self,
@@ -604,13 +606,15 @@ class AsyncClient(BaseClient):
             timeout=options.request_timeout,
         )
 
-    async def __aenter__(self):
-        await self.client.__aenter__()
+    async def __aenter__(self) -> Any:
+        if self.client:
+            await self.client.__aenter__()
 
         return self
 
-    async def __aexit__(self, *exc_info) -> Any:
-        return await self.client.__aexit__(*exc_info)
+    async def __aexit__(self, *exc_info: Tuple[Any]) -> Any:
+        if self.client:
+            return await self.client.__aexit__(*exc_info)
 
     async def make_request(
         self,
@@ -644,7 +648,7 @@ class AsyncClient(BaseClient):
             Response to the HTTP request.
 
         """
-        request: Callable[..., Response] = self._get_request_method(
+        request: Callable[..., Awaitable[Response]] = self._get_request_method(
             method, self.client
         )
         request_params: Dict[str, Any] = self._get_request_params(
@@ -733,7 +737,7 @@ class AsyncClient(BaseClient):
             The reponse in JSON format.
 
         """
-        response: Any = await self.make_request(
+        response: Response = await self.make_request(
             "post",
             endpoint,
             options=options,
@@ -770,7 +774,7 @@ class AsyncClient(BaseClient):
             The reponse in JSON format.
 
         """
-        response: Any = await self.make_request(
+        response: Response = await self.make_request(
             "put", endpoint, options=options, params=params, data=data
         )
 
@@ -802,7 +806,7 @@ class AsyncClient(BaseClient):
             The reponse in JSON format.
 
         """
-        response: Any = await self.make_request(
+        response: Response = await self.make_request(
             "delete", endpoint, options=options, params=params, data=data
         )
 
