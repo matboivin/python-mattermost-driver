@@ -39,39 +39,39 @@ class FileMetadata:
     Attributes
     ----------
     id : str
-        The file ID.
+        The unique identifier for this file.
     user_id : str
-        The sender's user ID.
+        The ID of the user that uploaded this file.
     post_id : str
-        The file's post ID.
+        If this file is attached to a post, the ID of that post.
     channel_id : str
         The ID of the channel in which the file was posted.
     create_at : int
-        Date and time the file was created in milliseconds.
+        The time in milliseconds a file was created.
     update_at : int
-        Date and time the file was updated in milliseconds.
+        The time in milliseconds a file was last updated.
     delete_at : int
-        Date and time the file was deleted in milliseconds.
+        The time in milliseconds a file was deleted.
     name : str
-        Filename.
+        The filename.
     extension : str
         The file extension.
     size : int
-        The filesize.
+        The file size in bytes.
     mime_type : str
         The file MIME type.
-    width : int
-        The file width in pixels.
-    height : int
-        The file height in pixels.
-    has_preview_image : bool
-        Whether the file has a preview.
-    mini_preview : str
-        The file bytes as string.
     remote_id : str
         No idea.
     archived : bool
         Whether the file is archived.
+    width : int, optional
+        If this file is an image, the width of the file in pixels.
+    height : int, optional
+        If this file is an image, the height of the file in pixels.
+    has_preview_image : bool, optional
+        If this file is an image, the height of the file.
+    mini_preview : str, optional
+        If this file is an image, the file bytes as string.
 
     """
 
@@ -100,9 +100,9 @@ class FileMetadata:
         self.extension: str = attr["extension"]
         self.size: int = attr["size"]
         self.mime_type: str = attr["mime_type"]
-        self.width: int = attr["width"]
-        self.height: int = attr["height"]
-        self.has_preview_image: bool = attr["has_preview_image"]
-        self.mini_preview: str = attr["mini_preview"]
         self.remote_id: str = attr["remote_id"]
         self.archived: bool = attr["archived"]
+        self.width: int | None = attr.get("width")
+        self.height: int | None = attr.get("height")
+        self.has_preview_image: bool | None = attr.get("has_preview_image")
+        self.mini_preview: str | None = attr.get("mini_preview")
