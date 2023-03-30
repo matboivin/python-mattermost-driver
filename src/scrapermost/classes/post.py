@@ -90,9 +90,9 @@ class Post:
 
         if metadata.get("embeds"):
             self.metadata["embeds"] = [
-                EmbedMetadata(file) for file in metadata.get("embeds")
+                EmbedMetadata(file) for file in metadata["embeds"]
             ]
         if metadata.get("files"):
             self.metadata["files"] = [
-                FileMetadata(file) for file in metadata.get("files")
+                FileMetadata(file) for file in metadata["files"]
             ]

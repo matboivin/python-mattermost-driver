@@ -31,5 +31,3 @@ The easiest way to update the documentation would be to:
  - `cp -r python-mattermostdriver/docs/_build/html/. python-mattermost-driver-docs/`
  - Check the changed files with `git status`
  - Add them and commit/push
-
-

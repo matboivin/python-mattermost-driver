@@ -24,7 +24,7 @@ class Users(APIEndpoint):
 
     def login_user(
         self, options: Dict[str, Any] | None
-    ) -> Any | Awaitable[Any]:
+    ) -> Response | Awaitable[Response]:
         # Use client.make_request() instead of post to get the HTTP Response
         # instead of JSON
         return self.client.make_request(

@@ -39,7 +39,9 @@ class PostEdited(WebsocketEvent):
 
         super().__init__(event)
 
+        self.post: Post
+
         if isinstance(event["data"]["post"], str):
-            self.post: Post = Post(loads(event["data"]["post"]))
+            self.post = Post(loads(event["data"]["post"]))
         else:
-            self.post: Post = Post(event["data"]["post"])
+            self.post = Post(event["data"]["post"])

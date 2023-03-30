@@ -50,13 +50,14 @@ class Posted(WebsocketEvent):
             raise TypeError(f"Event type '{event.get('event')}' was passed.")
 
         super().__init__(event)
-
-        if isinstance(event["data"]["post"], str):
-            self.post: Post = Post(loads(event["data"]["post"]))
-        else:
-            self.post: Post = Post(event["data"]["post"])
-
         data: Dict[str, Any] = event["data"]
+
+        self.post: Post
+
+        if isinstance(data["post"], str):
+            self.post = Post(loads(data["post"]))
+        else:
+            self.post = Post(data["post"])
 
         self.channel_display_name: str = data["channel_display_name"]
         self.channel_name: str = data["channel_name"]
