@@ -1,21 +1,22 @@
 """Driver classes."""
 
+from abc import ABC, abstractmethod
 from asyncio import AbstractEventLoop, get_event_loop, run
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Awaitable, Callable, Dict, Literal, Tuple
 
 from requests import Response
 
-from .client import AsyncClient, Client, ClientType
+from .client import AsyncClient, Client
 from .endpoints import *
 from .options import DriverOptions
 from .websocket import Websocket
 
-logger: Logger = getLogger("scrapermost.api")
+logger: Logger = getLogger("scrapermost.driver")
 logger.setLevel(INFO)
 
 
-class BaseDriver:
+class BaseDriver(ABC):
     """Base for creating driver classes.
 
     Contains the client, api and provides you with functions for login, logout
@@ -39,19 +40,17 @@ class BaseDriver:
 
     def __init__(
         self,
-        options: Dict[str, Any] | None,
-        client_cls: Callable[..., ClientType],
+        options: Dict[str, Any],
     ) -> None:
         """Initialize driver.
+
         Parameters
         ----------
         options : dict, optional
             The options for driver and client.
-        client_cls : Function()
-            Constructor for the underlying client class.
+
         """
         self.options: DriverOptions = DriverOptions(options)
-        self.client: ClientType = client_cls(self.options)
         self.websocket: Websocket | None = None
 
         if self.options.debug:
@@ -63,6 +62,15 @@ class BaseDriver:
             )
 
     # ############################################################ Properties #
+
+    @property
+    def client(self):  # type: ignore
+        return self.client
+
+    @client.setter
+    @abstractmethod
+    def client(self, client):  # type: ignore
+        ...
 
     @property
     def users(self) -> Users:
@@ -354,22 +362,30 @@ class Driver(BaseDriver):
 
     """
 
-    def __init__(
-        self,
-        options: Dict[str, Any],
-        client_cls: Callable[..., ClientType] = Client,
-    ) -> None:
-        super().__init__(options, client_cls)
+    def __init__(self, options: Dict[str, Any]) -> None:
+        super().__init__(options)
+
+        self.client = Client(self.options)
 
     def __enter__(self) -> Any:
-        if isinstance(self.client, Client):  # FIXME
-            self.client.__enter__()
+        self.client.__enter__()
 
         return self
 
     def __exit__(self, *exc_info: Tuple[Any]) -> Any:
-        if isinstance(self.client, Client):  # FIXME
-            return self.client.__exit__(*exc_info)
+        return self.client.__exit__(*exc_info)
+
+    # ############################################################ Properties #
+
+    @property
+    def client(self) -> Client:
+        return self.client
+
+    @BaseDriver.client.setter
+    def client(self, client: Client) -> None:
+        self.client = client
+
+    # ############################################################### Methods #
 
     def init_websocket(
         self,
@@ -499,22 +515,30 @@ class AsyncDriver(BaseDriver):
 
     """
 
-    def __init__(
-        self,
-        options: Dict[str, Any],
-        client_cls: Callable[..., ClientType] = AsyncClient,
-    ) -> None:
-        super().__init__(options, client_cls)
+    def __init__(self, options: Dict[str, Any]) -> None:
+        super().__init__(options)
+
+        self.client = AsyncClient(self.options)
 
     async def __aenter__(self) -> Any:
-        if isinstance(self.client, AsyncClient):  # FIXME
-            await self.client.__aenter__()
+        await self.client.__aenter__()
 
         return self
 
     async def __aexit__(self, *exc_info: Tuple[Any]) -> Any:
-        if isinstance(self.client, AsyncClient):  # FIXME
-            return await self.client.__aexit__(*exc_info)
+        return await self.client.__aexit__(*exc_info)
+
+    # ############################################################ Properties #
+
+    @property
+    def client(self) -> AsyncClient:
+        return self.client
+
+    @BaseDriver.client.setter
+    def client(self, client: AsyncClient) -> None:
+        self.client = client
+
+    # ############################################################### Methods #
 
     async def init_websocket(
         self,

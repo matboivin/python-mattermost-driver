@@ -5,7 +5,7 @@ requests to the Mattermost server.
 """
 
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Awaitable, Callable, Dict, Tuple, TypeAlias
+from typing import Any, Awaitable, Callable, Dict, Tuple, TypeVar
 
 from httpx import AsyncClient as HttpxAsyncClient
 from httpx import Client as HttpxClient
@@ -23,7 +23,7 @@ from .exceptions import (
 )
 from .options import DriverOptions
 
-logger: Logger = getLogger("scrapermost.websocket")
+logger: Logger = getLogger("scrapermost.client")
 logger.setLevel(INFO)
 
 
@@ -813,4 +813,4 @@ class AsyncClient(BaseClient):
         return response.json()
 
 
-ClientType: TypeAlias = Client | AsyncClient
+ClientT = TypeVar("ClientT", bound=Client | AsyncClient)
