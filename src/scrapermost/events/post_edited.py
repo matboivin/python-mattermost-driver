@@ -3,7 +3,7 @@
 from json import loads
 from typing import Any, Dict
 
-from mattermostdriver.classes import Post
+from scrapermost.classes import Post
 
 from .base import WebsocketEvent
 

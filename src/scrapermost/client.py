@@ -23,7 +23,7 @@ from .exceptions import (
 )
 from .options import DriverOptions
 
-logger: Logger = getLogger("mattermostdriver.websocket")
+logger: Logger = getLogger("scrapermost.websocket")
 logger.setLevel(INFO)
 
 

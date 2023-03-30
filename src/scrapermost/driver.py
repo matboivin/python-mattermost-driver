@@ -11,7 +11,7 @@ from .endpoints import *
 from .options import DriverOptions
 from .websocket import Websocket
 
-logger: Logger = getLogger("mattermostdriver.api")
+logger: Logger = getLogger("scrapermost.api")
 logger.setLevel(INFO)
 
 

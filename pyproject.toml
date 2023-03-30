@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mattermostdriver"
+name = "scrapermost"
 version = "8.0.0"
 description = "A Python Mattermost Driver"
 authors = ["Christian Plümer <github@kuuku.net>"]
@@ -27,6 +27,7 @@ httpx = "^0.23.3"
 
 [tool.poetry.dev-dependencies]
 mdformat-gfm = "^0.3.5"
+pdoc3 = "^0.10.0"
 pre-commit = "^3.1.1"
 pycodestyle = "^2.10.0"
 pylint = "^2.16.4"

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from mattermostdriver.client import ClientType
+from scrapermost.client import ClientType
 
 
 @dataclass

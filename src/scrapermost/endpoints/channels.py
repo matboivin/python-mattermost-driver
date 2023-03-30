@@ -10,7 +10,7 @@ from .base import APIEndpoint
 from .teams import Teams
 from .users import Users
 
-log: Logger = getLogger("mattermostdriver.api.channels")
+log: Logger = getLogger("scrapermost.api.channels")
 log.setLevel(INFO)
 
 

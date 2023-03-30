@@ -1,8 +1,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# Python Mattermost Driver (APIv4)
+# Scrapermost
 
-Library to use [Mattermost API](https://api.mattermost.com/).
+Python library to use [Mattermost APIv4](https://api.mattermost.com/).
 
 This repository is a fork of [Python Mattermost Driver](https://github.com/Vaelor/python-mattermost-driver).
 
@@ -40,42 +40,42 @@ $ poetry install
 
 ## Usage
 
-This project is intended to be used as a library.
+A [Driver](https://api.mattermost.com/#tag/drivers), or client, is an object used to interact with the Mattermost API.
+
+At least the following options must be provided as a dict:
+
+- `login_id` (user account's email address or username) and `password`
+- or `token`
+
+Example with synchronous driver:
 
 ```python
-from mattermostdriver import Driver
+from scrapermost import Driver
 
-def init_driver(server_url: str, email: str, password: str) -> Driver:
-    return Driver(
-        {
-            "url": server_url,
-            "login_id": email,
-            "password": password
-        }
-    )
+driver: Driver = Driver(
+    {
+        "hostname": server_hostname,
+        "login_id": email,
+        "password": password
+    }
+)
 
-def start_driver(driver: Driver) -> None:
-    """Connect Mattermost Driver to server."""
-    driver.login()
+driver.login()
 ```
 
 Example with asynchronous driver:
 
 ```python
-from mattermostdriver import AsyncDriver
+from scrapermost import AsyncDriver
 
-def init_driver(server_url: str, email: str, password: str) -> AsyncDriver:
-    return AsyncDriver(
-        {
-            "url": server_url,
-            "login_id": email,
-            "password": password
-        }
-    )
+driver: AsyncDriver = AsyncDriver(
+    {
+        "hostname": server_hostname,
+        "token": token
+    }
+)
 
-async def start_driver(driver: AsyncDriver) -> None:
-    """Connect Mattermost Driver to server."""
-    await driver.login()
+await driver.login()
 ```
 
 <br />
