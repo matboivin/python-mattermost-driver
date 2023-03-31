@@ -1,4 +1,4 @@
-"""Class defining the /saml API endpoint."""
+"""Endpoints for configuring and interacting with SAML."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -14,6 +14,8 @@ class SAML(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------

@@ -1,4 +1,7 @@
-"""Class defining the system API endpoint."""
+"""General endpoints for interacting with the server.
+
+Example usages: configuration and logging.
+"""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -16,6 +19,8 @@ class System(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -31,9 +36,9 @@ class System(APIEndpoint):
         return self.client.post("/database/recycle")
 
     def send_test_email(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post("/email/test", options=options)
+        return self.client.post("/email/test", body_json=body_json)
 
     def get_configuration(
         self,
@@ -41,9 +46,9 @@ class System(APIEndpoint):
         return self.client.get("/config")
 
     def update_configuration(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.put("/config", options=options)
+        return self.client.put("/config", body_json=body_json)
 
     def reload_configuration(self) -> Any | Awaitable[Any]:
         return self.client.post("/config/reload")
@@ -80,9 +85,9 @@ class System(APIEndpoint):
         return self.client.get("/logs", params=params)
 
     def add_log_message(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post("/logs", options=options)
+        return self.client.post("/logs", body_json=body_json)
 
     def get_webrtc_token(
         self,
@@ -100,6 +105,6 @@ class System(APIEndpoint):
         return self.client.get("/config/environment")
 
     def test_aws_s3_connection(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post("/file/s3_test", options=options)
+        return self.client.post("/file/s3_test", body_json=body_json)

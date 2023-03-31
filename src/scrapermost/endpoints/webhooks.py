@@ -1,4 +1,4 @@
-"""Class defining the /hooks API endpoint."""
+"""Endpoints for creating, getting and updating webhooks."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -14,6 +14,8 @@ class Webhooks(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -23,9 +25,11 @@ class Webhooks(APIEndpoint):
     endpoint: str = "/hooks"
 
     def create_incoming_hook(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/incoming", options=options)
+        return self.client.post(
+            f"{self.endpoint}/incoming", body_json=body_json
+        )
 
     def list_incoming_hooks(
         self, params: Dict[str, Any] | None
@@ -38,16 +42,18 @@ class Webhooks(APIEndpoint):
         return self.client.get(f"{self.endpoint}/incoming/{hook_id}")
 
     def update_incoming_hook(
-        self, hook_id: str, options: Dict[str, Any] | None
+        self, hook_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/incoming/{hook_id}", options=options
+            f"{self.endpoint}/incoming/{hook_id}", body_json=body_json
         )
 
     def create_outgoing_hook(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/outgoing", options=options)
+        return self.client.post(
+            f"{self.endpoint}/outgoing", body_json=body_json
+        )
 
     def list_outgoing_hooks(
         self, params: Dict[str, Any] | None
@@ -63,10 +69,10 @@ class Webhooks(APIEndpoint):
         return self.client.delete(f"{self.endpoint}/outgoing/{hook_id}")
 
     def update_outgoing_hook(
-        self, hook_id: str, options: Dict[str, Any] | None
+        self, hook_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/outgoing/{hook_id}", options=options
+            f"{self.endpoint}/outgoing/{hook_id}", body_json=body_json
         )
 
     def regenerate_token_outgoing_hook(
@@ -77,6 +83,8 @@ class Webhooks(APIEndpoint):
         )
 
     def call_webhook(
-        self, hook_id: str, options: Dict[str, Any] | None = None
+        self, hook_id: str, body_json: Dict[str, Any] | None = None
     ) -> Response | Awaitable[Response]:
-        return self.client.make_request("post", f"/{hook_id}", options=options)
+        return self.client.make_request(
+            "post", f"/{hook_id}", body_json=body_json
+        )

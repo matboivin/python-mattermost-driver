@@ -1,4 +1,4 @@
-"""Class defining the /reactions API endpoint."""
+"""Endpoints for creating, getting and removing emoji reactions."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -16,6 +16,8 @@ class Reactions(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -25,9 +27,9 @@ class Reactions(APIEndpoint):
     endpoint: str = "/reactions"
 
     def create_reaction(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options=options)
+        return self.client.post(self.endpoint, body_json=body_json)
 
     def get_reactions_of_post(
         self, post_id: str

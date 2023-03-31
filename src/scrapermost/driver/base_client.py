@@ -52,7 +52,7 @@ class BaseClient(ABC):
     Static methods
     --------------
     _get_request_params(
-        method, options=None, params=None, data=None, files=None
+        method, body_json=None, params=None, data=None, files=None
     )
         Get request parameters as a dict.
     _get_request_method(method, client)
@@ -223,7 +223,7 @@ class BaseClient(ABC):
     @staticmethod
     def _get_request_params(
         method: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
@@ -234,7 +234,7 @@ class BaseClient(ABC):
         ----------
         method : str
             Either 'GET', 'POST', 'PUT' or 'DELETE'.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -252,8 +252,8 @@ class BaseClient(ABC):
         request_params: Dict[str, Any] = {}
 
         if method in ("post", "put"):
-            if options:
-                request_params["json"] = options
+            if body_json:
+                request_params["json"] = body_json
             if data:
                 request_params["data"] = data
             if files:

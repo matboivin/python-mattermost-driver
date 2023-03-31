@@ -1,4 +1,4 @@
-"""Class defining the /schemes API endpoint."""
+"""Endpoints for creating, getting and updating and deleting schemes."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -14,6 +14,8 @@ class Scheme(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -28,9 +30,9 @@ class Scheme(APIEndpoint):
         return self.client.get(self.endpoint, params=params)
 
     def create_scheme(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options=options)
+        return self.client.post(self.endpoint, body_json=body_json)
 
     def get_scheme(
         self, scheme_id: str
@@ -41,10 +43,10 @@ class Scheme(APIEndpoint):
         return self.client.delete(f"{self.endpoint}/{scheme_id}")
 
     def patch_scheme(
-        self, scheme_id: str, options: Dict[str, Any] | None = None
+        self, scheme_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/{scheme_id}/patch", options=options
+            f"{self.endpoint}/{scheme_id}/patch", body_json=body_json
         )
 
     def get_page_of_teams_using_scheme(

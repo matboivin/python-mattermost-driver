@@ -1,4 +1,4 @@
-"""Class defining the /emoji API endpoint."""
+"""Endpoints for creating, getting and interacting with emojis."""
 
 from dataclasses import dataclass
 from json import dumps
@@ -15,6 +15,8 @@ class Emoji(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -58,9 +60,9 @@ class Emoji(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{emoji_id}/image")
 
     def search_custom_emoji(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/search", options=options)
+        return self.client.post(f"{self.endpoint}/search", body_json=body_json)
 
     def autocomplete_custom_emoji(
         self, params: Dict[str, Any] | None = None

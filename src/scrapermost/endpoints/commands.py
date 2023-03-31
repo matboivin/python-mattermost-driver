@@ -1,4 +1,4 @@
-"""Class defining the /commands API endpoint."""
+"""Endpoints for creating, getting and updating slash commands."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -15,6 +15,8 @@ class Commands(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -24,9 +26,9 @@ class Commands(APIEndpoint):
     endpoint: str = "/commands"
 
     def create_command(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options=options)
+        return self.client.post(self.endpoint, body_json=body_json)
 
     def list_commands_for_team(
         self, params: Dict[str, Any] | None = None
@@ -41,9 +43,9 @@ class Commands(APIEndpoint):
         )
 
     def update_command(
-        self, command_id: str, options: Dict[str, Any] | None = None
+        self, command_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.put(self.endpoint + command_id, options=options)
+        return self.client.put(self.endpoint + command_id, body_json=body_json)
 
     def delete_command(self, command_id: str) -> Any | Awaitable[Any]:
         return self.client.delete(self.endpoint + command_id)
@@ -52,6 +54,8 @@ class Commands(APIEndpoint):
         return self.client.put(f"{self.endpoint}/{command_id}/regen_token")
 
     def execute_command(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/execute", options=options)
+        return self.client.post(
+            f"{self.endpoint}/execute", body_json=body_json
+        )

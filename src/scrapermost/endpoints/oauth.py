@@ -1,4 +1,4 @@
-"""Class defining the /oauth API endpoint."""
+"""Endpoints to configure and interact as an OAuth 2.0 service provider."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -15,6 +15,8 @@ class OAuth(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -24,9 +26,9 @@ class OAuth(APIEndpoint):
     endpoint: str = "/oauth"
 
     def register_oauth_app(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/apps", options=options)
+        return self.client.post(f"{self.endpoint}/apps", body_json=body_json)
 
     def get_oauth_apps(
         self, params: Dict[str, Any] | None = None

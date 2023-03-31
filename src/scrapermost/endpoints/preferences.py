@@ -1,4 +1,4 @@
-"""Class defining the user preferences API endpoint."""
+"""Endpoints for saving and modifying user preferences."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -17,6 +17,8 @@ class Preferences(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -31,18 +33,18 @@ class Preferences(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{user_id}/preferences")
 
     def save_user_preferences(
-        self, user_id: str, options: Dict[str, Any] | None = None
+        self, user_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/{user_id}/preferences", options=options
+            f"{self.endpoint}/{user_id}/preferences", body_json=body_json
         )
 
     def delete_user_preferences(
-        self, user_id: str, options: Dict[str, Any] | None = None
+        self, user_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
             f"{self.endpoint}/{user_id}/preferences/delete",
-            options=options,
+            body_json=body_json,
         )
 
     def list_user_preferences_by_category(

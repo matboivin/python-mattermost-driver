@@ -9,8 +9,11 @@ class EmbedMetadata:
     Attributes
     ----------
     type : str
+        The embed's type.
     url : str
+        The embed's URL.
     data : dict
+        TODO: Add description.
 
     """
 
@@ -61,7 +64,7 @@ class FileMetadata:
     mime_type : str
         The file MIME type.
     remote_id : str
-        No idea.
+        TODO: Add description.
     archived : bool
         Whether the file is archived.
     width : int, optional

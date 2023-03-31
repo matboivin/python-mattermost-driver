@@ -1,4 +1,4 @@
-"""Class defining the /bots API endpoint."""
+"""Endpoints for creating, getting and updating bot users."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -14,6 +14,8 @@ class Bots(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -23,9 +25,9 @@ class Bots(APIEndpoint):
     endpoint: str = "/bots"
 
     def create_bot(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options=options)
+        return self.client.post(self.endpoint, body_json=body_json)
 
     def get_bots(
         self, params: Dict[str, Any] | None = None
@@ -33,9 +35,11 @@ class Bots(APIEndpoint):
         return self.client.get(self.endpoint, params=params)
 
     def patch_bot(
-        self, bot_id: str, options: Dict[str, Any] | None
+        self, bot_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.put(f"{self.endpoint}/{bot_id}", options=options)
+        return self.client.put(
+            f"{self.endpoint}/{bot_id}", body_json=body_json
+        )
 
     def get_bot(
         self, bot_id: str, params: Dict[str, Any] | None = None

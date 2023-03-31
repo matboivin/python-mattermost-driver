@@ -1,4 +1,4 @@
-"""Class defining the /channels API endpoint."""
+"""Endpoints for creating, getting and interacting with channels."""
 
 from dataclasses import dataclass
 from logging import INFO, Logger, getLogger
@@ -20,6 +20,8 @@ class Channels(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -29,25 +31,25 @@ class Channels(APIEndpoint):
     endpoint: str = "/channels"
 
     def create_channel(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options=options)
+        return self.client.post(self.endpoint, body_json=body_json)
 
     def create_direct_message_channel(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/direct", options=options)
+        return self.client.post(f"{self.endpoint}/direct", body_json=body_json)
 
     def create_group_message_channel(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/group", options=options)
+        return self.client.post(f"{self.endpoint}/group", body_json=body_json)
 
     def get_list_of_channels_by_ids(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{Teams.endpoint}/{team_id}/channels/ids", options=options
+            f"{Teams.endpoint}/{team_id}/channels/ids", body_json=body_json
         )
 
     def get_channel(
@@ -56,20 +58,20 @@ class Channels(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{channel_id}")
 
     def update_channel(
-        self, channel_id: str, options: Dict[str, Any] | None
+        self, channel_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/{channel_id}", options=options
+            f"{self.endpoint}/{channel_id}", body_json=body_json
         )
 
     def delete_channel(self, channel_id: str) -> Any | Awaitable[Any]:
         return self.client.delete(f"{self.endpoint}/{channel_id}")
 
     def patch_channel(
-        self, channel_id: str, options: Dict[str, Any] | None
+        self, channel_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/{channel_id}/patch", options=options
+            f"{self.endpoint}/{channel_id}/patch", body_json=body_json
         )
 
     def restore_channel(self, channel_id: str) -> Any | Awaitable[Any]:
@@ -111,17 +113,17 @@ class Channels(APIEndpoint):
         )
 
     def add_user(
-        self, channel_id: str, options: Dict[str, Any] | None = None
+        self, channel_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{self.endpoint}/{channel_id}/members", options=options
+            f"{self.endpoint}/{channel_id}/members", body_json=body_json
         )
 
     def get_channel_members_by_ids(
-        self, channel_id: str, options: Dict[str, Any] | None = None
+        self, channel_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{self.endpoint}/{channel_id}/members/ids", options=options
+            f"{self.endpoint}/{channel_id}/members/ids", body_json=body_json
         )
 
     def get_channel_member(
@@ -139,29 +141,29 @@ class Channels(APIEndpoint):
         )
 
     def update_channel_roles(
-        self, channel_id: str, user_id: str, options: Dict[str, Any] | None
+        self, channel_id: str, user_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
             f"{self.endpoint}/{channel_id}/members/{user_id}/roles",
-            options=options,
+            body_json=body_json,
         )
 
     def update_channel_notifications(
         self,
         channel_id: str,
         user_id: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
     ) -> Any | Awaitable[Any]:
         return self.client.put(
             f"{self.endpoint}/{channel_id}/members/{user_id}/notify_props",
-            options=options,
+            body_json=body_json,
         )
 
     def view_channel(
-        self, user_id: str, options: Dict[str, Any] | None
+        self, user_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{self.endpoint}/members/{user_id}/view", options=options
+            f"{self.endpoint}/members/{user_id}/view", body_json=body_json
         )
 
     def get_channel_members_for_user(
@@ -210,10 +212,10 @@ class Channels(APIEndpoint):
         )
 
     def search_channels(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{Teams.endpoint}/{team_id}/channels/search", options=options
+            f"{Teams.endpoint}/{team_id}/channels/search", body_json=body_json
         )
 
     def autocomplete_channels(
@@ -227,11 +229,11 @@ class Channels(APIEndpoint):
         self,
         channel_id: str,
         user_id: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
     ) -> Any | Awaitable[Any]:
         return self.client.put(
             f"{self.endpoint}/{channel_id}/members/{user_id}/schemeRoles",
-            options=options,
+            body_json=body_json,
         )
 
     def set_channel_scheme(self, channel_id: str) -> Any | Awaitable[Any]:

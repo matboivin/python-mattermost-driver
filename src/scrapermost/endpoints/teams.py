@@ -1,4 +1,4 @@
-"""Class defining the /teams API endpoint."""
+"""Endpoints for creating, getting and interacting with teams."""
 
 import warnings
 from dataclasses import dataclass
@@ -16,6 +16,8 @@ class Teams(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -25,9 +27,9 @@ class Teams(APIEndpoint):
     endpoint: str = "/teams"
 
     def create_team(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options)
+        return self.client.post(self.endpoint, body_json)
 
     def get_teams(
         self, params: Dict[str, Any] | None = None
@@ -40,9 +42,9 @@ class Teams(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{team_id}")
 
     def update_team(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.put(f"{self.endpoint}/{team_id}", options)
+        return self.client.put(f"{self.endpoint}/{team_id}", body_json)
 
     def delete_team(
         self, team_id: str, params: Dict[str, Any] | None = None
@@ -50,17 +52,17 @@ class Teams(APIEndpoint):
         return self.client.delete(f"{self.endpoint}/{team_id}", params=params)
 
     def patch_team(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.put(f"{self.endpoint}/{team_id}/patch", options)
+        return self.client.put(f"{self.endpoint}/{team_id}/patch", body_json)
 
     def get_team_by_name(self, name: str) -> Any | Awaitable[Any]:
         return self.client.get(f"{self.endpoint}/name/{name}")
 
     def search_teams(
-        self, options: Dict[str, Any] | None = None
+        self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/search", options)
+        return self.client.post(f"{self.endpoint}/search", body_json)
 
     def check_team_exists(
         self, name: str
@@ -80,10 +82,10 @@ class Teams(APIEndpoint):
         )
 
     def add_user_to_team(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{self.endpoint}/{team_id}/members", options=options
+            f"{self.endpoint}/{team_id}/members", body_json=body_json
         )
 
     def add_user_to_team_from_invite(
@@ -94,10 +96,10 @@ class Teams(APIEndpoint):
         )
 
     def add_multiple_users_to_team(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{self.endpoint}/{team_id}/members/batch", options=options
+            f"{self.endpoint}/{team_id}/members/batch", body_json=body_json
         )
 
     def get_team_members_for_user(
@@ -118,10 +120,10 @@ class Teams(APIEndpoint):
         )
 
     def get_team_members_by_id(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{self.endpoint}/{team_id}/members/ids", options
+            f"{self.endpoint}/{team_id}/members/ids", body_json
         )
 
     def get_team_stats(
@@ -130,11 +132,14 @@ class Teams(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{team_id}/stats")
 
     def update_team_member_roles(
-        self, team_id: str, user_id: str, options: Dict[str, Any] | None = None
+        self,
+        team_id: str,
+        user_id: str,
+        body_json: Dict[str, Any] | None = None,
     ) -> Any | Awaitable[Any]:
         return self.client.put(
             f"{self.endpoint}/{team_id}/members/{user_id}/roles",
-            options,
+            body_json,
         )
 
     def get_team_unreads_for_user(
@@ -152,10 +157,10 @@ class Teams(APIEndpoint):
         )
 
     def invite_users_to_team_by_mail(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{self.endpoint}/{team_id}/invite/email", options
+            f"{self.endpoint}/{team_id}/invite/email", body_json
         )
 
     def import_team_from_other_app(
@@ -193,7 +198,7 @@ class Teams(APIEndpoint):
         )
 
     def search_channels(
-        self, team_id: str, options: Dict[str, Any] | None = None
+        self, team_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         warnings.warn(
             "Using deprecated endpoint Teams.search_channels(). "
@@ -201,7 +206,7 @@ class Teams(APIEndpoint):
             DeprecationWarning,
         )
         return self.client.post(
-            f"{self.endpoint}/{team_id}/channels/search", options=options
+            f"{self.endpoint}/{team_id}/channels/search", body_json=body_json
         )
 
     def get_team_icon(
@@ -215,11 +220,14 @@ class Teams(APIEndpoint):
         return self.client.post(f"{self.endpoint}/{team_id}/image", files=file)
 
     def update_scheme_derived_roles_of_team_member(
-        self, team_id: str, user_id: str, options: Dict[str, Any] | None = None
+        self,
+        team_id: str,
+        user_id: str,
+        body_json: Dict[str, Any] | None = None,
     ) -> Any | Awaitable[Any]:
         return self.client.put(
             f"{self.endpoint}/{team_id}/members/{user_id}/schemeRoles",
-            options=options,
+            body_json=body_json,
         )
 
     def delete_team_icon(self, team_id: str) -> None:

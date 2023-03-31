@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 
-from scrapermost.client import ClientType
+from scrapermost.driver import AsyncClient, Client
 
 
 @dataclass
@@ -11,9 +11,9 @@ class APIEndpoint:
 
     Attributes
     ----------
-    client : AsyncClient or Client
+    client : driver.async_client.AsyncClient or driver.client.Client
         The underlying client object.
 
     """
 
-    client: ClientType
+    client: AsyncClient | Client

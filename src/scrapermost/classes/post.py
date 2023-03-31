@@ -30,23 +30,23 @@ class Post:
         If the post is a reply, ID of the replied-to post.
         If the post is in a thread, ID of the thread's first message.
     original_id : str
-        No idea.
+        TODO: Add description.
     message : str
         The post's content.
     type : str
-        No idea.
+        TODO: Add description.
     props : dict
-        No idea.
+        TODO: Add description.
     hashtags : str
         Hashtags contained in message, separated by a space.
     pending_post_id : str
-        No idea.
+        TODO: Add description.
     reply_count : int
         Count of replies from the root post.
     last_reply_at : int
         Date and time of the last reply.
     participants : Any
-        No idea.
+        TODO: Add description.
     metadata : Metadata
         Embedded links, emojis, reactions, and files metadata.
 

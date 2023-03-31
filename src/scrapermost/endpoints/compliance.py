@@ -1,4 +1,4 @@
-"""Class defining the /compliance API endpoint."""
+"""Endpoints for creating, getting and downloading compliance reports."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -14,6 +14,8 @@ class Compliance(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------

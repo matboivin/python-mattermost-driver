@@ -133,8 +133,8 @@ class Driver(BaseDriver):
         Returns
         -------
         Any or requests.Response
-            The reponse in JSON format or the raw response if couldn't be
-            converted to JSON.
+            The json-encoded content of the response if any.
+            Otherwise, the raw response.
 
         """
         if self.options.token:
@@ -178,7 +178,7 @@ class Driver(BaseDriver):
         Returns
         -------
         Any
-            The reponse in JSON format.
+            The json-encoded content of the response.
 
         """
         result: Any = self.users.logout_user()

@@ -24,16 +24,16 @@ class Client(BaseClient):
     Methods
     -------
     make_request(
-        method, endpoint, options=None, params=None, data=None, files=None
+        method, endpoint, body_json=None, params=None, data=None, files=None
     )
         Make request to Mattermost API.
-    get(endpoint, options=None, params=None)
+    get(endpoint, body_json=None, params=None)
         Send a GET request.
-    post(endpoint, options=None, params=None, data=None, files=None)
+    post(endpoint, body_json=None, params=None, data=None, files=None)
         Send a POST request.
-    put(endpoint, options=None, params=None, data=None)
+    put(endpoint, body_json=None, params=None, data=None)
         Send a PUT request.
-    delete(endpoint, options=None, params=None, data=None)
+    delete(endpoint, body_json=None, params=None, data=None)
         Send a DELETE request.
 
     """
@@ -98,7 +98,7 @@ class Client(BaseClient):
         self,
         method: str,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
@@ -111,7 +111,7 @@ class Client(BaseClient):
             Either 'GET', 'POST', 'PUT' or 'DELETE'.
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -130,7 +130,7 @@ class Client(BaseClient):
             method, self.client
         )
         request_params: Dict[str, Any] = self._get_request_params(
-            method, options, params, data, files
+            method, body_json, params, data, files
         )
         request_params["headers"] = self.get_auth_header()
 
@@ -143,7 +143,7 @@ class Client(BaseClient):
     def get(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
     ) -> Any | Response:
         """Send a GET request.
@@ -152,7 +152,7 @@ class Client(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -161,12 +161,12 @@ class Client(BaseClient):
         Returns
         -------
         Any or requests.Response
-            The reponse in JSON format or the raw response if couldn't be
-            converted to JSON.
+            The json-encoded content of the response if any.
+            Otherwise, the raw response.
 
         """
         response: Response = self.make_request(
-            "get", endpoint, options=options, params=params
+            "get", endpoint, body_json=body_json, params=params
         )
 
         if response.headers.get("Content-Type") != "application/json":
@@ -187,7 +187,7 @@ class Client(BaseClient):
     def post(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
@@ -198,7 +198,7 @@ class Client(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -210,13 +210,13 @@ class Client(BaseClient):
         Returns
         -------
         Any
-            The reponse in JSON format.
+            The json-encoded content of the response.
 
         """
         return self.make_request(
             "post",
             endpoint,
-            options=options,
+            body_json=body_json,
             params=params,
             data=data,
             files=files,
@@ -225,7 +225,7 @@ class Client(BaseClient):
     def put(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
     ) -> Any:
@@ -235,7 +235,7 @@ class Client(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -245,17 +245,17 @@ class Client(BaseClient):
         Returns
         -------
         Any
-            The reponse in JSON format.
+            The json-encoded content of the response.
 
         """
         return self.make_request(
-            "put", endpoint, options=options, params=params, data=data
+            "put", endpoint, body_json=body_json, params=params, data=data
         ).json()
 
     def delete(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
     ) -> Any:
@@ -265,7 +265,7 @@ class Client(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -275,9 +275,9 @@ class Client(BaseClient):
         Returns
         -------
         Any
-            The reponse in JSON format.
+            The json-encoded content of the response.
 
         """
         return self.make_request(
-            "delete", endpoint, options=options, params=params, data=data
+            "delete", endpoint, body_json=body_json, params=params, data=data
         ).json()

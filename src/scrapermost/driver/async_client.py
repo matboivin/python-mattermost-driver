@@ -24,16 +24,16 @@ class AsyncClient(BaseClient):
     Methods
     -------
     make_request(
-        method, endpoint, options=None, params=None, data=None, files=None,
+        method, endpoint, body_json=None, params=None, data=None, files=None,
     )
         Make request to Mattermost API.
-    get(endpoint, options=None, params=None)
+    get(endpoint, body_json=None, params=None)
         Send an asynchronous GET request.
-    post(endpoint, options=None, params=None, data=None, files=None)
+    post(endpoint, body_json=None, params=None, data=None, files=None)
         Send an asynchronous POST request.
-    put(endpoint, options=None, params=None, data=None)
+    put(endpoint, body_json=None, params=None, data=None)
         Send an asynchronous PUT request.
-    delete(endpoint, options=None, params=None, data=None)
+    delete(endpoint, body_json=None, params=None, data=None)
         Send an asynchronous DELETE request.
 
     """
@@ -98,7 +98,7 @@ class AsyncClient(BaseClient):
         self,
         method: str,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
@@ -111,7 +111,7 @@ class AsyncClient(BaseClient):
             Either 'GET', 'POST', 'PUT' or 'DELETE'.
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -130,7 +130,7 @@ class AsyncClient(BaseClient):
             method, self.client
         )
         request_params: Dict[str, Any] = self._get_request_params(
-            method, options, params, data, files
+            method, body_json, params, data, files
         )
         request_params["headers"] = self.get_auth_header()
 
@@ -145,7 +145,7 @@ class AsyncClient(BaseClient):
     async def get(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
     ) -> Any | Response:
         """Send an asynchronous GET request.
@@ -154,7 +154,7 @@ class AsyncClient(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -163,12 +163,12 @@ class AsyncClient(BaseClient):
         Returns
         -------
         Any or requests.Response
-            The reponse in JSON format or the raw response if couldn't be
-            converted to JSON.
+            The json-encoded content of the response if any.
+            Otherwise, the raw response.
 
         """
         response: Response = await self.make_request(
-            "get", endpoint, options=options, params=params
+            "get", endpoint, body_json=body_json, params=params
         )
 
         if response.headers.get("Content-Type") != "application/json":
@@ -189,7 +189,7 @@ class AsyncClient(BaseClient):
     async def post(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
@@ -200,7 +200,7 @@ class AsyncClient(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -212,13 +212,13 @@ class AsyncClient(BaseClient):
         Returns
         -------
         Any
-            The reponse in JSON format.
+            The json-encoded content of the response.
 
         """
         response: Response = await self.make_request(
             "post",
             endpoint,
-            options=options,
+            body_json=body_json,
             params=params,
             data=data,
             files=files,
@@ -229,7 +229,7 @@ class AsyncClient(BaseClient):
     async def put(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
     ) -> Any:
@@ -239,7 +239,7 @@ class AsyncClient(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -249,11 +249,11 @@ class AsyncClient(BaseClient):
         Returns
         -------
         Any
-            The reponse in JSON format.
+            The json-encoded content of the response.
 
         """
         response: Response = await self.make_request(
-            "put", endpoint, options=options, params=params, data=data
+            "put", endpoint, body_json=body_json, params=params, data=data
         )
 
         return response.json()
@@ -261,7 +261,7 @@ class AsyncClient(BaseClient):
     async def delete(
         self,
         endpoint: str,
-        options: Dict[str, Any] | None = None,
+        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
     ) -> Any:
@@ -271,7 +271,7 @@ class AsyncClient(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        options : dict, default=None
+        body_json : dict, default=None
             A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
@@ -281,11 +281,11 @@ class AsyncClient(BaseClient):
         Returns
         -------
         Any
-            The reponse in JSON format.
+            The json-encoded content of the response.
 
         """
         response: Response = await self.make_request(
-            "delete", endpoint, options=options, params=params, data=data
+            "delete", endpoint, body_json=body_json, params=params, data=data
         )
 
         return response.json()

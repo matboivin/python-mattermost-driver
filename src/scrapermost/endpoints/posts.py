@@ -1,4 +1,4 @@
-"""Class defining the /posts API endpoint."""
+"""Endpoints for creating, getting and interacting with posts."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -17,6 +17,8 @@ class Posts(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -26,14 +28,16 @@ class Posts(APIEndpoint):
     endpoint: str = "/posts"
 
     def create_post(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options=options)
+        return self.client.post(self.endpoint, body_json=body_json)
 
     def create_ephemeral_post(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(f"{self.endpoint}/ephemeral", options=options)
+        return self.client.post(
+            f"{self.endpoint}/ephemeral", body_json=body_json
+        )
 
     def get_post(
         self, post_id: str
@@ -44,15 +48,17 @@ class Posts(APIEndpoint):
         return self.client.delete(f"{self.endpoint}/{post_id}")
 
     def update_post(
-        self, post_id: str, options: Dict[str, Any] | None = None
-    ) -> Any | Awaitable[Any]:
-        return self.client.put(f"{self.endpoint}/{post_id}", options=options)
-
-    def patch_post(
-        self, post_id: str, options: Dict[str, Any] | None = None
+        self, post_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/{post_id}/patch", options=options
+            f"{self.endpoint}/{post_id}", body_json=body_json
+        )
+
+    def patch_post(
+        self, post_id: str, body_json: Dict[str, Any] | None = None
+    ) -> Any | Awaitable[Any]:
+        return self.client.put(
+            f"{self.endpoint}/{post_id}/patch", body_json=body_json
         )
 
     def get_thread(
@@ -82,10 +88,10 @@ class Posts(APIEndpoint):
         )
 
     def search_for_team_posts(
-        self, team_id: str, options: Dict[str, Any] | None
+        self, team_id: str, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         return self.client.post(
-            f"{Teams.endpoint}/{team_id}/posts/search", options=options
+            f"{Teams.endpoint}/{team_id}/posts/search", body_json=body_json
         )
 
     def pin_post_to_channel(self, post_id: str) -> Any | Awaitable[Any]:

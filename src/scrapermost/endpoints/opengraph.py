@@ -1,4 +1,4 @@
-"""Class defining the /opengraph API endpoint."""
+"""Endpoint for getting Open Graph metadata."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -12,15 +12,31 @@ class Opengraph(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
+    get_opengraph_metadata_for_url(body_json)
+        Get Open Graph Metadata for a specif URL.
 
     """
 
     endpoint: str = "/opengraph"
 
     def get_opengraph_metadata_for_url(
-        self, options: Dict[str, Any] | None
+        self, body_json: Dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, options=options)
+        """Get Open Graph Metadata for a specif URL.
+
+        Parameters
+        ----------
+        body_json : dict, optional
+            A JSON serializable object to include in the body of the request.
+
+        Returns
+        -------
+        Any or Coroutine(...) -> Any
+
+        """
+        return self.client.post(self.endpoint, body_json=body_json)

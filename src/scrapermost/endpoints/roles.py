@@ -1,4 +1,4 @@
-"""Class defining the /roles API endpoint."""
+"""Endpoints for creating, getting and updating roles."""
 
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
@@ -14,6 +14,8 @@ class Roles(APIEndpoint):
 
     Attributes
     ----------
+    endpoint : str
+        The endpoint path.
 
     Methods
     -------
@@ -33,10 +35,10 @@ class Roles(APIEndpoint):
         return self.client.get(f"{self.endpoint}/name/{role_name}")
 
     def patch_role(
-        self, role_id: str, options: Dict[str, Any] | None = None
+        self, role_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         return self.client.put(
-            f"{self.endpoint}/{role_id}/patch", options=options
+            f"{self.endpoint}/{role_id}/patch", body_json=body_json
         )
 
     def get_list_of_roles_by_name(

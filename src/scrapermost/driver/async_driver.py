@@ -122,8 +122,8 @@ class AsyncDriver(BaseDriver):
         Returns
         -------
         Any or requests.Response
-            The reponse in JSON format or the raw response if couldn't be
-            converted to JSON.
+            The json-encoded content of the response if any.
+            Otherwise, the raw response.
 
         """
         if self.options.token:
@@ -167,9 +167,8 @@ class AsyncDriver(BaseDriver):
 
         Returns
         -------
-        Any or requests.Response
-            The reponse in JSON format or the raw response if couldn't be
-            converted to JSON.
+        Any
+            The json-encoded content of the response.
 
         """
         result: Any = await self.users.logout_user()
