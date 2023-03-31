@@ -1,4 +1,4 @@
-"""Websocket class to listen to Mattermost events."""
+"""Class to use Mattermost websocket API."""
 
 from asyncio import CancelledError, Task, create_task, sleep
 from logging import DEBUG, INFO, Logger, getLogger
@@ -15,7 +15,7 @@ logger.setLevel(INFO)
 
 
 class Websocket:
-    """Class defining a websocket to listen to Mattermost events.
+    """Class defining a websocket handle Mattermost events.
 
     Attributes
     ----------
@@ -52,6 +52,16 @@ class Websocket:
     """
 
     def __init__(self, options: DriverOptions, token: str) -> None:
+        """Initialize websocket.
+
+        Parameters
+        ----------
+        options : options.DriverOptions
+            The websocket options.
+        token : str
+            The user token.
+
+        """
         scheme: str = "wss" if options.scheme == "https" else "ws"
         self._url: str = (
             f"{scheme}://{options.hostname}:{options.port}{options.basepath}"
@@ -156,7 +166,7 @@ class Websocket:
         self,
         websocket: ClientWebSocketResponse,
         event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
-        data_format: Literal["text", "json"] = "json",
+        data_format: Literal["json", "text"] = "json",
     ) -> None:
         """Start main coroutine.
 
@@ -170,7 +180,7 @@ class Websocket:
             Client-side websocket.
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
-        data_format : 'text' or 'json', default='json'
+        data_format : 'json' or 'text', default='json'
             Whether to receive the websocket data as text or JSON.
 
         """
@@ -256,7 +266,7 @@ class Websocket:
     async def connect(
         self,
         event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
-        data_format: Literal["text", "json"] = "json",
+        data_format: Literal["json", "text"] = "json",
     ) -> None:
         """Connect to the websocket and authenticate it.
 
@@ -267,7 +277,7 @@ class Websocket:
         ----------
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
-        data_format : 'text' or 'json', default='json'
+        data_format : 'json' or 'text', default='json'
             Whether to receive the websocket data as text or JSON.
 
         """

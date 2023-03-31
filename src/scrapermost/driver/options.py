@@ -1,10 +1,12 @@
-"""Driver options class."""
+"""Mattermost API connection settings class."""
 
 from typing import Any, Dict
 
 
 class DriverOptions:
-    """Class to hold the driver options.
+    """Class to define and group the connection options.
+
+    Settings configure the driver, client and websocket connections to the API.
 
     Attributes
     ----------
@@ -62,12 +64,13 @@ class DriverOptions:
             If 'login_id' and 'password' or 'token' are missing.
 
         """
-        if not all([options.get("login_id"), options.get("password")]):
-            if not options.get("token"):
-                raise RuntimeError(
-                    "Required options are 'login_id' and 'password', "
-                    "or 'token.'"
-                )
+        if not all(
+            [options.get("login_id"), options.get("password")]
+        ) and not options.get("token"):
+            raise RuntimeError(
+                "Required options are 'login_id' and 'password', "
+                "or 'token.'"
+            )
 
         self.debug: bool = options.get("debug", False)
         self.scheme: str = options.get("scheme", "https")

@@ -1,7 +1,5 @@
-"""Clients and Drivers classes."""
+"""Mattermost driver classes."""
 
-from .client import AsyncClient, Client
-from .driver import AsyncDriver, Driver
-from .websocket import Websocket
+from .driver import AsyncClient, AsyncDriver, Client, Driver, Websocket
 
 __all__ = ["AsyncClient", "AsyncDriver", "Client", "Driver", "Websocket"]
