@@ -41,7 +41,7 @@ class OAuth(APIEndpoint):
         return self.client.get(f"{self.endpoint}/apps/{app_id}")
 
     def delete_oauth_app(self, app_id: str) -> Any | Awaitable[Any]:
-        return self.client.delete(f"{self.endpoint}/apps/" + app_id)
+        return self.client.delete(f"{self.endpoint}/apps/{app_id}")
 
     def regenerate_oauth_app_secret(self, app_id: str) -> Any | Awaitable[Any]:
         return self.client.post(f"{self.endpoint}/apps/{app_id}/regen_secret")

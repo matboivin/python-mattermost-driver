@@ -8,8 +8,6 @@ from abc import ABC, abstractmethod
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Dict
 
-from httpx import AsyncClient as HttpxAsyncClient
-from httpx import Client as HttpxClient
 from httpx import HTTPStatusError
 from requests import Response
 
@@ -51,12 +49,6 @@ class BaseClient(ABC):
 
     Static methods
     --------------
-    _get_request_params(
-        method, body_json=None, params=None, data=None, files=None
-    )
-        Get request parameters as a dict.
-    _get_request_method(method, client)
-        Get the client's method from request's name.
     _check_response(response)
         Raise custom exception from response status code.
     activate_verbose_logging()
@@ -221,71 +213,6 @@ class BaseClient(ABC):
     # ######################################################## Static methods #
 
     @staticmethod
-    def _get_request_params(
-        method: str,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
-        files: Dict[str, Any] | None = None,
-    ) -> Dict[str, Any]:
-        """Get request parameters as a dict.
-
-        Parameters
-        ----------
-        method : str
-            Either 'GET', 'POST', 'PUT' or 'DELETE'.
-        body_json : dict, default=None
-            A JSON serializable object to include in the body of the request.
-        params : dict, default=None
-            Query parameters to include in the URL.
-        data : dict, default=None
-            Form data to include in the body of the request.
-        files : dict, default=None
-            Upload files to include in the body of the request.
-
-        Returns
-        -------
-        dict
-            The request parameters.
-
-        """
-        request_params: Dict[str, Any] = {}
-
-        if method in ("post", "put"):
-            if body_json:
-                request_params["json"] = body_json
-            if data:
-                request_params["data"] = data
-            if files:
-                request_params["files"] = files
-
-        if params:
-            request_params["params"] = params
-
-        return request_params
-
-    @staticmethod
-    def _get_request_method(
-        method: str, client: HttpxAsyncClient | HttpxClient
-    ) -> Any:
-        """Get the client's method from request's name.
-
-        Parameters
-        ----------
-        method : str
-            Either 'GET', 'POST', 'PUT' or 'DELETE'.
-        client : httpx.AsyncClient or httpx.Client
-            The client instance.
-
-        Returns
-        -------
-        Any
-            Client's GET/POST/PUT/DELETE method.
-
-        """
-        return getattr(client, method.lower())
-
-    @staticmethod
     def _check_response(response: Response) -> None:
         """Raise custom exception from response status code.
 
@@ -293,6 +220,8 @@ class BaseClient(ABC):
         ----------
         response : requests.Response
             Response to the HTTP request.
+        json : bool
+            Whether to return the json-encoded content of the response.
 
         """
         try:

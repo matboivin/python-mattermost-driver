@@ -84,7 +84,7 @@ class Webhooks(APIEndpoint):
 
     def call_webhook(
         self, hook_id: str, body_json: Dict[str, Any] | None = None
-    ) -> Response | Awaitable[Response]:
-        return self.client.make_request(
-            "post", f"/{hook_id}", body_json=body_json
+    ) -> Any:
+        return self.client.post(
+            f"/{hook_id}", body_json=body_json, get_json=False
         )

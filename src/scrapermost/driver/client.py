@@ -4,7 +4,7 @@ This class holds information about the logged-in user and actually makes the
 requests to the Mattermost server.
 """
 
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Dict, Tuple
 
 from httpx import Client as HttpxClient
 from requests import Response
@@ -23,17 +23,16 @@ class Client(BaseClient):
 
     Methods
     -------
-    make_request(
-        method, endpoint, body_json=None, params=None, data=None, files=None
-    )
-        Make request to Mattermost API.
-    get(endpoint, body_json=None, params=None)
+    get(endpoint, params=None, get_json=True)
         Send a GET request.
-    post(endpoint, body_json=None, params=None, data=None, files=None)
+    post(
+        endpoint, body_json=None, params=None, data=None, files=None,
+        get_json=True
+    )
         Send a POST request.
-    put(endpoint, body_json=None, params=None, data=None)
+    put(endpoint, body_json=None, params=None, data=None, get_json=True)
         Send a PUT request.
-    delete(endpoint, body_json=None, params=None, data=None)
+    delete(endpoint, params=None, get_json=True)
         Send a DELETE request.
 
     """
@@ -49,7 +48,7 @@ class Client(BaseClient):
         """
         super().__init__(options)
 
-        self.client = HttpxClient(
+        self.httpx_client = HttpxClient(
             auth=options.auth,
             verify=options.verify,
             http2=options.http2,
@@ -58,14 +57,12 @@ class Client(BaseClient):
         )
 
     def __enter__(self) -> Any:
-        if self.client:
-            self.client.__enter__()
+        self.httpx_client.__enter__()
 
         return self
 
     def __exit__(self, *exc_info: Tuple[Any]) -> Any:
-        if self.client:
-            return self.client.__exit__(*exc_info)
+        return self.httpx_client.__exit__(*exc_info)
 
     # ############################################################ Properties #
 
@@ -94,57 +91,11 @@ class Client(BaseClient):
 
     # ############################################################### Methods #
 
-    def make_request(
-        self,
-        method: str,
-        endpoint: str,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
-        files: Dict[str, Any] | None = None,
-    ) -> Response:
-        """Make a request to Mattermost API.
-
-        Parameters
-        ----------
-        method : str
-            Either 'GET', 'POST', 'PUT' or 'DELETE'.
-        endpoint : str
-            The API endpoint to make the request to.
-        body_json : dict, default=None
-            A JSON serializable object to include in the body of the request.
-        params : dict, default=None
-            Query parameters to include in the URL.
-        data : dict, default=None
-            Form data to include in the body of the request.
-        files : dict, default=None
-            Upload files to include in the body of the request.
-
-        Returns
-        -------
-        requests.Response
-            Response to the HTTP request.
-
-        """
-        request: Callable[..., Response] = self._get_request_method(
-            method, self.client
-        )
-        request_params: Dict[str, Any] = self._get_request_params(
-            method, body_json, params, data, files
-        )
-        request_params["headers"] = self.get_auth_header()
-
-        response: Response = request(f"{self.url}{endpoint}", **request_params)
-
-        self._check_response(response)
-
-        return response
-
     def get(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
+        get_json: bool = True,
     ) -> Any | Response:
         """Send a GET request.
 
@@ -152,37 +103,39 @@ class Client(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        body_json : dict, default=None
-            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
-        data : dict, default=None
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
         Any or requests.Response
-            The json-encoded content of the response if any.
-            Otherwise, the raw response.
+            The json-encoded content of the response or the raw response.
 
         """
-        response: Response = self.make_request(
-            "get", endpoint, body_json=body_json, params=params
+        response: Response = self.httpx_client.get(
+            url=endpoint, params=params, headers=self.get_auth_header()
         )
+        self._check_response(response)
 
         if response.headers.get("Content-Type") != "application/json":
             logger.debug(
-                "Response is not application/json, returning raw response"
+                "Could not convert response to JSON," "returning raw response."
             )
             return response
 
-        try:
-            return response.json()
+        if get_json:
+            try:
+                return response.json()
 
-        except ValueError:
-            logger.debug(
-                "Could not convert response to json, returning raw response"
-            )
-            return response
+            except ValueError:
+                logger.debug(
+                    "Could not convert response to JSON,"
+                    "returning raw response."
+                )
+
+        return response
 
     def post(
         self,
@@ -191,7 +144,8 @@ class Client(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-    ) -> Any:
+        get_json: bool = True,
+    ) -> Any | Response:
         """Send a POST request.
 
         Parameters
@@ -206,21 +160,26 @@ class Client(BaseClient):
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any
-            The json-encoded content of the response.
+        Any or requests.Response
+            The json-encoded content of the response or the raw response.
 
         """
-        return self.make_request(
-            "post",
-            endpoint,
+        response: Response = self.httpx_client.post(
+            url=endpoint,
             body_json=body_json,
             params=params,
             data=data,
             files=files,
-        ).json()
+            headers=self.get_auth_header(),
+        )
+        self._check_response(response)
+
+        return response.json() if get_json else response
 
     def put(
         self,
@@ -228,7 +187,8 @@ class Client(BaseClient):
         body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
-    ) -> Any:
+        get_json: bool = True,
+    ) -> Any | Response:
         """Send a PUT request.
 
         Parameters
@@ -241,43 +201,52 @@ class Client(BaseClient):
             Query parameters to include in the URL.
         data : dict, default=None
             Form data to include in the body of the request.
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any
-            The json-encoded content of the response.
+        Any or requests.Response
+            The json-encoded content of the response or the raw response.
 
         """
-        return self.make_request(
-            "put", endpoint, body_json=body_json, params=params, data=data
-        ).json()
+        response: Response = self.httpx_client.put(
+            url=endpoint,
+            body_json=body_json,
+            params=params,
+            data=data,
+            headers=self.get_auth_header(),
+        )
+        self._check_response(response)
+
+        return response.json() if get_json else response
 
     def delete(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
-    ) -> Any:
+        get_json: bool = True,
+    ) -> Any | Response:
         """Send a DELETE request.
 
         Parameters
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        body_json : dict, default=None
-            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
-        data : dict, default=None
-            Form data to include in the body of the request.
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any
-            The json-encoded content of the response.
+        Any or requests.Response
+            The json-encoded content of the response or the raw response.
 
         """
-        return self.make_request(
-            "delete", endpoint, body_json=body_json, params=params, data=data
-        ).json()
+        response: Response = self.httpx_client.delete(
+            url=endpoint, params=params, headers=self.get_auth_header()
+        )
+        self._check_response(response)
+
+        return response.json() if get_json else response

@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and interacting with users."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Coroutine, Dict
+from typing import Any, Awaitable, Dict
 
 from requests import Response
 
@@ -100,9 +100,7 @@ class Users(APIEndpoint):
 
     endpoint: str = "/users"
 
-    def login_user(
-        self, body_json: Dict[str, Any] | None
-    ) -> Response | Coroutine[Any, Any, Response]:
+    def login_user(self, body_json: Dict[str, Any] | None) -> Any:
         """Login to Mattermost server.
 
         Parameters
@@ -115,10 +113,8 @@ class Users(APIEndpoint):
         requests.Response or Coroutine(...) -> requests.Response
 
         """
-        # Use client.make_request() instead of post to get the HTTP Response
-        # instead of JSON
-        return self.client.make_request(
-            "post", f"{self.endpoint}/login", body_json=body_json
+        return self.client.post(
+            f"{self.endpoint}/login", body_json=body_json, get_json=False
         )
 
     def logout_user(self) -> Any | Awaitable[Any]:

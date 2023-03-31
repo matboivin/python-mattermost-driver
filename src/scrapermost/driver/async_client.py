@@ -4,7 +4,7 @@ This class holds information about the logged-in user and actually makes the
 requests to the Mattermost server.
 """
 
-from typing import Any, Awaitable, Callable, Dict, Tuple
+from typing import Any, Dict, Tuple
 
 from httpx import AsyncClient as HttpxAsyncClient
 from requests import Response
@@ -23,17 +23,16 @@ class AsyncClient(BaseClient):
 
     Methods
     -------
-    make_request(
-        method, endpoint, body_json=None, params=None, data=None, files=None,
-    )
-        Make request to Mattermost API.
-    get(endpoint, body_json=None, params=None)
+    get(endpoint, params=None, get_json=True)
         Send an asynchronous GET request.
-    post(endpoint, body_json=None, params=None, data=None, files=None)
+    post(
+        endpoint, body_json=None, params=None, data=None, files=None,
+        get_json=True
+    )
         Send an asynchronous POST request.
-    put(endpoint, body_json=None, params=None, data=None)
+    put(endpoint, body_json=None, params=None, data=None, get_json=True)
         Send an asynchronous PUT request.
-    delete(endpoint, body_json=None, params=None, data=None)
+    delete(endpoint, params=None, get_json=True)
         Send an asynchronous DELETE request.
 
     """
@@ -49,7 +48,7 @@ class AsyncClient(BaseClient):
         """
         super().__init__(options)
 
-        self.client = HttpxAsyncClient(
+        self.httpx_client = HttpxAsyncClient(
             auth=options.auth,
             verify=options.verify,
             http2=options.http2,
@@ -58,14 +57,12 @@ class AsyncClient(BaseClient):
         )
 
     async def __aenter__(self) -> Any:
-        if self.client:
-            await self.client.__aenter__()
+        await self.httpx_client.__aenter__()
 
         return self
 
     async def __aexit__(self, *exc_info: Tuple[Any]) -> Any:
-        if self.client:
-            return await self.client.__aexit__(*exc_info)
+        return await self.httpx_client.__aexit__(*exc_info)
 
     # ############################################################ Properties #
 
@@ -94,59 +91,11 @@ class AsyncClient(BaseClient):
 
     # ############################################################### Methods #
 
-    async def make_request(
-        self,
-        method: str,
-        endpoint: str,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
-        files: Dict[str, Any] | None = None,
-    ) -> Response:
-        """Make request to Mattermost API.
-
-        Parameters
-        ----------
-        method : str
-            Either 'GET', 'POST', 'PUT' or 'DELETE'.
-        endpoint : str
-            The API endpoint to make the request to.
-        body_json : dict, default=None
-            A JSON serializable object to include in the body of the request.
-        params : dict, default=None
-            Query parameters to include in the URL.
-        data : dict, default=None
-            Form data to include in the body of the request.
-        files : dict, default=None
-            Upload files to include in the body of the request.
-
-        Returns
-        -------
-        requests.Response
-            Response to the HTTP request.
-
-        """
-        request: Callable[..., Awaitable[Response]] = self._get_request_method(
-            method, self.client
-        )
-        request_params: Dict[str, Any] = self._get_request_params(
-            method, body_json, params, data, files
-        )
-        request_params["headers"] = self.get_auth_header()
-
-        response: Response = await request(
-            f"{self._url}{endpoint}", **request_params
-        )
-
-        self._check_response(response)
-
-        return response
-
     async def get(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
+        get_json: bool = True,
     ) -> Any | Response:
         """Send an asynchronous GET request.
 
@@ -154,37 +103,39 @@ class AsyncClient(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        body_json : dict, default=None
-            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
-        data : dict, default=None
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
         Any or requests.Response
-            The json-encoded content of the response if any.
-            Otherwise, the raw response.
+            The json-encoded content of the response or the raw response.
 
         """
-        response: Response = await self.make_request(
-            "get", endpoint, body_json=body_json, params=params
+        response: Response = await self.httpx_client.get(
+            url=endpoint, params=params, headers=self.get_auth_header()
         )
+        self._check_response(response)
 
         if response.headers.get("Content-Type") != "application/json":
             logger.debug(
-                "Response is not application/json, returning raw response."
+                "Could not convert response to JSON," "returning raw response."
             )
             return response
 
-        try:
-            return response.json()
+        if get_json:
+            try:
+                return response.json()
 
-        except ValueError:
-            logger.debug(
-                "Could not convert response to JSON, returning raw response."
-            )
-            return response
+            except ValueError:
+                logger.debug(
+                    "Could not convert response to JSON,"
+                    "returning raw response."
+                )
+
+        return response
 
     async def post(
         self,
@@ -193,6 +144,7 @@ class AsyncClient(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
+        get_json: bool = True,
     ) -> Any:
         """Send an asynchronous POST request.
 
@@ -208,23 +160,26 @@ class AsyncClient(BaseClient):
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any
-            The json-encoded content of the response.
+        Any or requests.Response
+            The json-encoded content of the response or the raw response.
 
         """
-        response: Response = await self.make_request(
-            "post",
-            endpoint,
+        response: Response = await self.httpx_client.post(
+            url=endpoint,
             body_json=body_json,
             params=params,
             data=data,
             files=files,
+            headers=self.get_auth_header(),
         )
+        self._check_response(response)
 
-        return response.json()
+        return response.json() if get_json else response
 
     async def put(
         self,
@@ -232,6 +187,7 @@ class AsyncClient(BaseClient):
         body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
+        get_json: bool = True,
     ) -> Any:
         """Send an asynchronous PUT request.
 
@@ -245,25 +201,31 @@ class AsyncClient(BaseClient):
             Query parameters to include in the URL.
         data : dict, default=None
             Form data to include in the body of the request.
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any
-            The json-encoded content of the response.
+        Any or requests.Response
+            The json-encoded content of the response or the raw response.
 
         """
-        response: Response = await self.make_request(
-            "put", endpoint, body_json=body_json, params=params, data=data
+        response: Response = await self.httpx_client.put(
+            url=endpoint,
+            body_json=body_json,
+            params=params,
+            data=data,
+            headers=self.get_auth_header(),
         )
+        self._check_response(response)
 
-        return response.json()
+        return response.json() if get_json else response
 
     async def delete(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
+        get_json: bool = True,
     ) -> Any:
         """Send an asynchronous DELETE request.
 
@@ -271,21 +233,20 @@ class AsyncClient(BaseClient):
         ----------
         endpoint : str
             The API endpoint to make the request to.
-        body_json : dict, default=None
-            A JSON serializable object to include in the body of the request.
         params : dict, default=None
             Query parameters to include in the URL.
-        data : dict, default=None
-            Form data to include in the body of the request.
+        get_json : bool, default=True
+            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any
-            The json-encoded content of the response.
+        Any or requests.Response
+            The json-encoded content of the response or the raw response.
 
         """
-        response: Response = await self.make_request(
-            "delete", endpoint, body_json=body_json, params=params, data=data
+        response: Response = await self.httpx_client.delete(
+            url=endpoint, params=params, headers=self.get_auth_header()
         )
+        self._check_response(response)
 
-        return response.json()
+        return response.json() if get_json else response

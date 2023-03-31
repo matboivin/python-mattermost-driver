@@ -110,13 +110,13 @@ class Teams(APIEndpoint):
     def get_team_member(
         self, team_id: str, user_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
-        return self.client.get(f"{self.endpoint}/{team_id}/members/" + user_id)
+        return self.client.get(f"{self.endpoint}/{team_id}/members/{user_id}")
 
     def remove_user_from_team(
         self, team_id: str, user_id: str
     ) -> Any | Awaitable[Any]:
         return self.client.delete(
-            f"{self.endpoint}/{team_id}/members/" + user_id
+            f"{self.endpoint}/{team_id}/members/{user_id}"
         )
 
     def get_team_members_by_id(

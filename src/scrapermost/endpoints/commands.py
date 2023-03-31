@@ -45,10 +45,12 @@ class Commands(APIEndpoint):
     def update_command(
         self, command_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        return self.client.put(self.endpoint + command_id, body_json=body_json)
+        return self.client.put(
+            f"{self.endpoint}/{command_id}", body_json=body_json
+        )
 
     def delete_command(self, command_id: str) -> Any | Awaitable[Any]:
-        return self.client.delete(self.endpoint + command_id)
+        return self.client.delete(f"{self.endpoint}/{command_id}")
 
     def generate_new_token(self, command_id: str) -> Any | Awaitable[Any]:
         return self.client.put(f"{self.endpoint}/{command_id}/regen_token")
