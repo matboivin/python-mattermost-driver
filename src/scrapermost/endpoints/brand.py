@@ -22,7 +22,7 @@ class Brand(APIEndpoint):
     get_brand_image()
         Get the previously uploaded brand image.
     upload_brand_image(image)
-        Uploads a brand image.
+        Upload a brand image.
 
     """
 
@@ -40,7 +40,7 @@ class Brand(APIEndpoint):
         return self.client.get(f"{self.endpoint}/image")
 
     def upload_brand_image(self, image: str) -> Any | Awaitable[Any]:
-        """Uploads a brand image.
+        """Upload a brand image.
 
         Parameters
         ----------

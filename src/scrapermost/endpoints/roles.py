@@ -24,7 +24,7 @@ class Roles(APIEndpoint):
     get_role_by_name(role_name)
         Get a role from the provided role name.
     patch_role(role_id, body_json)
-        Partially update a role by providing only the fields to update.
+        Update a role partially by providing only the fields to update.
     get_list_of_roles_by_name()
         Get a list of roles from their names.
 
@@ -57,8 +57,8 @@ class Roles(APIEndpoint):
 
         Parameters
         ----------
-        role_id : str
-            Role GUID.
+        role_name : str
+            Role name.
 
         Returns
         -------
@@ -71,7 +71,7 @@ class Roles(APIEndpoint):
     def patch_role(
         self, role_id: str, body_json: Dict[str, Any]
     ) -> Any | Awaitable[Any]:
-        """Partially update a role by providing only the fields to update.
+        """Update a role partially by providing only the fields to update.
 
         Parameters
         ----------

@@ -40,7 +40,7 @@ class MethodNotAllowed(HTTPError):
 
 
 class ContentTooLarge(HTTPError):
-    """Content Too Large
+    """Content Too Large.
 
     Raised when mattermost returns a 413 Content too large.
     """

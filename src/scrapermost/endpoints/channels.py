@@ -40,7 +40,7 @@ class Channels(APIEndpoint):
     delete_channel(channel_id)
         Archive a channel.
     patch_channel(channel_id, body_json)
-        Partially update a channel by providing only the fields to update.
+        Update a channel partially by providing only the fields to update.
     restore_channel(channel_id)
         Restore channel from the provided channel ID string.
     get_channel_statistics(channel_id)
@@ -244,7 +244,7 @@ class Channels(APIEndpoint):
     def patch_channel(
         self, channel_id: str, body_json: Dict[str, Any]
     ) -> Any | Awaitable[Any]:
-        """Partially update a channel by providing only the fields to update.
+        """Update a channel partially by providing only the fields to update.
 
         Parameters
         ----------
@@ -331,6 +331,8 @@ class Channels(APIEndpoint):
 
         Parameters
         ----------
+        team_id : str
+            Team GUID.
         page : int, default=0
             The page to select.
         per_page : int, default=60
@@ -354,6 +356,8 @@ class Channels(APIEndpoint):
 
         Parameters
         ----------
+        team_id : str
+            Team GUID.
         page : int, default=0
             The page to select.
         per_page : int, default=60

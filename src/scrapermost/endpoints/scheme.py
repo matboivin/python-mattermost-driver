@@ -28,7 +28,7 @@ class Scheme(APIEndpoint):
     delete_scheme(scheme_id)
         Mark the scheme as deleted in the database.
     patch_scheme(scheme_id, body_json)
-        Partially update a scheme by providing only the fields to update.
+        Update a scheme partially by providing only the fields to update.
     get_page_of_teams_using_scheme(scheme_id, page=0, per_page=60)
         Get a page of teams which use this scheme.
     get_page_of_channels_using_scheme(scheme_id, page=0, per_page=60)
@@ -123,7 +123,7 @@ class Scheme(APIEndpoint):
     def patch_scheme(
         self, scheme_id: str, body_json: Dict[str, Any]
     ) -> Any | Awaitable[Any]:
-        """Partially update a scheme by providing only the fields to update.
+        """Update a scheme partially by providing only the fields to update.
 
         Parameters
         ----------
@@ -155,10 +155,10 @@ class Scheme(APIEndpoint):
         ----------
         scheme_id : str
             Scheme GUID.
+        page : int, default=0
+            The page to select.
         per_page : int, default=60
             The number of members per page (max: 200).
-        scope : '' or 'team' or 'channel', default=''
-            Limit the results returned to the provided scope.
 
         Returns
         -------
@@ -180,10 +180,10 @@ class Scheme(APIEndpoint):
         ----------
         scheme_id : str
             Scheme GUID.
+        page : int, default=0
+            The page to select.
         per_page : int, default=60
             The number of members per page (max: 200).
-        scope : '' or 'team' or 'channel', default=''
-            Limit the results returned to the provided scope.
 
         Returns
         -------

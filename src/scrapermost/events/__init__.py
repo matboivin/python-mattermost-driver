@@ -1,4 +1,4 @@
-""""Classes defining websocket events."""
+"""Classes defining websocket events."""
 
 from .hello import Hello
 from .post_edited import PostEdited

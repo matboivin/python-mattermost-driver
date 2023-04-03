@@ -24,7 +24,7 @@ class Bots(APIEndpoint):
     get_bots(params)
         Get a page of a list of bots.
     patch_bot(bot_id, body_json)
-        Partially update a bot by providing only the fields to update.
+        Update a bot partially by providing only the fields to update.
     get_bot(bot_id, include_deleted)
         Get a bot specified by its bot ID.
     disable_bot(bot_id)
@@ -93,7 +93,7 @@ class Bots(APIEndpoint):
     def patch_bot(
         self, bot_id: str, body_json: Dict[str, Any]
     ) -> Any | Awaitable[Any]:
-        """Partially update a bot by providing only the fields to update.
+        """Update a bot partially by providing only the fields to update.
 
         Parameters
         ----------

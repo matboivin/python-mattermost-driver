@@ -20,17 +20,17 @@ class Files(APIEndpoint):
     Methods
     -------
     upload_file(channel_id, files)
-        Uploads a file that can later be attached to a post.
+        Upload a file that can later be attached to a post.
     get_file(file_id)
-        Gets a file that has been uploaded previously.
+        Get a file that has been uploaded previously.
     get_file_thumbnail(file_id)
-        Gets a file's thumbnail.
+        Get a file's thumbnail.
     get_file_preview(file_id)
-        Gets a file's preview.
+        Get a file's preview.
     get_public_file_link(file_id)
         Get a public file link.
     get_file_metadata(file_id)
-        Gets a file's info.
+        Get a file's info.
 
     """
 
@@ -39,7 +39,7 @@ class Files(APIEndpoint):
     def upload_file(
         self, channel_id: str, files: Dict[str, Any]
     ) -> Any | Awaitable[Any]:
-        """Uploads a file that can later be attached to a post.
+        """Upload a file that can later be attached to a post.
 
         Parameters
         ----------
@@ -60,7 +60,7 @@ class Files(APIEndpoint):
     def get_file(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
-        """Gets a file that has been uploaded previously.
+        """Get a file that has been uploaded previously.
 
         Parameters
         ----------
@@ -78,7 +78,7 @@ class Files(APIEndpoint):
     def get_file_thumbnail(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
-        """Gets a file's thumbnail.
+        """Get a file's thumbnail.
 
         Parameters
         ----------
@@ -96,7 +96,7 @@ class Files(APIEndpoint):
     def get_file_preview(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
-        """Gets a file's preview.
+        """Get a file's preview.
 
         Parameters
         ----------
@@ -116,7 +116,7 @@ class Files(APIEndpoint):
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a public file link.
 
-        Gets a public link for a file that can be accessed without logging
+        Get a public link for a file that can be accessed without logging
         into Mattermost.
 
         Parameters
@@ -135,7 +135,7 @@ class Files(APIEndpoint):
     def get_file_metadata(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
-        """Gets a file's info.
+        """Get a file's info.
 
         Parameters
         ----------

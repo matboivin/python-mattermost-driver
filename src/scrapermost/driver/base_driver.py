@@ -55,6 +55,7 @@ class BaseDriver(ABC):
 
     @property
     def client(self):  # type: ignore
+        """Get the underlying Mattermost client."""
         ...
 
     @property

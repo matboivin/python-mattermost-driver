@@ -1,4 +1,4 @@
-""""Classes defining API endpoints."""
+"""Classes defining API endpoints."""
 
 from .bots import Bots
 from .brand import Brand

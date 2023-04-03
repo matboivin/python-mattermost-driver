@@ -33,7 +33,7 @@ class Posts(APIEndpoint):
     update_post(post_id, body_json)
         Update a post.
     patch_post(post_id, body_json)
-        Partially update a post by providing only the fields to update.
+        Update a post partially by providing only the fields to update.
     get_thread(post_id)
         Get a post and the rest of the posts in the same thread.
     get_list_of_flagged_posts(user_id)
@@ -176,7 +176,7 @@ class Posts(APIEndpoint):
     def patch_post(
         self, post_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        """Partially update a post by providing only the fields to update.
+        """Update a post partially by providing only the fields to update.
 
         Parameters
         ----------

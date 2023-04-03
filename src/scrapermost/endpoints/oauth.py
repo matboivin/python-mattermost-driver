@@ -163,7 +163,7 @@ class OAuth(APIEndpoint):
 
         Parameters
         ----------
-        user : str
+        user_id : str
             User GUID.
         page : int, default=0
             The page to select.

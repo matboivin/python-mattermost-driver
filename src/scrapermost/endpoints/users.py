@@ -42,9 +42,9 @@ class Users(APIEndpoint):
     update_user(user_id, body_json=None)
         Update a user by providing the user object.
     deactivate_user(user_id)
-        Deactivates the user.
+        Deactivate the user.
     patch_user(user_id, body_json=None)
-        Partially update a user.
+        Update a user partially.
     update_user_role(user_id, body_json=None)
         Update a user's system-level roles.
     update_user_active_status(user_id, body_json=None)
@@ -58,9 +58,9 @@ class Users(APIEndpoint):
     reset_password(body_json=None)
         Reset password.
     update_user_mfa(user_id, body_json=None)
-        Activates multi-factor authentication for the user.
+        Activate multi-factor authentication for the user.
     generate_mfa(user_id)
-        Generates an multi-factor authentication secret for a user.
+        Generate an multi-factor authentication secret for a user.
     check_mfa(body_json=None)
         Check if a user has multi-factor authentication active.
     update_user_password(user_id, body_json=None)
@@ -72,9 +72,9 @@ class Users(APIEndpoint):
     get_user_sessions(user_id)
         Get a list of sessions by providing the user GUID.
     revoke_user_session(user_id, body_json=None)
-        Revokes a user session from the provided user ID and session ID.
+        Revoke a user session from the provided user ID and session ID.
     revoke_all_user_sessions(user_id)
-        Revokes all user sessions from the provided user ID and session ID.
+        Revoke all user sessions from the provided user ID and session ID.
     attach_mobile_device(body_json=None)
         Attach a mobile device ID to the currently logged in session.
     get_user_audits(user_id)
@@ -94,7 +94,7 @@ class Users(APIEndpoint):
     search_tokens(body_json=None)
         Get a list of tokens based on search criteria in the request body.
     update_user_authentication_method(user_id, body_json=None)
-        Updates a user's authentication method.
+        Update a user's authentication method.
 
     """
 
@@ -299,9 +299,9 @@ class Users(APIEndpoint):
         )
 
     def deactivate_user(self, user_id: str) -> Any | Awaitable[Any]:
-        """Deactivates the user.
+        """Deactivate the user.
 
-        Revokes all its sessions by archiving its user object.
+        Revoke all its sessions by archiving its user object.
 
         Parameters
         ----------
@@ -318,7 +318,7 @@ class Users(APIEndpoint):
     def patch_user(
         self, user_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        """Partially update a user.
+        """Update a user partially.
 
         Provide only the fields you want to update.
 
@@ -466,7 +466,7 @@ class Users(APIEndpoint):
     def update_user_mfa(
         self, user_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        """Activates multi-factor authentication for the user.
+        """Activate multi-factor authentication for the user.
 
         Parameters
         ----------
@@ -485,7 +485,7 @@ class Users(APIEndpoint):
         )
 
     def generate_mfa(self, user_id: str) -> Any | Awaitable[Any]:
-        """Generates an multi-factor authentication secret for a user.
+        """Generate an multi-factor authentication secret for a user.
 
         Parameters
         ----------
@@ -599,7 +599,7 @@ class Users(APIEndpoint):
     def revoke_user_session(
         self, user_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        """Revokes a user session from the provided user ID and session ID.
+        """Revoke a user session from the provided user ID and session ID.
 
         Parameters
         ----------
@@ -618,7 +618,7 @@ class Users(APIEndpoint):
         )
 
     def revoke_all_user_sessions(self, user_id: str) -> Any | Awaitable[Any]:
-        """Revokes all user sessions from the provided user ID and session ID.
+        """Revoke all user sessions from the provided user ID and session ID.
 
         Parameters
         ----------
@@ -693,7 +693,7 @@ class Users(APIEndpoint):
     def send_verification_mail(
         self, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        """
+        """Send verification email.
 
         Parameters
         ----------
@@ -831,7 +831,7 @@ class Users(APIEndpoint):
     def update_user_authentication_method(
         self, user_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
-        """Updates a user's authentication method.
+        """Update a user's authentication method.
 
         Parameters
         ----------

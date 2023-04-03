@@ -37,12 +37,12 @@ repos:
   #     ]
   #     args: [--config-file=./pyproject.toml]
 
-  # - repo: https://github.com/pycqa/pydocstyle
-  #   rev: 6.3.0
-  #   hooks:
-  #   - id: pydocstyle
-  #     additional_dependencies: [ 'tomli']
-  #     args: ['--ignore=D105,D107,D213,D203,D204,D416']
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 6.3.0
+    hooks:
+    - id: pydocstyle
+      additional_dependencies: [ 'tomli']
+      args: ['--ignore=D105,D107,D213,D203,D204,D416']
 
   - repo: local
     hooks:

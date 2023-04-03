@@ -88,6 +88,7 @@ class BaseClient(ABC):
 
     @property
     def httpx_client(self):  # type: ignore
+        """Get the underlying httpx client object."""
         ...
 
     @property
