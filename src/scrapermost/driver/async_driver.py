@@ -39,7 +39,7 @@ class AsyncDriver(BaseDriver):
         """
         super().__init__(options)
 
-        self.client = AsyncClient(self.options)
+        self._client = AsyncClient(self.options)
 
     async def __aenter__(self) -> Any:
         await self.client.__aenter__()
@@ -60,19 +60,7 @@ class AsyncDriver(BaseDriver):
         async_client.AsyncClient
 
         """
-        return self.client
-
-    @BaseDriver.client.setter
-    def client(self, client: AsyncClient) -> None:
-        """Set the underlying Mattermost client.
-
-        Parameters
-        ----------
-        client : async_client.AsyncClient
-            The new asynchronous client.
-
-        """
-        self.client = client
+        return self._client
 
     # ############################################################### Methods #
 

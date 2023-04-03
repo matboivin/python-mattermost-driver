@@ -17,7 +17,7 @@ class Status(APIEndpoint):
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='user'
         The endpoint path.
 
     Methods

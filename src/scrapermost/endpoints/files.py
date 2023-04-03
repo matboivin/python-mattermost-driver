@@ -10,11 +10,11 @@ from .base import APIEndpoint
 
 @dataclass
 class Files(APIEndpoint):
-    """Class defining the /files API endpoint.
+    """Class defining the Files API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='files'
         The endpoint path.
 
     Methods
@@ -34,7 +34,7 @@ class Files(APIEndpoint):
 
     """
 
-    endpoint: str = "/files"
+    endpoint: str = "files"
 
     def upload_file(
         self, channel_id: str, files: Dict[str, Any]

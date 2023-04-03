@@ -10,11 +10,11 @@ from .base import APIEndpoint
 
 @dataclass
 class Cluster(APIEndpoint):
-    """Class defining the /cluster API endpoint.
+    """Class defining the Cluster API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='cluster'
         The endpoint path.
 
     Methods
@@ -24,7 +24,7 @@ class Cluster(APIEndpoint):
 
     """
 
-    endpoint: str = "/cluster"
+    endpoint: str = "cluster"
 
     def get_cluster_status(self) -> Any | Response | Awaitable[Any | Response]:
         """Get cluster status.

@@ -1,7 +1,7 @@
 """Endpoints related to custom branding and white-labeling."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -10,23 +10,23 @@ from .base import APIEndpoint
 
 @dataclass
 class Brand(APIEndpoint):
-    """Class defining the /brand API endpoint.
+    """Class defining the Brand API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='brand'
         The endpoint path.
 
     Methods
     -------
     get_brand_image()
         Get the previously uploaded brand image.
-    upload_brand_image(files)
+    upload_brand_image(image)
         Uploads a brand image.
 
     """
 
-    endpoint: str = "/brand"
+    endpoint: str = "brand"
 
     def get_brand_image(self) -> Any | Response | Awaitable[Any | Response]:
         """Get the previously uploaded brand image.
@@ -39,14 +39,12 @@ class Brand(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/image")
 
-    def upload_brand_image(
-        self, files: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    def upload_brand_image(self, image: str) -> Any | Awaitable[Any]:
         """Uploads a brand image.
 
         Parameters
         ----------
-        files : dict
+        image : str
             The image's bytes string to be uploaded.
 
         Returns
@@ -54,4 +52,6 @@ class Brand(APIEndpoint):
         Any or Coroutine(...) -> Any
 
         """
-        return self.client.post(f"{self.endpoint}/image", files=files)
+        return self.client.post(
+            f"{self.endpoint}/image", files={"image": image}
+        )

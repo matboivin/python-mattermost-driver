@@ -23,16 +23,16 @@ class Client(BaseClient):
 
     Methods
     -------
-    get(endpoint, params=None, get_json=True)
+    get(endpoint, params=None, rec_json=True)
         Send a GET request.
     post(
         endpoint, body_json=None, params=None, data=None, files=None,
-        get_json=True
+        rec_json=True
     )
         Send a POST request.
-    put(endpoint, body_json=None, params=None, data=None, get_json=True)
+    put(endpoint, body_json=None, params=None, data=None, rec_json=True)
         Send a PUT request.
-    delete(endpoint, params=None, get_json=True)
+    delete(endpoint, params=None, rec_json=True)
         Send a DELETE request.
 
     """
@@ -48,7 +48,7 @@ class Client(BaseClient):
         """
         super().__init__(options)
 
-        self.httpx_client = HttpxClient(
+        self._httpx_client = HttpxClient(
             auth=options.auth,
             verify=options.verify,
             http2=options.http2,
@@ -75,19 +75,7 @@ class Client(BaseClient):
         httpx.Client
 
         """
-        return self.httpx_client
-
-    @BaseClient.httpx_client.setter
-    def httpx_client(self, httpx_client: HttpxClient) -> None:
-        """Set the underlying httpx client object.
-
-        Parameters
-        ----------
-        httpx_client : httpx.Client
-            The new client instance.
-
-        """
-        self.httpx_client = httpx_client
+        return self._httpx_client
 
     # ############################################################### Methods #
 
@@ -95,7 +83,7 @@ class Client(BaseClient):
         self,
         endpoint: str,
         params: Dict[str, Any] | None = None,
-        get_json: bool = True,
+        rec_json: bool = True,
     ) -> Any | Response:
         """Send a GET request.
 
@@ -105,7 +93,7 @@ class Client(BaseClient):
             The API endpoint to make the request to.
         params : dict, default=None
             Query parameters to include in the URL.
-        get_json : bool, default=True
+        rec_json : bool, default=True
             Whether to return the json-encoded content of the response.
 
         Returns
@@ -113,9 +101,16 @@ class Client(BaseClient):
         Any or requests.Response
             The json-encoded content of the response or the raw response.
 
+        Raises
+        ------
+        httox.HTTPStatusError
+            If any httpx.HTTPError occurred.
+
         """
         response: Response = self.httpx_client.get(
-            url=endpoint, params=params, headers=self.get_auth_header()
+            url=f"{self.url}/{endpoint}",
+            params=params,
+            headers=self.get_auth_header(),
         )
         self._check_response(response)
 
@@ -125,7 +120,7 @@ class Client(BaseClient):
             )
             return response
 
-        if get_json:
+        if rec_json:
             try:
                 return response.json()
 
@@ -144,7 +139,7 @@ class Client(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        get_json: bool = True,
+        rec_json: bool = True,
     ) -> Any | Response:
         """Send a POST request.
 
@@ -160,7 +155,7 @@ class Client(BaseClient):
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        get_json : bool, default=True
+        rec_json : bool, default=True
             Whether to return the json-encoded content of the response.
 
         Returns
@@ -168,18 +163,23 @@ class Client(BaseClient):
         Any or requests.Response
             The json-encoded content of the response or the raw response.
 
+        Raises
+        ------
+        httox.HTTPStatusError
+            If any httpx.HTTPError occurred.
+
         """
         response: Response = self.httpx_client.post(
-            url=endpoint,
-            body_json=body_json,
-            params=params,
+            url=f"{self.url}/{endpoint}",
             data=data,
             files=files,
+            json=body_json,
+            params=params,
             headers=self.get_auth_header(),
         )
         self._check_response(response)
 
-        return response.json() if get_json else response
+        return response.json() if rec_json else response
 
     def put(
         self,
@@ -187,7 +187,7 @@ class Client(BaseClient):
         body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
-        get_json: bool = True,
+        rec_json: bool = True,
     ) -> Any | Response:
         """Send a PUT request.
 
@@ -201,7 +201,7 @@ class Client(BaseClient):
             Query parameters to include in the URL.
         data : dict, default=None
             Form data to include in the body of the request.
-        get_json : bool, default=True
+        rec_json : bool, default=True
             Whether to return the json-encoded content of the response.
 
         Returns
@@ -209,23 +209,28 @@ class Client(BaseClient):
         Any or requests.Response
             The json-encoded content of the response or the raw response.
 
+        Raises
+        ------
+        httox.HTTPStatusError
+            If any httpx.HTTPError occurred.
+
         """
         response: Response = self.httpx_client.put(
-            url=endpoint,
-            body_json=body_json,
-            params=params,
+            url=f"{self.url}/{endpoint}",
             data=data,
+            json=body_json,
+            params=params,
             headers=self.get_auth_header(),
         )
         self._check_response(response)
 
-        return response.json() if get_json else response
+        return response.json() if rec_json else response
 
     def delete(
         self,
         endpoint: str,
         params: Dict[str, Any] | None = None,
-        get_json: bool = True,
+        rec_json: bool = True,
     ) -> Any | Response:
         """Send a DELETE request.
 
@@ -235,7 +240,7 @@ class Client(BaseClient):
             The API endpoint to make the request to.
         params : dict, default=None
             Query parameters to include in the URL.
-        get_json : bool, default=True
+        rec_json : bool, default=True
             Whether to return the json-encoded content of the response.
 
         Returns
@@ -243,10 +248,17 @@ class Client(BaseClient):
         Any or requests.Response
             The json-encoded content of the response or the raw response.
 
+        Raises
+        ------
+        httox.HTTPStatusError
+            If any httpx.HTTPError occurred.
+
         """
         response: Response = self.httpx_client.delete(
-            url=endpoint, params=params, headers=self.get_auth_header()
+            url=f"{self.url}/{endpoint}",
+            params=params,
+            headers=self.get_auth_header(),
         )
         self._check_response(response)
 
-        return response.json() if get_json else response
+        return response.json() if rec_json else response

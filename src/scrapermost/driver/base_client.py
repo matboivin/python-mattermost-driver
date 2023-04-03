@@ -4,7 +4,7 @@ This class holds information about the logged-in user and actually makes the
 requests to the Mattermost server.
 """
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Dict
 
@@ -88,11 +88,6 @@ class BaseClient(ABC):
 
     @property
     def httpx_client(self):  # type: ignore
-        ...
-
-    @httpx_client.setter
-    @abstractmethod
-    def httpx_client(self, client):  # type: ignore
         ...
 
     @property
@@ -222,6 +217,11 @@ class BaseClient(ABC):
             Response to the HTTP request.
         json : bool
             Whether to return the json-encoded content of the response.
+
+        Raises
+        ------
+        httox.HTTPStatusError
+            If any httpx.HTTPError occurred.
 
         """
         try:

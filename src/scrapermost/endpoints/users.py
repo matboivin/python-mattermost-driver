@@ -10,11 +10,11 @@ from .base import APIEndpoint
 
 @dataclass
 class Users(APIEndpoint):
-    """Class defining the /users API endpoint.
+    """Class defining the Users API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='users'
         The endpoint path.
 
     Methods
@@ -98,7 +98,7 @@ class Users(APIEndpoint):
 
     """
 
-    endpoint: str = "/users"
+    endpoint: str = "users"
 
     def login_user(self, body_json: Dict[str, Any] | None) -> Any:
         """Login to Mattermost server.
@@ -114,7 +114,7 @@ class Users(APIEndpoint):
 
         """
         return self.client.post(
-            f"{self.endpoint}/login", body_json=body_json, get_json=False
+            f"{self.endpoint}/login", body_json=body_json, rec_json=False
         )
 
     def logout_user(self) -> Any | Awaitable[Any]:
@@ -142,7 +142,7 @@ class Users(APIEndpoint):
         body_json : dict, optional
             A JSON serializable object to include in the body of the request.
         params : dict, optional
-            Query parameters to include in the URL.
+            Query parameters to include.
 
         Returns
         -------
@@ -161,7 +161,7 @@ class Users(APIEndpoint):
         Parameters
         ----------
         params : dict, optional
-            Query parameters to include in the URL.
+            Query parameters to include.
 
         Returns
         -------
@@ -235,7 +235,7 @@ class Users(APIEndpoint):
         Parameters
         ----------
         params : dict, optional
-            Query parameters to include in the URL.
+            Query parameters to include.
 
         Returns
         -------
@@ -767,7 +767,7 @@ class Users(APIEndpoint):
         Any or Coroutine(...) -> Any
 
         """
-        return self.client.get(f"{self.endpoint}/tokens/" + token_id)
+        return self.client.get(f"{self.endpoint}/tokens/{token_id}")
 
     def disable_personal_access_token(
         self, body_json: Dict[str, Any] | None = None

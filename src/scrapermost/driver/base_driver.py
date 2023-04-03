@@ -1,10 +1,11 @@
 """Driver base class."""
 
-from abc import ABC, abstractmethod
+from abc import ABC
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Dict
 
-from ..endpoints import *
+from scrapermost.endpoints import *
+
 from .options import DriverOptions
 from .websocket import Websocket
 
@@ -54,11 +55,6 @@ class BaseDriver(ABC):
 
     @property
     def client(self):  # type: ignore
-        ...
-
-    @client.setter
-    @abstractmethod
-    def client(self, client):  # type: ignore
         ...
 
     @property

@@ -8,11 +8,11 @@ from .base import APIEndpoint
 
 @dataclass
 class IntegrationActions(APIEndpoint):
-    """Class defining the /actions API endpoint.
+    """Class defining the integrations actions API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='actions'
         The endpoint path.
 
     Methods
@@ -24,7 +24,7 @@ class IntegrationActions(APIEndpoint):
 
     """
 
-    endpoint: str = "/actions"
+    endpoint: str = "actions"
 
     def open_dialog(
         self, body_json: Dict[str, Any] | None

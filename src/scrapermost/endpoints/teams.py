@@ -2,7 +2,7 @@
 
 import warnings
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable, Dict, Literal
 
 from requests import Response
 
@@ -12,29 +12,86 @@ from .users import Users
 
 @dataclass
 class Teams(APIEndpoint):
-    """Class defining the /teams API endpoint.
+    """Class defining the Teams API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='teams'
         The endpoint path.
 
     Methods
     -------
+    create_team(name, diplay_name, channel_type)
+        Create a new team on the system.
+    get_teams(page=0, per_page=60, total_count=False, exclude_policy=False)
+        Get teams.
 
     """
 
-    endpoint: str = "/teams"
+    endpoint: str = "teams"
 
     def create_team(
-        self, body_json: Dict[str, Any] | None = None
+        self, name: str, diplay_name: str, channel_type: Literal["O", "I"]
     ) -> Any | Awaitable[Any]:
-        return self.client.post(self.endpoint, body_json)
+        """Create a new team on the system.
+
+        Parameters
+        ----------
+        name : str
+            Unique handler for a team, will be present in the team URL.
+        diplay_name : str
+            Non-unique UI name for the team.
+        channel_type : 'O' or 'I
+            'O' for open, 'I' for invite only.
+
+        Returns
+        -------
+        Any or Coroutine(...) -> Any
+
+        """
+        options: Any = {
+            "name": name,
+            "display_name": diplay_name,
+            "type": channel_type,
+        }
+
+        return self.client.post(self.endpoint, body_json=options)
 
     def get_teams(
-        self, params: Dict[str, Any] | None = None
+        self,
+        page: int = 0,
+        per_page: int = 60,
+        total_count: bool = False,
+        exclude_policy: bool = False,
     ) -> Any | Response | Awaitable[Any | Response]:
-        return self.client.get(self.endpoint, params=params)
+        """Get teams.
+
+        Parameters
+        ----------
+        page : int, default=0
+            The page to select.
+        per_page : int, default=60
+            The number of members per page (max: 200).
+        total_count : bool, default=False
+            Appends a total count of returned teams inside the response object.
+        exclude_policy : bool, default=False
+            Whether to exclude teams which are part of a data retention policy.
+
+        Returns
+        -------
+        Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
+
+        """
+        return self.client.get(
+            self.endpoint,
+            params={
+                "page": page,
+                "per_page": per_page,
+                "include_total_count": total_count,
+                "exclude_policy_constrained": exclude_policy,
+            },
+        )
 
     def get_team(
         self, team_id: str
@@ -67,7 +124,7 @@ class Teams(APIEndpoint):
     def check_team_exists(
         self, name: str
     ) -> Any | Response | Awaitable[Any | Response]:
-        return self.client.get(f"{self.endpoint}/name/" + name + "/exists")
+        return self.client.get(f"{self.endpoint}/name/{name}/exists")
 
     def get_user_teams(
         self, user_id: str

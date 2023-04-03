@@ -2,7 +2,8 @@
 
 from dataclasses import dataclass
 
-from scrapermost.driver import AsyncClient, Client
+from scrapermost.driver.async_client import AsyncClient
+from scrapermost.driver.client import Client
 
 
 @dataclass

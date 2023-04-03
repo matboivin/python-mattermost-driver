@@ -8,11 +8,11 @@ from .base import APIEndpoint
 
 @dataclass
 class LDAP(APIEndpoint):
-    """Class defining the /ldap API endpoint.
+    """Class defining the LDAP API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='ldap'
         The endpoint path.
 
     Methods
@@ -24,7 +24,7 @@ class LDAP(APIEndpoint):
 
     """
 
-    endpoint: str = "/ldap"
+    endpoint: str = "ldap"
 
     def sync_ldap(self) -> Any | Awaitable[Any]:
         """Sync with LDAP.

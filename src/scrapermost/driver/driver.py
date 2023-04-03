@@ -40,7 +40,7 @@ class Driver(BaseDriver):
         """
         super().__init__(options)
 
-        self.client = Client(self.options)
+        self._client = Client(self.options)
 
     def __enter__(self) -> Any:
         self.client.__enter__()
@@ -61,19 +61,7 @@ class Driver(BaseDriver):
         client.Client
 
         """
-        return self.client
-
-    @BaseDriver.client.setter
-    def client(self, client: Client) -> None:
-        """Set the underlying Mattermost client.
-
-        Parameters
-        ----------
-        client : client.Client
-            The new synchronous client.
-
-        """
-        self.client = client
+        return self._client
 
     # ############################################################### Methods #
 

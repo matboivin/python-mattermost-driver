@@ -8,11 +8,11 @@ from .base import APIEndpoint
 
 @dataclass
 class Opengraph(APIEndpoint):
-    """Class defining the /opengraph API endpoint.
+    """Class defining the OpenGraph API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='opengraph'
         The endpoint path.
 
     Methods
@@ -22,7 +22,7 @@ class Opengraph(APIEndpoint):
 
     """
 
-    endpoint: str = "/opengraph"
+    endpoint: str = "opengraph"
 
     def get_opengraph_metadata_for_url(
         self, body_json: Dict[str, Any] | None

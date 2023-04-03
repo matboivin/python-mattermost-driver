@@ -86,5 +86,5 @@ class Webhooks(APIEndpoint):
         self, hook_id: str, body_json: Dict[str, Any] | None = None
     ) -> Any:
         return self.client.post(
-            f"/{hook_id}", body_json=body_json, get_json=False
+            f"/{hook_id}", body_json=body_json, rec_json=False
         )

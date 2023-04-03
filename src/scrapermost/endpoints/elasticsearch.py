@@ -8,11 +8,11 @@ from .base import APIEndpoint
 
 @dataclass
 class Elasticsearch(APIEndpoint):
-    """Class defining the /elasticsearch API endpoint.
+    """Class defining the ElasticSearch API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='elasticsearch'
         The endpoint path.
 
     Methods
@@ -24,7 +24,7 @@ class Elasticsearch(APIEndpoint):
 
     """
 
-    endpoint: str = "/elasticsearch"
+    endpoint: str = "elasticsearch"
 
     def test_elasticsearch_configuration(self) -> Any | Awaitable[Any]:
         """Test Elasticsearch configuration.

@@ -10,11 +10,11 @@ from .base import APIEndpoint
 
 @dataclass
 class DataRetention(APIEndpoint):
-    """Class defining the /data_retention API endpoint.
+    """Class defining the Data retention policy API endpoint.
 
     Attributes
     ----------
-    endpoint : str
+    endpoint : str, default='data_retention'
         The endpoint path.
 
     Methods
@@ -24,7 +24,7 @@ class DataRetention(APIEndpoint):
 
     """
 
-    endpoint: str = "/data_retention"
+    endpoint: str = "data_retention"
 
     def get_data_retention_policy(
         self,
