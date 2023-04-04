@@ -14,6 +14,10 @@ This repository is a fork of [Python Mattermost Driver](https://github.com/Vaelo
    1. [Requirements](#requirements)
    2. [Installation](#installation)
 2. [Usage](#usage)
+   1. [Initialize client and connect to a Mattermost server](#initialize-client-and-connect-to-a-mattermost-server)
+   2. [Use the Web service API](#use-the-web-service-api)
+   3. [Connect to the Websocket API](#connect-to-the-websocket-api)
+   4. [Disconnect websocket](#disconnect-websocket)
 3. [License](#license)
 4. [Acknowledgments](#acknowledgments)
 
@@ -23,10 +27,14 @@ This repository is a fork of [Python Mattermost Driver](https://github.com/Vaelo
 
 ### Requirements
 
-- Python 3.9 or greater
+- Python 3.10 or greater
 - [`poetry`](https://python-poetry.org/)
 
+<br />
+
 ### Installation
+
+As this project is not published to Pypi, follow the guidelines below.
 
 1. Clone the repository and change it to your working directory.
 
@@ -40,6 +48,18 @@ $ poetry install
 
 ## Usage
 
+1. Activate the virtual environment:
+
+```console
+$ source `poetry env info --path`/bin/activate
+```
+
+2. Use it as a library.
+
+<br />
+
+### Initialize client and connect to a Mattermost server
+
 A [Driver](https://api.mattermost.com/#tag/drivers), or client, is an object used to interact with the Mattermost API.
 
 At least the following options must be provided as a dict:
@@ -47,35 +67,103 @@ At least the following options must be provided as a dict:
 - `login_id` (user account's email address or username) and `password`
 - or `token`
 
-Example with synchronous driver:
+**Full list of Driver options [here](src/scrapermost/driver/options.py).**
+
+Example with [synchronous driver](src/scrapermost/driver/driver.py):
 
 ```python
 from scrapermost import Driver
 
-driver: Driver = Driver(
-    {
-        "hostname": server_hostname,
-        "login_id": email,
-        "password": password
-    }
-)
+def init_driver(server_host: str, email: str, password: str) -> Driver:
+    return Driver(
+        {
+            "hostname": server_host,
+            "login_id": email,
+            "password": password,
+            "scheme": "https",
+            "port": 443,
+        }
+    )
 
-driver.login()
+def connect_driver_to_server(driver: Driver) -> None:
+    driver.login()
 ```
 
-Example with asynchronous driver:
+Example with [asynchronous driver](src/scrapermost/driver/async_driver.py):
 
 ```python
 from scrapermost import AsyncDriver
 
-driver: AsyncDriver = AsyncDriver(
-    {
-        "hostname": server_hostname,
-        "token": token
-    }
-)
+def init_driver(server_host: str, email: str, password: str) -> AsyncDriver:
+    return AsyncDriver(
+        {
+            "hostname": server_host,
+            "login_id": email,
+            "password": password,
+            "scheme": "https",
+            "port": 443,
+        }
+    )
 
-await driver.login()
+async def connect_driver_to_server(driver: AsyncDriver) -> None:
+    await driver.login()
+```
+
+<br />
+
+### Use the Web service API
+
+You can make api calls by using calling `Driver.endpointofchoice`. For example, if you want to get a user's data (`http://your-mattermost-url.com/api/v4/users/{user_id}`), you would use `Driver.users.get_user(user_id)`. The returned data will be in JSON format.
+
+Example with [asynchronous driver](src/scrapermost/driver/async_driver.py):
+
+```python
+from typing import Any
+
+response: Any = await driver.users.get_user(user_id="me")
+```
+
+<br />
+
+### Connect to the Websocket API
+
+It is possible to use a [websocket](src/scrapermost/driver/websocket.py) to listen to Mattermost events ([event list here](https://api.mattermost.com/#tag/WebSocket)).
+
+Create a function to handle every Mattermost websocket event:
+
+```python
+from typing import Any, Dict
+
+from scrapermost import Posted
+
+# Minimalist event handler example
+async def my_event_handler(event: Dict[str, Any]):
+    if event.get("event") == "posted":  # event is a new post
+        post: Posted = Posted(event)
+
+        print(post)
+```
+
+Assuming `Driver.login()` was called, initialize the websocket connection to the Mattermost server using `Driver.init_websocket()`.
+
+Example with [synchronous driver](src/scrapermost/driver/driver.py):
+
+```python
+driver.init_websocket(my_event_handler, data_format="json")
+```
+
+Example with [asynchronous driver](src/scrapermost/driver/async_driver.py):
+
+```python
+await driver.init_websocket(my_event_handler, data_format="json")
+```
+
+<br />
+
+### Disconnect websocket
+
+```python
+driver.disconnect_websocket()
 ```
 
 <br />
