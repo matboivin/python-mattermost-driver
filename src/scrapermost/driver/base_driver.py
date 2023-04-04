@@ -4,8 +4,7 @@ from abc import ABC
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Dict
 
-from scrapermost.endpoints import *
-
+from ..endpoints import *
 from .options import DriverOptions
 from .websocket import Websocket
 
@@ -30,7 +29,7 @@ class BaseDriver(ABC):
 
     Methods
     -------
-    disconnect()
+    disconnect_websocket()
         Disconnect the driver from the server.
 
     """
@@ -324,11 +323,7 @@ class BaseDriver(ABC):
 
     # ############################################################### Methods #
 
-    def disconnect(self) -> None:
-        """Disconnect the driver from the server.
-
-        It stops the websocket event loop.
-
-        """
+    def disconnect_websocket(self) -> None:
+        """Disconnect the driver from the server."""
         if self.websocket:
             self.websocket.disconnect()
