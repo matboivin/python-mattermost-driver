@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .posts import Posts
 from .users import Users
 
@@ -32,9 +32,8 @@ class Reactions(APIEndpoint):
 
     endpoint: str = "reactions"
 
-    def create_reaction(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_reaction(self, body_json: Dict[str, Any]) -> Any:
         """Create a reaction.
 
         Parameters
@@ -56,6 +55,7 @@ class Reactions(APIEndpoint):
         """
         return self.client.post(self.endpoint, body_json=body_json)
 
+    @_ret_json
     def get_reactions_of_post(
         self, post_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -74,12 +74,13 @@ class Reactions(APIEndpoint):
         """
         return self.client.get(f"{Posts.endpoint}/{post_id}/{self.endpoint}")
 
+    @_ret_json
     def delete_reaction(
         self,
         user_id: str,
         post_id: str,
         emoji_name: str,
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Delete a reaction made by a user from the given post.
 
         Parameters

@@ -5,7 +5,7 @@ from typing import Any, Awaitable
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -28,6 +28,7 @@ class Brand(APIEndpoint):
 
     endpoint: str = "brand"
 
+    @_ret_json
     def get_brand_image(self) -> Any | Response | Awaitable[Any | Response]:
         """Get the previously uploaded brand image.
 
@@ -39,7 +40,8 @@ class Brand(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/image")
 
-    def upload_brand_image(self, image: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def upload_brand_image(self, image: str) -> Any:
         """Upload a brand image.
 
         Parameters

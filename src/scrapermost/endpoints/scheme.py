@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict, Literal
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -38,6 +38,7 @@ class Scheme(APIEndpoint):
 
     endpoint: str = "schemes"
 
+    @_ret_json
     def get_schemes(
         self,
         page: int = 0,
@@ -66,7 +67,8 @@ class Scheme(APIEndpoint):
             params={"scope": scope, "page": page, "per_page": per_page},
         )
 
-    def create_scheme(self, body_json: Dict[str, Any]) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_scheme(self, body_json: Dict[str, Any]) -> Any:
         """Create a new scheme.
 
         Parameters
@@ -87,6 +89,7 @@ class Scheme(APIEndpoint):
         """
         return self.client.post(self.endpoint, body_json=body_json)
 
+    @_ret_json
     def get_scheme(
         self, scheme_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -105,7 +108,8 @@ class Scheme(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{scheme_id}")
 
-    def delete_scheme(self, scheme_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_scheme(self, scheme_id: str) -> Any:
         """Mark the scheme as deleted in the database.
 
         Parameters
@@ -120,9 +124,8 @@ class Scheme(APIEndpoint):
         """
         return self.client.delete(f"{self.endpoint}/{scheme_id}")
 
-    def patch_scheme(
-        self, scheme_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def patch_scheme(self, scheme_id: str, body_json: Dict[str, Any]) -> Any:
         """Update a scheme partially by providing only the fields to update.
 
         Parameters
@@ -146,6 +149,7 @@ class Scheme(APIEndpoint):
             f"{self.endpoint}/{scheme_id}/patch", body_json=body_json
         )
 
+    @_ret_json
     def get_page_of_teams_using_scheme(
         self, scheme_id: str, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -171,6 +175,7 @@ class Scheme(APIEndpoint):
             params={"page": page, "per_page": per_page},
         )
 
+    @_ret_json
     def get_page_of_channels_using_scheme(
         self, scheme_id: str, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:

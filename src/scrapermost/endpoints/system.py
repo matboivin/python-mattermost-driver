@@ -8,7 +8,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -61,6 +61,7 @@ class System(APIEndpoint):
 
     """
 
+    @_ret_json
     def check_system_health(
         self,
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -77,7 +78,8 @@ class System(APIEndpoint):
         """
         return self.client.get("system/ping")
 
-    def recycle_database_connection(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def recycle_database_connection(self) -> Any:
         """Recycle database connections.
 
         Recycle database connections by closing and reconnecting all
@@ -90,9 +92,8 @@ class System(APIEndpoint):
         """
         return self.client.post("database/recycle")
 
-    def send_test_email(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def send_test_email(self, body_json: Dict[str, Any]) -> Any:
         """Send a test email.
 
         Parameters
@@ -108,6 +109,7 @@ class System(APIEndpoint):
         """
         return self.client.post("email/test", body_json=body_json)
 
+    @_ret_json
     def get_configuration(
         self,
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -121,9 +123,8 @@ class System(APIEndpoint):
         """
         return self.client.get("config")
 
-    def update_configuration(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def update_configuration(self, body_json: Dict[str, Any]) -> Any:
         """Submit a new configuration for the server to use.
 
         Parameters
@@ -139,7 +140,8 @@ class System(APIEndpoint):
         """
         return self.client.put("config", body_json=body_json)
 
-    def reload_configuration(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def reload_configuration(self) -> Any:
         """Reload the configuration file to pick up on any changes made to it.
 
         Returns
@@ -149,6 +151,7 @@ class System(APIEndpoint):
         """
         return self.client.post("config/reload")
 
+    @_ret_json
     def get_client_configuration(
         self, params: Dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -167,9 +170,8 @@ class System(APIEndpoint):
         """
         return self.client.get("config/client", params=params)
 
-    def upload_license_file(
-        self, files: Dict[str, Any] | None
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def upload_license_file(self, files: Dict[str, Any] | None) -> Any:
         """Upload a license to enable enterprise features.
 
         Parameters
@@ -184,7 +186,8 @@ class System(APIEndpoint):
         """
         return self.client.post("license", files=files)
 
-    def remove_license_file(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def remove_license_file(self) -> Any:
         """Remove the license file from the server.
 
         Returns
@@ -194,6 +197,7 @@ class System(APIEndpoint):
         """
         return self.client.delete("license")
 
+    @_ret_json
     def get_client_license(
         self, params: Dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -212,6 +216,7 @@ class System(APIEndpoint):
         """
         return self.client.get("license/client", params=params)
 
+    @_ret_json
     def get_audits(
         self, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -234,7 +239,8 @@ class System(APIEndpoint):
             "audits", params={"page": page, "per_page": per_page}
         )
 
-    def invalidate_all_caches(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def invalidate_all_caches(self) -> Any:
         """Purge all the in-memory caches for the Mattermost server.
 
         Returns
@@ -245,6 +251,7 @@ class System(APIEndpoint):
         """
         return self.client.post("/caches/invalidate")
 
+    @_ret_json
     def get_logs(
         self, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -267,9 +274,8 @@ class System(APIEndpoint):
             "logs", params={"page": page, "per_page": per_page}
         )
 
-    def add_log_message(
-        self, level: str, message: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def add_log_message(self, level: str, message: str) -> Any:
         """Add log messages to the server logs.
 
         Parameters
@@ -288,6 +294,7 @@ class System(APIEndpoint):
             "logs", body_json={"level": level, "message": message}
         )
 
+    @_ret_json
     def get_analytics(
         self, params: Dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -306,6 +313,7 @@ class System(APIEndpoint):
         """
         return self.client.get("analytics/old", params=params)
 
+    @_ret_json
     def get_configuration_environment(
         self,
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -319,9 +327,10 @@ class System(APIEndpoint):
         """
         return self.client.get("config/environment")
 
+    @_ret_json
     def test_aws_s3_connection(
         self, body_json: Dict[str, Any] | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Test AWS S3 connection.
 
         Send a test to validate if can connect to AWS S3. Optionally provide a

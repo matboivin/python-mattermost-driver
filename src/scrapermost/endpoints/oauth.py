@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .users import Users
 
 
@@ -39,9 +39,8 @@ class OAuth(APIEndpoint):
 
     endpoint: str = "oauth"
 
-    def register_oauth_app(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def register_oauth_app(self, body_json: Dict[str, Any]) -> Any:
         """Register an OAuth 2.0 client application.
 
         Parameters
@@ -67,6 +66,7 @@ class OAuth(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/apps", body_json=body_json)
 
+    @_ret_json
     def get_oauth_apps(
         self, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -90,6 +90,7 @@ class OAuth(APIEndpoint):
             params={"page": page, "per_page": per_page},
         )
 
+    @_ret_json
     def get_oauth_app(
         self, app_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -108,7 +109,8 @@ class OAuth(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/apps/{app_id}")
 
-    def delete_oauth_app(self, app_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_oauth_app(self, app_id: str) -> Any:
         """Delete and unregister an OAuth 2.0 client application.
 
         Parameters
@@ -123,7 +125,8 @@ class OAuth(APIEndpoint):
         """
         return self.client.delete(f"{self.endpoint}/apps/{app_id}")
 
-    def regenerate_oauth_app_secret(self, app_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def regenerate_oauth_app_secret(self, app_id: str) -> Any:
         """Regenerate the client secret for an OAuth 2.0 client app.
 
         Parameters
@@ -138,6 +141,7 @@ class OAuth(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/apps/{app_id}/regen_secret")
 
+    @_ret_json
     def get_info_on_oauth_app(
         self, app_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -156,6 +160,7 @@ class OAuth(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/apps/{app_id}/info")
 
+    @_ret_json
     def get_authorized_oauth_apps(
         self, user_id: str, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:

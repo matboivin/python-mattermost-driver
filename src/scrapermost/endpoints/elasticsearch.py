@@ -1,9 +1,9 @@
 """Endpoints for configuring and interacting with Elasticsearch."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable
+from typing import Any
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -26,7 +26,10 @@ class Elasticsearch(APIEndpoint):
 
     endpoint: str = "elasticsearch"
 
-    def test_elasticsearch_configuration(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def test_elasticsearch_configuration(
+        self,
+    ) -> Any:
         """Test Elasticsearch configuration.
 
         Returns
@@ -36,7 +39,10 @@ class Elasticsearch(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/test")
 
-    def purge_all_elasticsearch_indexes(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def purge_all_elasticsearch_indexes(
+        self,
+    ) -> Any:
         """Purge all Elasticsearch indexes.
 
         Returns

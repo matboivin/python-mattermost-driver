@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -46,9 +46,8 @@ class Webhooks(APIEndpoint):
 
     endpoint: str = "/hooks"
 
-    def create_incoming_hook(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_incoming_hook(self, body_json: Dict[str, Any]) -> Any:
         """Create an incoming webhook for a channel.
 
         Parameters
@@ -73,6 +72,7 @@ class Webhooks(APIEndpoint):
             f"{self.endpoint}/incoming", body_json=body_json
         )
 
+    @_ret_json
     def list_incoming_hooks(
         self, page: int = 0, per_page: int = 60, team_id: str | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -100,6 +100,7 @@ class Webhooks(APIEndpoint):
 
         return self.client.get(f"{self.endpoint}/incoming", params=options)
 
+    @_ret_json
     def get_incoming_hook(
         self, hook_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -118,9 +119,10 @@ class Webhooks(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/incoming/{hook_id}")
 
+    @_ret_json
     def update_incoming_hook(
         self, hook_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Update an incoming webhook given the hook ID.
 
         Parameters
@@ -148,9 +150,8 @@ class Webhooks(APIEndpoint):
             f"{self.endpoint}/incoming/{hook_id}", body_json=body_json
         )
 
-    def create_outgoing_hook(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_outgoing_hook(self, body_json: Dict[str, Any]) -> Any:
         """Create an outgoing webhook for a team.
 
         Parameters
@@ -183,6 +184,7 @@ class Webhooks(APIEndpoint):
             f"{self.endpoint}/outgoing", body_json=body_json
         )
 
+    @_ret_json
     def list_outgoing_hooks(
         self,
         page: int = 0,
@@ -218,6 +220,7 @@ class Webhooks(APIEndpoint):
 
         return self.client.get(f"{self.endpoint}/outgoing", params=options)
 
+    @_ret_json
     def get_outgoing_hook(
         self, hook_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -236,7 +239,8 @@ class Webhooks(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/outgoing/{hook_id}")
 
-    def delete_outgoing_hook(self, hook_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_outgoing_hook(self, hook_id: str) -> Any:
         """Delete an outgoing webhook given the hook ID.
 
         Parameters
@@ -251,9 +255,10 @@ class Webhooks(APIEndpoint):
         """
         return self.client.delete(f"{self.endpoint}/outgoing/{hook_id}")
 
+    @_ret_json
     def update_outgoing_hook(
         self, hook_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Update an outgoing webhook given the hook ID.
 
         Parameters
@@ -279,9 +284,8 @@ class Webhooks(APIEndpoint):
             f"{self.endpoint}/outgoing/{hook_id}", body_json=body_json
         )
 
-    def regenerate_token_outgoing_hook(
-        self, hook_id: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def regenerate_token_outgoing_hook(self, hook_id: str) -> Any:
         """Regenerate the token for the outgoing webhook.
 
         Parameters
@@ -315,6 +319,4 @@ class Webhooks(APIEndpoint):
         Any or Coroutine(...) -> Any
 
         """
-        return self.client.post(
-            f"{hook_id}", body_json=body_json, rec_json=False
-        )
+        return self.client.post(f"{hook_id}", body_json=body_json)

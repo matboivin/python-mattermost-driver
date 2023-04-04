@@ -5,7 +5,7 @@ from typing import Any, Awaitable
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -26,6 +26,7 @@ class DataRetention(APIEndpoint):
 
     endpoint: str = "data_retention"
 
+    @_ret_json
     def get_data_retention_policy(
         self,
     ) -> Any | Response | Awaitable[Any | Response]:

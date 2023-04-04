@@ -5,7 +5,7 @@ from typing import Any, Awaitable
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -26,6 +26,7 @@ class Cluster(APIEndpoint):
 
     endpoint: str = "cluster"
 
+    @_ret_json
     def get_cluster_status(self) -> Any | Response | Awaitable[Any | Response]:
         """Get cluster status.
 

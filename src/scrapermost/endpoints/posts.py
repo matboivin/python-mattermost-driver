@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .channels import Channels
 from .teams import Teams
 from .users import Users
@@ -57,7 +57,8 @@ class Posts(APIEndpoint):
 
     endpoint: str = "posts"
 
-    def create_post(self, body_json: Dict[str, Any]) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_post(self, body_json: Dict[str, Any]) -> Any:
         """Create a new post in a channel.
 
         To create the post as a comment on another post, provide root_id.
@@ -84,9 +85,8 @@ class Posts(APIEndpoint):
         """
         return self.client.post(self.endpoint, body_json=body_json)
 
-    def create_ephemeral_post(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_ephemeral_post(self, body_json: Dict[str, Any]) -> Any:
         """Create a new ephemeral post in a channel.
 
         Parameters
@@ -111,6 +111,7 @@ class Posts(APIEndpoint):
             f"{self.endpoint}/ephemeral", body_json=body_json
         )
 
+    @_ret_json
     def get_post(
         self, post_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -129,7 +130,8 @@ class Posts(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{post_id}")
 
-    def delete_post(self, post_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_post(self, post_id: str) -> Any:
         """Mark the post as deleted in the database.
 
         Parameters
@@ -144,9 +146,8 @@ class Posts(APIEndpoint):
         """
         return self.client.delete(f"{self.endpoint}/{post_id}")
 
-    def update_post(
-        self, post_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def update_post(self, post_id: str, body_json: Dict[str, Any]) -> Any:
         """Update a post.
 
         Parameters
@@ -173,9 +174,10 @@ class Posts(APIEndpoint):
             f"{self.endpoint}/{post_id}", body_json=body_json
         )
 
+    @_ret_json
     def patch_post(
         self, post_id: str, body_json: Dict[str, Any] | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Update a post partially by providing only the fields to update.
 
         Parameters
@@ -204,6 +206,7 @@ class Posts(APIEndpoint):
             f"{self.endpoint}/{post_id}/patch", body_json=body_json
         )
 
+    @_ret_json
     def get_thread(
         self, post_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -224,6 +227,7 @@ class Posts(APIEndpoint):
             f"{self.endpoint}/{post_id}/thread",
         )
 
+    @_ret_json
     def get_list_of_flagged_posts(
         self, user_id: str, params: Dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -254,6 +258,7 @@ class Posts(APIEndpoint):
             params=params,
         )
 
+    @_ret_json
     def get_file_info_for_post(
         self, post_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -272,6 +277,7 @@ class Posts(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{post_id}/files/info")
 
+    @_ret_json
     def get_posts_for_channel(
         self, channel_id: str, params: Dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -294,6 +300,7 @@ class Posts(APIEndpoint):
             f"{Channels.endpoint}/{channel_id}/{self.endpoint}", params=params
         )
 
+    @_ret_json
     def get_unread_posts_for_channel(
         self,
         user_id: str,
@@ -322,9 +329,10 @@ class Posts(APIEndpoint):
             params=params,
         )
 
+    @_ret_json
     def search_for_team_posts(
         self, team_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Search posts in the team and from the provided terms string.
 
         Parameters
@@ -353,7 +361,8 @@ class Posts(APIEndpoint):
             body_json=body_json,
         )
 
-    def pin_post_to_channel(self, post_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def pin_post_to_channel(self, post_id: str) -> Any:
         """Pin a post to the channel.
 
         Parameters
@@ -368,7 +377,8 @@ class Posts(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/{post_id}/pin")
 
-    def unpin_post_to_channel(self, post_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def unpin_post_to_channel(self, post_id: str) -> Any:
         """Unpin a post to the channel.
 
         Parameters
@@ -383,9 +393,8 @@ class Posts(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/{post_id}/unpin")
 
-    def perform_post_action(
-        self, post_id: str, action_id: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def perform_post_action(self, post_id: str, action_id: str) -> Any:
         """Perform a post action.
 
         Parameters

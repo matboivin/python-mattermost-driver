@@ -1,9 +1,9 @@
 """Endpoints for configuring and interacting with LDAP."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable
+from typing import Any
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -26,7 +26,8 @@ class LDAP(APIEndpoint):
 
     endpoint: str = "ldap"
 
-    def sync_ldap(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def sync_ldap(self) -> Any:
         """Sync with LDAP.
 
         Synchronize any user attribute changes in the configured AD/LDAP server
@@ -39,7 +40,8 @@ class LDAP(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/sync")
 
-    def test_ldap_config(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def test_ldap_config(self) -> Any:
         """Test LDAP configuration.
 
         Test the current AD/LDAP configuration to see if the AD/LDAP server can

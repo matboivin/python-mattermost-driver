@@ -6,7 +6,7 @@ from typing import Any, Awaitable, Dict, Literal
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -41,9 +41,8 @@ class Emoji(APIEndpoint):
 
     endpoint: str = "emoji"
 
-    def create_custom_emoji(
-        self, emoji_name: str, image: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_custom_emoji(self, emoji_name: str, image: str) -> Any:
         """Create a custom emoji for the team.
 
         Parameters
@@ -69,6 +68,7 @@ class Emoji(APIEndpoint):
             files={"image": image},
         )
 
+    @_ret_json
     def get_emoji_list(
         self,
         page: int = 0,
@@ -97,6 +97,7 @@ class Emoji(APIEndpoint):
             params={"page": page, "per_page": per_page, "sort": sort},
         )
 
+    @_ret_json
     def get_custom_emoji(
         self, emoji_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -115,7 +116,8 @@ class Emoji(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{emoji_id}")
 
-    def delete_custom_emoji(self, emoji_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_custom_emoji(self, emoji_id: str) -> Any:
         """Delete a custom emoji.
 
         Parameters
@@ -130,6 +132,7 @@ class Emoji(APIEndpoint):
         """
         return self.client.delete(f"{self.endpoint}/{emoji_id}")
 
+    @_ret_json
     def get_custom_emoji_by_name(
         self, name: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -148,6 +151,7 @@ class Emoji(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/name/{name}")
 
+    @_ret_json
     def get_custom_emoji_image(
         self, emoji_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -166,9 +170,10 @@ class Emoji(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{emoji_id}/image")
 
+    @_ret_json
     def search_custom_emoji(
         self, term: str, prefix_only: str | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Search for custom emoji by name based on search criteria.
 
         Parameters
@@ -188,6 +193,7 @@ class Emoji(APIEndpoint):
             body_json={"term": term, "prefix_only": prefix_only},
         )
 
+    @_ret_json
     def autocomplete_custom_emoji(
         self, name: str
     ) -> Any | Response | Awaitable[Any | Response]:

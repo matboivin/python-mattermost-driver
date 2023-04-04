@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict, List, Literal
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .users import Users
 
 
@@ -85,9 +85,10 @@ class Teams(APIEndpoint):
 
     endpoint: str = "teams"
 
+    @_ret_json
     def create_team(
         self, name: str, diplay_name: str, channel_type: Literal["O", "I"]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Create a new team on the system.
 
         Parameters
@@ -112,6 +113,7 @@ class Teams(APIEndpoint):
 
         return self.client.post(self.endpoint, body_json=options)
 
+    @_ret_json
     def get_teams(
         self,
         page: int = 0,
@@ -148,6 +150,7 @@ class Teams(APIEndpoint):
             },
         )
 
+    @_ret_json
     def get_team(
         self, team_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -166,9 +169,8 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{team_id}")
 
-    def update_team(
-        self, team_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def update_team(self, team_id: str, body_json: Dict[str, Any]) -> Any:
         """Update a team by providing the team object.
 
         Parameters
@@ -195,9 +197,8 @@ class Teams(APIEndpoint):
         """
         return self.client.put(f"{self.endpoint}/{team_id}", body_json)
 
-    def delete_team(
-        self, team_id: str, permanent: bool = False
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_team(self, team_id: str, permanent: bool = False) -> Any:
         """Mark the team as deleted in the database.
 
         Parameters
@@ -217,9 +218,10 @@ class Teams(APIEndpoint):
             f"{self.endpoint}/{team_id}", params={"permanent": permanent}
         )
 
+    @_ret_json
     def patch_team(
         self, team_id: str, body_json: Dict[str, Any] | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Update a team partially by providing only the fields to update.
 
         Parameters
@@ -244,7 +246,8 @@ class Teams(APIEndpoint):
         """
         return self.client.put(f"{self.endpoint}/{team_id}/patch", body_json)
 
-    def get_team_by_name(self, name: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def get_team_by_name(self, name: str) -> Any:
         """Get a team based on provided name string.
 
         Parameters
@@ -259,7 +262,8 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/name/{name}")
 
-    def search_teams(self, body_json: Dict[str, Any]) -> Any | Awaitable[Any]:
+    @_ret_json
+    def search_teams(self, body_json: Dict[str, Any]) -> Any:
         """Search teams based on search term and options provided.
 
         Parameters
@@ -283,6 +287,7 @@ class Teams(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/search", body_json)
 
+    @_ret_json
     def check_team_exists(
         self, name: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -301,6 +306,7 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/name/{name}/exists")
 
+    @_ret_json
     def get_user_teams(
         self, user_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -319,6 +325,7 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{Users.endpoint}/{user_id}/teams")
 
+    @_ret_json
     def get_team_members(
         self, team_id: str, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -344,9 +351,8 @@ class Teams(APIEndpoint):
             params={"page": page, "per_page": per_page},
         )
 
-    def add_user_to_team(
-        self, team_id: str, user_id: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def add_user_to_team(self, team_id: str, user_id: str) -> Any:
         """Add user to the team by user_id.
 
         Parameters
@@ -366,7 +372,8 @@ class Teams(APIEndpoint):
             body_json={"team_id": team_id, "user_id": user_id},
         )
 
-    def add_user_to_team_from_invite(self, token: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def add_user_to_team_from_invite(self, token: str) -> Any:
         """Add user to team from invite.
 
         Using either an invite id or hash/data pair from an email invite link,
@@ -386,9 +393,10 @@ class Teams(APIEndpoint):
             f"{self.endpoint}/members/invite", params={"token": token}
         )
 
+    @_ret_json
     def add_multiple_users_to_team(
         self, team_id: str, users_per_team: List[Dict[str, Any]]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Add a number of users to the team by user_id.
 
         Parameters
@@ -420,6 +428,7 @@ class Teams(APIEndpoint):
             body_json=users_per_team,
         )
 
+    @_ret_json
     def get_team_members_for_user(
         self, user_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -438,6 +447,7 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{Users.endpoint}/{user_id}/teams/members")
 
+    @_ret_json
     def get_team_member(
         self, team_id: str, user_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -458,9 +468,8 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{team_id}/members/{user_id}")
 
-    def remove_user_from_team(
-        self, team_id: str, user_id: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def remove_user_from_team(self, team_id: str, user_id: str) -> Any:
         """Remove user from team.
 
         Parameters
@@ -479,9 +488,8 @@ class Teams(APIEndpoint):
             f"{self.endpoint}/{team_id}/members/{user_id}"
         )
 
-    def get_team_members_by_id(
-        self, team_id: str, user_ids: List[str]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def get_team_members_by_id(self, team_id: str, user_ids: List[str]) -> Any:
         """Get a list of team members based on a provided array of user IDs.
 
         Parameters
@@ -500,6 +508,7 @@ class Teams(APIEndpoint):
             f"{self.endpoint}/{team_id}/members/ids", body_json=user_ids
         )
 
+    @_ret_json
     def get_team_stats(
         self, team_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -518,6 +527,7 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{team_id}/stats")
 
+    @_ret_json
     def get_team_icon(
         self, team_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -536,9 +546,8 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{team_id}/image")
 
-    def set_team_icon(
-        self, team_id: str, files: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def set_team_icon(self, team_id: str, files: Dict[str, Any]) -> Any:
         """Set the team icon for the team.
 
         Parameters
@@ -557,7 +566,8 @@ class Teams(APIEndpoint):
             f"{self.endpoint}/{team_id}/image", files=files
         )
 
-    def delete_team_icon(self, team_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_team_icon(self, team_id: str) -> Any:
         """Remove the team icon for the team.
 
         Parameters
@@ -572,9 +582,10 @@ class Teams(APIEndpoint):
         """
         return self.client.delete(f"{self.endpoint}/{team_id}/image")
 
+    @_ret_json
     def update_team_member_roles(
         self, team_id: str, user_id: str, roles: str
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Update a team member roles.
 
         Parameters
@@ -596,12 +607,13 @@ class Teams(APIEndpoint):
             body_json={"roles": roles},
         )
 
+    @_ret_json
     def update_scheme_derived_roles_of_team_member(
         self,
         team_id: str,
         user_id: str,
         body_json: Dict[str, Any],
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Update a team member's scheme_admin/scheme_user properties.
 
         Parameters
@@ -628,6 +640,7 @@ class Teams(APIEndpoint):
             body_json=body_json,
         )
 
+    @_ret_json
     def get_team_unreads_for_user(
         self, user_id: str, params: Dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -658,6 +671,7 @@ class Teams(APIEndpoint):
             f"{Users.endpoint}/{user_id}/teams/unread", params=params
         )
 
+    @_ret_json
     def get_unreads_for_team(
         self, user_id: str, team_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -680,9 +694,10 @@ class Teams(APIEndpoint):
             f"{Users.endpoint}/{user_id}/teams/{team_id}/unread",
         )
 
+    @_ret_json
     def invite_users_to_team_by_mail(
         self, team_id: str, email_addresses: List[str]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Invite users to the existing team using their email addresses.
 
         Parameters
@@ -702,9 +717,10 @@ class Teams(APIEndpoint):
             body_json=email_addresses,
         )
 
+    @_ret_json
     def import_team_from_other_app(
         self, team_id: str, data: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Import a team into a existing team.
 
         Import users, channels, posts, hooks.
@@ -730,6 +746,7 @@ class Teams(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/{team_id}/import", data=data)
 
+    @_ret_json
     def get_invite_info_for_team(
         self, invite_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -748,7 +765,8 @@ class Teams(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/invite/{invite_id}")
 
-    def set_team_scheme(self, team_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def set_team_scheme(self, team_id: str) -> Any:
         """Set a team's scheme.
 
         Parameters

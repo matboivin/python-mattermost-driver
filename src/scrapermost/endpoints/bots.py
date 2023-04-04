@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -44,7 +44,8 @@ class Bots(APIEndpoint):
 
     endpoint: str = "bots"
 
-    def create_bot(self, body_json: Dict[str, Any]) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_bot(self, body_json: Dict[str, Any]) -> Any:
         """Create a new bot account on the system.
 
         Parameters
@@ -65,6 +66,7 @@ class Bots(APIEndpoint):
         """
         return self.client.post(self.endpoint, body_json=body_json)
 
+    @_ret_json
     def get_bots(
         self, params: Dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -90,9 +92,8 @@ class Bots(APIEndpoint):
         """
         return self.client.get(self.endpoint, params=params)
 
-    def patch_bot(
-        self, bot_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def patch_bot(self, bot_id: str, body_json: Dict[str, Any]) -> Any:
         """Update a bot partially by providing only the fields to update.
 
         Parameters
@@ -111,6 +112,7 @@ class Bots(APIEndpoint):
             f"{self.endpoint}/{bot_id}", body_json=body_json
         )
 
+    @_ret_json
     def get_bot(
         self, bot_id: str, include_deleted: bool
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -134,7 +136,8 @@ class Bots(APIEndpoint):
             params={"include_deleted": include_deleted},
         )
 
-    def disable_bot(self, bot_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def disable_bot(self, bot_id: str) -> Any:
         """Disable a bot.
 
         Parameters
@@ -149,7 +152,8 @@ class Bots(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/{bot_id}/disable")
 
-    def enable_bot(self, bot_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def enable_bot(self, bot_id: str) -> Any:
         """Enable a bot.
 
         Parameters
@@ -164,9 +168,8 @@ class Bots(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/{bot_id}/enable")
 
-    def assign_bot_to_user(
-        self, bot_id: str, user_id: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def assign_bot_to_user(self, bot_id: str, user_id: str) -> Any:
         """Assign a bot to a specified user.
 
         Parameters
@@ -183,6 +186,7 @@ class Bots(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/{bot_id}/assign/{user_id}")
 
+    @_ret_json
     def get_bot_lhs_icon(
         self, bot_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -201,9 +205,8 @@ class Bots(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{bot_id}/icon")
 
-    def set_bot_lhs_icon(
-        self, bot_id: str, image: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def set_bot_lhs_icon(self, bot_id: str, image: str) -> Any:
         """Set a bot's Left-Hand Sidebar icon image.
 
         Parameters
@@ -223,7 +226,8 @@ class Bots(APIEndpoint):
             files={"image": image},
         )
 
-    def delete_bot_lhs_icon(self, bot_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_bot_lhs_icon(self, bot_id: str) -> Any:
         """Delete a bot's Left-Hand Sidebar icon image.
 
         Parameters

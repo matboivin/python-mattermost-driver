@@ -5,7 +5,7 @@ from typing import Any, Awaitable
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -32,7 +32,8 @@ class Compliance(APIEndpoint):
 
     endpoint: str = "compliance"
 
-    def create_report(self) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_report(self) -> Any:
         """Create and save a compliance report.
 
         Returns
@@ -43,6 +44,7 @@ class Compliance(APIEndpoint):
         """
         return self.client.post(f"{self.endpoint}/reports")
 
+    @_ret_json
     def get_reports(
         self, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -66,6 +68,7 @@ class Compliance(APIEndpoint):
             params={"page": page, "per_page": per_page},
         )
 
+    @_ret_json
     def get_report(
         self, report_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -84,6 +87,7 @@ class Compliance(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/reports/{report_id}")
 
+    @_ret_json
     def download_report(
         self, report_id: str
     ) -> Any | Response | Awaitable[Any | Response]:

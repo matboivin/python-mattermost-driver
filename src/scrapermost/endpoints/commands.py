@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .teams import Teams
 
 
@@ -39,9 +39,8 @@ class Commands(APIEndpoint):
 
     endpoint: str = "commands"
 
-    def create_command(
-        self, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def create_command(self, body_json: Dict[str, Any]) -> Any:
         """Create a command for a team.
 
         Parameters
@@ -63,6 +62,7 @@ class Commands(APIEndpoint):
         """
         return self.client.post(self.endpoint, body_json=body_json)
 
+    @_ret_json
     def list_commands_for_team(
         self, team_id: str, custom_only: bool = False
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -85,6 +85,7 @@ class Commands(APIEndpoint):
             params={"team_id": team_id, "custom_only": custom_only},
         )
 
+    @_ret_json
     def list_autocomplete_commands(
         self, team_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -105,9 +106,10 @@ class Commands(APIEndpoint):
             f"{Teams.endpoint}{team_id}/{self.endpoint}/autocomplete"
         )
 
+    @_ret_json
     def update_command(
         self, command_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Update a command.
 
         Parameters
@@ -126,7 +128,8 @@ class Commands(APIEndpoint):
             f"{self.endpoint}/{command_id}", body_json=body_json
         )
 
-    def delete_command(self, command_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_command(self, command_id: str) -> Any:
         """Delete a command based on command ID string.
 
         Parameters
@@ -141,7 +144,8 @@ class Commands(APIEndpoint):
         """
         return self.client.delete(f"{self.endpoint}/{command_id}")
 
-    def generate_new_token(self, command_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def generate_new_token(self, command_id: str) -> Any:
         """Generate a new token for the command based on command ID string.
 
         Parameters
@@ -156,9 +160,8 @@ class Commands(APIEndpoint):
         """
         return self.client.put(f"{self.endpoint}/{command_id}/regen_token")
 
-    def execute_command(
-        self, channel_id: str, command: str
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def execute_command(self, channel_id: str, command: str) -> Any:
         """Execute a command on a team.
 
         Parameters

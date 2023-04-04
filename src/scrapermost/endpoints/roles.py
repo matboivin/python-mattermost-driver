@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -32,6 +32,7 @@ class Roles(APIEndpoint):
 
     endpoint: str = "roles"
 
+    @_ret_json
     def get_role_by_id(
         self, role_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -50,6 +51,7 @@ class Roles(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{role_id}")
 
+    @_ret_json
     def get_role_by_name(
         self, role_name: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -68,9 +70,8 @@ class Roles(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/name/{role_name}")
 
-    def patch_role(
-        self, role_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def patch_role(self, role_id: str, body_json: Dict[str, Any]) -> Any:
         """Update a role partially by providing only the fields to update.
 
         Parameters
@@ -95,6 +96,7 @@ class Roles(APIEndpoint):
             f"{self.endpoint}/{role_id}/patch", body_json=body_json
         )
 
+    @_ret_json
     def get_list_of_roles_by_name(
         self,
     ) -> Any | Response | Awaitable[Any | Response]:

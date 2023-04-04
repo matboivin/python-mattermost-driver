@@ -116,9 +116,7 @@ class AsyncDriver(BaseDriver):
         """
         if self.options.token:
             self.client.token = self.options.token
-            result: Any | Response = await self.users.get_user(  # type:ignore
-                "me"
-            )
+            result: Any | Response = await self.users.get_user("me")
 
         else:
             response: Response = await self.users.login_user(

@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict, List
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .users import Users
 
 
@@ -37,6 +37,7 @@ class Preferences(APIEndpoint):
 
     endpoint: str = Users.endpoint
 
+    @_ret_json
     def get_user_preferences(
         self, user_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -55,9 +56,10 @@ class Preferences(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{user_id}/preferences")
 
+    @_ret_json
     def save_user_preferences(
         self, user_id: str, preferences: List[Dict[str, Any]]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Save a list of the user's preferences.
 
         Parameters
@@ -85,9 +87,10 @@ class Preferences(APIEndpoint):
             f"{self.endpoint}/{user_id}/preferences", body_json=preferences
         )
 
+    @_ret_json
     def delete_user_preferences(
         self, user_id: str, preferences: List[Dict[str, Any]]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Delete a list of the user's preferences.
 
         Parameters
@@ -116,6 +119,7 @@ class Preferences(APIEndpoint):
             body_json=preferences,
         )
 
+    @_ret_json
     def list_user_preferences_by_category(
         self, user_id: str, category: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -138,6 +142,7 @@ class Preferences(APIEndpoint):
             f"{self.endpoint}/{user_id}/preferences/{category}"
         )
 
+    @_ret_json
     def get_specific_user_preference(
         self, user_id: str, category: str, preference_name: str
     ) -> Any | Response | Awaitable[Any | Response]:

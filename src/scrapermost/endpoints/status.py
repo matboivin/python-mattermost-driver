@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .users import Users
 
 
@@ -33,6 +33,7 @@ class Status(APIEndpoint):
 
     endpoint: str = Users.endpoint
 
+    @_ret_json
     def get_user_status(
         self, user_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -51,9 +52,10 @@ class Status(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{user_id}/status")
 
+    @_ret_json
     def update_user_status(
         self, user_id: str, body_json: Dict[str, Any] | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Manually set a user's status.
 
         Parameters
@@ -72,9 +74,10 @@ class Status(APIEndpoint):
             f"{self.endpoint}/{user_id}/status", body_json=body_json
         )
 
+    @_ret_json
     def get_user_statuses_by_id(
         self, body_json: Dict[str, Any] | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any:
         """Get a list of user statuses by ID from the server.
 
         Parameters

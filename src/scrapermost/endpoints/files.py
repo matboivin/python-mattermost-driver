@@ -5,7 +5,7 @@ from typing import Any, Awaitable, Dict
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -36,9 +36,8 @@ class Files(APIEndpoint):
 
     endpoint: str = "files"
 
-    def upload_file(
-        self, channel_id: str, files: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    @_ret_json
+    def upload_file(self, channel_id: str, files: Dict[str, Any]) -> Any:
         """Upload a file that can later be attached to a post.
 
         Parameters
@@ -57,6 +56,7 @@ class Files(APIEndpoint):
             self.endpoint, data={"channel_id": channel_id}, files=files
         )
 
+    @_ret_json
     def get_file(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -75,6 +75,7 @@ class Files(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{file_id}")
 
+    @_ret_json
     def get_file_thumbnail(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -93,6 +94,7 @@ class Files(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{file_id}/thumbnail")
 
+    @_ret_json
     def get_file_preview(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -111,6 +113,7 @@ class Files(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{file_id}/preview")
 
+    @_ret_json
     def get_public_file_link(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -132,6 +135,7 @@ class Files(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{file_id}/link")
 
+    @_ret_json
     def get_file_metadata(
         self, file_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
