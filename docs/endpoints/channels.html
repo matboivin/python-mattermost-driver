@@ -1,0 +1,3064 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>scrapermost.endpoints.channels API documentation</title>
+<meta name="description" content="Endpoints for creating, getting and interacting with channels." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>scrapermost.endpoints.channels</code></h1>
+</header>
+<section id="section-intro">
+<p>Endpoints for creating, getting and interacting with channels.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Endpoints for creating, getting and interacting with channels.&#34;&#34;&#34;
+
+from dataclasses import dataclass
+from logging import INFO, Logger, getLogger
+from typing import Any, Awaitable, Dict, List
+
+from requests import Response
+
+from .base import APIEndpoint, _ret_json
+from .teams import Teams
+from .users import Users
+
+log: Logger = getLogger(&#34;scrapermost.api.channels&#34;)
+log.setLevel(INFO)
+
+
+@dataclass
+class Channels(APIEndpoint):
+    &#34;&#34;&#34;Class defining the Channels API endpoint.
+
+    Attributes
+    ----------
+    endpoint : str, default=&#39;channels&#39;
+        The endpoint path.
+
+    Methods
+    -------
+    create_channel(body_json)
+        Create a new channel.
+    create_direct_message_channel(first_user_id, second_user_id)
+        Create a new direct message channel between two users.
+    create_group_message_channel(user_ids)
+        Create a new group message channel to group of users.
+    get_list_of_channels_by_ids(team_id, channel_ids)
+        Get a list of public channels on a team by ID.
+    get_channel(channel_id)
+        Get channel from the provided channel ID string.
+    update_channel(channel_id, body_json)
+        Update a channel.
+    delete_channel(channel_id)
+        Archive a channel.
+    patch_channel(channel_id, body_json)
+        Update a channel partially by providing only the fields to update.
+    restore_channel(channel_id)
+        Restore channel from the provided channel ID string.
+    get_channel_statistics(channel_id)
+        Get statistics for a channel.
+    get_channel_pinned_posts(channel_id)
+        Get a list of pinned posts for channel.
+    get_public_channels(team_id, page=0, per_page=60)
+        Get a page of public channels on a team.
+    get_deleted_channels(team_id, page=0, per_page=60)
+        Get a page of deleted channels on a team.
+    autocomplete_channels(team_id, name)
+        Autocomplete public channels on a team.
+    search_channels(team_id, term)
+        Search public channels on a team.
+    get_channel_by_name(team_id, channel_name)
+        Get channel from the provided team ID and channel name strings.
+    get_channel_by_name_and_team_name(team_name, channel_name)
+        Get a channel from the provided team channel name strings.
+    get_channel_members(channel_id, page=0, per_page=60)
+        Get a page of members for a channel.
+    add_user(channel_id, user_id, post_root_id=None)
+        Add a user to a channel by creating a channel member object.
+    get_channel_members_by_ids(channel_id, user_ids)
+        Get a list of channel members based on the provided user IDs.
+    get_channel_member(channel_id, user_id)
+        Get a channel member.
+    remove_channel_member(channel_id, user_id)
+        Delete a channel member,removing them from the channel.
+    update_channel_roles(channel_id, user_id, roles)
+        Update a user&#39;s roles for a channel.
+    update_scheme_derived_roles_of_channel_member(
+            channel_id, user_id, body_json
+        )
+        Update the scheme-derived roles of a channel member.
+    update_channel_notifications(channel_id, user_id, body_json)
+        Update a user&#39;s notification properties for a channel.
+    view_channel(user_id, channel_id, prev_channel_id=None)
+        Perform all the actions involved in viewing a channel.
+    get_channel_members_for_user(user_id, team_id)
+        Get channel memberships and roles for a user.
+    get_channels_for_user(user_id, team_id)
+        Get all the channels on a team for a user.
+    get_unread_messages(user_id, channel_id)
+        Get the total unread messages and mentions for a channel for a user.
+    set_channel_scheme(channel_id)
+        Set a channel&#39;s scheme.
+
+    &#34;&#34;&#34;
+
+    endpoint: str = &#34;channels&#34;
+
+    @_ret_json
+    def create_channel(
+        self, body_json: Dict[str, Any] | None
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Create a new channel.
+
+        Parameters
+        ----------
+        body_json : dict, optional
+            A JSON serializable object to include in the body of the request.
+            team_id, name, display_name and type are required.
+            Example:
+            {
+                &#34;team_id&#34;: &#34;string&#34;,
+                &#34;name&#34;: &#34;string&#34;,
+                &#34;display_name&#34;: &#34;string&#34;,
+                &#34;purpose&#34;: &#34;string&#34;,
+                &#34;header&#34;: &#34;string&#34;,
+                &#34;type&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(self.endpoint, body_json=body_json)
+
+    @_ret_json
+    def create_direct_message_channel(
+        self, first_user_id: str, second_user_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Create a new direct message channel between two users.
+
+        Parameters
+        ----------
+        first_user_id : str
+            User GUID.
+        second_user_id : str
+            User GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{self.endpoint}/direct&#34;,
+            body_json=[first_user_id, second_user_id],
+        )
+
+    @_ret_json
+    def create_group_message_channel(
+        self, user_ids: List[str]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Create a new group message channel to group of users.
+
+        Parameters
+        ----------
+        user_ids : list of str
+            List of user IDs (min: 3, max: 8).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(f&#34;{self.endpoint}/group&#34;, body_json=user_ids)
+
+    @_ret_json
+    def get_list_of_channels_by_ids(
+        self, team_id: str, channel_ids: List[str]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a list of public channels on a team by ID.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        channel_ids : list of str
+            List of channel ids.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{Teams.endpoint}/{team_id}/channels/ids&#34;, body_json=channel_ids
+        )
+
+    @_ret_json
+    def get_channel(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get channel from the provided channel ID string.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(f&#34;{self.endpoint}/{channel_id}&#34;)
+
+    @_ret_json
+    def update_channel(
+        self, channel_id: str, body_json: Dict[str, Any]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;id&#34;: &#34;string&#34;,
+                &#34;name&#34;: &#34;string&#34;,
+                &#34;display_name&#34;: &#34;string&#34;,
+                &#34;purpose&#34;: &#34;string&#34;,
+                &#34;header&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}&#34;, body_json=body_json
+        )
+
+    @_ret_json
+    def delete_channel(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Archive a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.delete(f&#34;{self.endpoint}/{channel_id}&#34;)
+
+    @_ret_json
+    def patch_channel(
+        self, channel_id: str, body_json: Dict[str, Any]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a channel partially by providing only the fields to update.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;name&#34;: &#34;string&#34;,
+                &#34;display_name&#34;: &#34;string&#34;,
+                &#34;purpose&#34;: &#34;string&#34;,
+                &#34;header&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/patch&#34;, body_json=body_json
+        )
+
+    @_ret_json
+    def restore_channel(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Restore channel from the provided channel ID string.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{self.endpoint}/{channel_id}/restore&#34;,
+        )
+
+    @_ret_json
+    def get_channel_statistics(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get statistics for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{self.endpoint}/{channel_id}/stats&#34;,
+        )
+
+    @_ret_json
+    def get_channel_pinned_posts(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a list of pinned posts for channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(f&#34;{self.endpoint}/{channel_id}/pinned&#34;)
+
+    @_ret_json
+    def get_public_channels(
+        self, team_id: str, page: int = 0, per_page: int = 60
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a page of public channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        page : int, default=0
+            The page to select.
+        per_page : int, default=60
+            The number of members per page (max: 200).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels&#34;,
+            params={&#34;page&#34;: page, &#34;per_page&#34;: per_page},
+        )
+
+    @_ret_json
+    def get_deleted_channels(
+        self, team_id: str, page: int = 0, per_page: int = 60
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a page of deleted channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        page : int, default=0
+            The page to select.
+        per_page : int, default=60
+            The number of members per page (max: 200).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels/deleted&#34;,
+            params={&#34;page&#34;: page, &#34;per_page&#34;: per_page},
+        )
+
+    @_ret_json
+    def autocomplete_channels(
+        self, team_id: str, name: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Autocomplete public channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        name : str
+            Name or display name.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels/autocomplete&#34;,
+            params={&#34;name&#34;: name},
+        )
+
+    @_ret_json
+    def search_channels(
+        self, team_id: str, term: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Search public channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        term : str
+            The search term to match against the name or display name of
+            channels.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{Teams.endpoint}/{team_id}/channels/search&#34;,
+            body_json={&#34;term&#34;: term},
+        )
+
+    @_ret_json
+    def get_channel_by_name(
+        self, team_id: str, channel_name: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get channel from the provided team ID and channel name strings.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        channel_name : str
+            Channel Name.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels/name/{channel_name}&#34;
+        )
+
+    @_ret_json
+    def get_channel_by_name_and_team_name(
+        self, team_name: str, channel_name: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a channel from the provided team channel name strings.
+
+        Parameters
+        ----------
+        team_name : str
+            Team name.
+        channel_name : str
+            Channel Name.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/name/{team_name}/channels/name/{channel_name}&#34;
+        )
+
+    @_ret_json
+    def get_channel_members(
+        self, channel_id: str, page: int = 0, per_page: int = 60
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a page of members for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        page : int, default=0
+            The page to select.
+        per_page : int, default=60
+            The number of members per page (max: 200).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{self.endpoint}/{channel_id}/members&#34;,
+            params={&#34;page&#34;: page, &#34;per_page&#34;: per_page},
+        )
+
+    @_ret_json
+    def add_user(
+        self, channel_id: str, user_id: str, post_root_id: str | None = None
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Add a user to a channel by creating a channel member object.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            The ID of user to add into the channel.
+        post_root_id : str, optional
+            The ID of root post where link to add channel member originates.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        options: Any = {&#34;user_id&#34;: user_id}
+
+        if post_root_id:
+            options[&#34;post_root_id&#34;] = post_root_id
+
+        return self.client.post(
+            f&#34;{self.endpoint}/{channel_id}/members&#34;, body_json=options
+        )
+
+    @_ret_json
+    def get_channel_members_by_ids(
+        self, channel_id: str, user_ids: List[str]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a list of channel members based on the provided user IDs.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_ids : list of str
+            List of user IDs.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{self.endpoint}/{channel_id}/members/ids&#34;, body_json=user_ids
+        )
+
+    @_ret_json
+    def get_channel_member(
+        self, channel_id: str, user_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a channel member.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}&#34;
+        )
+
+    @_ret_json
+    def remove_channel_member(
+        self, channel_id: str, user_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Delete a channel member,removing them from the channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.delete(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}&#34;
+        )
+
+    @_ret_json
+    def update_channel_roles(
+        self, channel_id: str, user_id: str, roles: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a user&#39;s roles for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+        roles : str
+            Space-delimited channel roles to assign to the user.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}/roles&#34;,
+            body_json={&#34;roles&#34;: roles},
+        )
+
+    @_ret_json
+    def update_scheme_derived_roles_of_channel_member(
+        self,
+        channel_id: str,
+        user_id: str,
+        body_json: Dict[str, Any],
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update the scheme-derived roles of a channel member.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;scheme_admin&#34;: true,
+                &#34;scheme_user&#34;: true
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}/schemeRoles&#34;,
+            body_json=body_json,
+        )
+
+    @_ret_json
+    def update_channel_notifications(
+        self,
+        channel_id: str,
+        user_id: str,
+        body_json: Dict[str, Any],
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a user&#39;s notification properties for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;email&#34;: &#34;string&#34;,
+                &#34;push&#34;: &#34;string&#34;,
+                &#34;desktop&#34;: &#34;string&#34;,
+                &#34;mark_unread&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}/notify_props&#34;,
+            body_json=body_json,
+        )
+
+    @_ret_json
+    def view_channel(
+        self, user_id: str, channel_id: str, prev_channel_id: str | None = None
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Perform all the actions involved in viewing a channel.
+
+        This includes marking channels as read, clearing push notifications,
+        and updating the active channel.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        channel_id : str
+            The channel ID that is being viewed. Use a blank string to indicate
+            that all channels have lost focus.
+        prev_channel_id : str, optional
+            The channel ID of the previous channel, used when switching
+            channels. Providing this ID will cause push notifications to
+            clear on the channel being switched to.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        options: Any = {&#34;channel_id&#34;: channel_id}
+
+        if prev_channel_id:
+            options[&#34;prev_channel_id&#34;] = prev_channel_id
+
+        return self.client.post(
+            f&#34;{self.endpoint}/members/{user_id}/view&#34;, body_json=options
+        )
+
+    @_ret_json
+    def get_channel_members_for_user(
+        self, user_id: str, team_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get channel memberships and roles for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        team_id : str
+            Team GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Users.endpoint}/{user_id}/teams/{team_id}/channels/members&#34;
+        )
+
+    @_ret_json
+    def get_channels_for_user(
+        self, user_id: str, team_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get all the channels on a team for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        team_id : str
+            Team GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Users.endpoint}/{user_id}/teams/{team_id}/channels&#34;
+        )
+
+    @_ret_json
+    def get_unread_messages(
+        self, user_id: str, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get the total unread messages and mentions for a channel for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Users.endpoint}/{user_id}/channels/{channel_id}/unread&#34;
+        )
+
+    @_ret_json
+    def set_channel_scheme(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Set a channel&#39;s scheme.
+
+        More specifically sets the scheme_id value of a channel record.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(f&#34;{self.endpoint}/{channel_id}/scheme&#34;)</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="scrapermost.endpoints.channels.Channels"><code class="flex name class">
+<span>class <span class="ident">Channels</span></span>
+<span>(</span><span>client: <a title="scrapermost.driver.async_client.AsyncClient" href="../driver/async_client.html#scrapermost.driver.async_client.AsyncClient">AsyncClient</a> | <a title="scrapermost.driver.client.Client" href="../driver/client.html#scrapermost.driver.client.Client">Client</a>, endpoint: str = 'channels')</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class defining the Channels API endpoint.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>endpoint</code></strong> :&ensp;<code>str</code>, default=<code>'channels'</code></dt>
+<dd>The endpoint path.</dd>
+</dl>
+<h2 id="methods">Methods</h2>
+<p>create_channel(body_json)
+Create a new channel.
+create_direct_message_channel(first_user_id, second_user_id)
+Create a new direct message channel between two users.
+create_group_message_channel(user_ids)
+Create a new group message channel to group of users.
+get_list_of_channels_by_ids(team_id, channel_ids)
+Get a list of public channels on a team by ID.
+get_channel(channel_id)
+Get channel from the provided channel ID string.
+update_channel(channel_id, body_json)
+Update a channel.
+delete_channel(channel_id)
+Archive a channel.
+patch_channel(channel_id, body_json)
+Update a channel partially by providing only the fields to update.
+restore_channel(channel_id)
+Restore channel from the provided channel ID string.
+get_channel_statistics(channel_id)
+Get statistics for a channel.
+get_channel_pinned_posts(channel_id)
+Get a list of pinned posts for channel.
+get_public_channels(team_id, page=0, per_page=60)
+Get a page of public channels on a team.
+get_deleted_channels(team_id, page=0, per_page=60)
+Get a page of deleted channels on a team.
+autocomplete_channels(team_id, name)
+Autocomplete public channels on a team.
+search_channels(team_id, term)
+Search public channels on a team.
+get_channel_by_name(team_id, channel_name)
+Get channel from the provided team ID and channel name strings.
+get_channel_by_name_and_team_name(team_name, channel_name)
+Get a channel from the provided team channel name strings.
+get_channel_members(channel_id, page=0, per_page=60)
+Get a page of members for a channel.
+add_user(channel_id, user_id, post_root_id=None)
+Add a user to a channel by creating a channel member object.
+get_channel_members_by_ids(channel_id, user_ids)
+Get a list of channel members based on the provided user IDs.
+get_channel_member(channel_id, user_id)
+Get a channel member.
+remove_channel_member(channel_id, user_id)
+Delete a channel member,removing them from the channel.
+update_channel_roles(channel_id, user_id, roles)
+Update a user's roles for a channel.
+update_scheme_derived_roles_of_channel_member(
+channel_id, user_id, body_json
+)
+Update the scheme-derived roles of a channel member.
+update_channel_notifications(channel_id, user_id, body_json)
+Update a user's notification properties for a channel.
+view_channel(user_id, channel_id, prev_channel_id=None)
+Perform all the actions involved in viewing a channel.
+get_channel_members_for_user(user_id, team_id)
+Get channel memberships and roles for a user.
+get_channels_for_user(user_id, team_id)
+Get all the channels on a team for a user.
+get_unread_messages(user_id, channel_id)
+Get the total unread messages and mentions for a channel for a user.
+set_channel_scheme(channel_id)
+Set a channel's scheme.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">@dataclass
+class Channels(APIEndpoint):
+    &#34;&#34;&#34;Class defining the Channels API endpoint.
+
+    Attributes
+    ----------
+    endpoint : str, default=&#39;channels&#39;
+        The endpoint path.
+
+    Methods
+    -------
+    create_channel(body_json)
+        Create a new channel.
+    create_direct_message_channel(first_user_id, second_user_id)
+        Create a new direct message channel between two users.
+    create_group_message_channel(user_ids)
+        Create a new group message channel to group of users.
+    get_list_of_channels_by_ids(team_id, channel_ids)
+        Get a list of public channels on a team by ID.
+    get_channel(channel_id)
+        Get channel from the provided channel ID string.
+    update_channel(channel_id, body_json)
+        Update a channel.
+    delete_channel(channel_id)
+        Archive a channel.
+    patch_channel(channel_id, body_json)
+        Update a channel partially by providing only the fields to update.
+    restore_channel(channel_id)
+        Restore channel from the provided channel ID string.
+    get_channel_statistics(channel_id)
+        Get statistics for a channel.
+    get_channel_pinned_posts(channel_id)
+        Get a list of pinned posts for channel.
+    get_public_channels(team_id, page=0, per_page=60)
+        Get a page of public channels on a team.
+    get_deleted_channels(team_id, page=0, per_page=60)
+        Get a page of deleted channels on a team.
+    autocomplete_channels(team_id, name)
+        Autocomplete public channels on a team.
+    search_channels(team_id, term)
+        Search public channels on a team.
+    get_channel_by_name(team_id, channel_name)
+        Get channel from the provided team ID and channel name strings.
+    get_channel_by_name_and_team_name(team_name, channel_name)
+        Get a channel from the provided team channel name strings.
+    get_channel_members(channel_id, page=0, per_page=60)
+        Get a page of members for a channel.
+    add_user(channel_id, user_id, post_root_id=None)
+        Add a user to a channel by creating a channel member object.
+    get_channel_members_by_ids(channel_id, user_ids)
+        Get a list of channel members based on the provided user IDs.
+    get_channel_member(channel_id, user_id)
+        Get a channel member.
+    remove_channel_member(channel_id, user_id)
+        Delete a channel member,removing them from the channel.
+    update_channel_roles(channel_id, user_id, roles)
+        Update a user&#39;s roles for a channel.
+    update_scheme_derived_roles_of_channel_member(
+            channel_id, user_id, body_json
+        )
+        Update the scheme-derived roles of a channel member.
+    update_channel_notifications(channel_id, user_id, body_json)
+        Update a user&#39;s notification properties for a channel.
+    view_channel(user_id, channel_id, prev_channel_id=None)
+        Perform all the actions involved in viewing a channel.
+    get_channel_members_for_user(user_id, team_id)
+        Get channel memberships and roles for a user.
+    get_channels_for_user(user_id, team_id)
+        Get all the channels on a team for a user.
+    get_unread_messages(user_id, channel_id)
+        Get the total unread messages and mentions for a channel for a user.
+    set_channel_scheme(channel_id)
+        Set a channel&#39;s scheme.
+
+    &#34;&#34;&#34;
+
+    endpoint: str = &#34;channels&#34;
+
+    @_ret_json
+    def create_channel(
+        self, body_json: Dict[str, Any] | None
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Create a new channel.
+
+        Parameters
+        ----------
+        body_json : dict, optional
+            A JSON serializable object to include in the body of the request.
+            team_id, name, display_name and type are required.
+            Example:
+            {
+                &#34;team_id&#34;: &#34;string&#34;,
+                &#34;name&#34;: &#34;string&#34;,
+                &#34;display_name&#34;: &#34;string&#34;,
+                &#34;purpose&#34;: &#34;string&#34;,
+                &#34;header&#34;: &#34;string&#34;,
+                &#34;type&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(self.endpoint, body_json=body_json)
+
+    @_ret_json
+    def create_direct_message_channel(
+        self, first_user_id: str, second_user_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Create a new direct message channel between two users.
+
+        Parameters
+        ----------
+        first_user_id : str
+            User GUID.
+        second_user_id : str
+            User GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{self.endpoint}/direct&#34;,
+            body_json=[first_user_id, second_user_id],
+        )
+
+    @_ret_json
+    def create_group_message_channel(
+        self, user_ids: List[str]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Create a new group message channel to group of users.
+
+        Parameters
+        ----------
+        user_ids : list of str
+            List of user IDs (min: 3, max: 8).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(f&#34;{self.endpoint}/group&#34;, body_json=user_ids)
+
+    @_ret_json
+    def get_list_of_channels_by_ids(
+        self, team_id: str, channel_ids: List[str]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a list of public channels on a team by ID.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        channel_ids : list of str
+            List of channel ids.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{Teams.endpoint}/{team_id}/channels/ids&#34;, body_json=channel_ids
+        )
+
+    @_ret_json
+    def get_channel(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get channel from the provided channel ID string.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(f&#34;{self.endpoint}/{channel_id}&#34;)
+
+    @_ret_json
+    def update_channel(
+        self, channel_id: str, body_json: Dict[str, Any]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;id&#34;: &#34;string&#34;,
+                &#34;name&#34;: &#34;string&#34;,
+                &#34;display_name&#34;: &#34;string&#34;,
+                &#34;purpose&#34;: &#34;string&#34;,
+                &#34;header&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}&#34;, body_json=body_json
+        )
+
+    @_ret_json
+    def delete_channel(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Archive a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.delete(f&#34;{self.endpoint}/{channel_id}&#34;)
+
+    @_ret_json
+    def patch_channel(
+        self, channel_id: str, body_json: Dict[str, Any]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a channel partially by providing only the fields to update.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;name&#34;: &#34;string&#34;,
+                &#34;display_name&#34;: &#34;string&#34;,
+                &#34;purpose&#34;: &#34;string&#34;,
+                &#34;header&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/patch&#34;, body_json=body_json
+        )
+
+    @_ret_json
+    def restore_channel(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Restore channel from the provided channel ID string.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{self.endpoint}/{channel_id}/restore&#34;,
+        )
+
+    @_ret_json
+    def get_channel_statistics(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get statistics for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{self.endpoint}/{channel_id}/stats&#34;,
+        )
+
+    @_ret_json
+    def get_channel_pinned_posts(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a list of pinned posts for channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(f&#34;{self.endpoint}/{channel_id}/pinned&#34;)
+
+    @_ret_json
+    def get_public_channels(
+        self, team_id: str, page: int = 0, per_page: int = 60
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a page of public channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        page : int, default=0
+            The page to select.
+        per_page : int, default=60
+            The number of members per page (max: 200).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels&#34;,
+            params={&#34;page&#34;: page, &#34;per_page&#34;: per_page},
+        )
+
+    @_ret_json
+    def get_deleted_channels(
+        self, team_id: str, page: int = 0, per_page: int = 60
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a page of deleted channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        page : int, default=0
+            The page to select.
+        per_page : int, default=60
+            The number of members per page (max: 200).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels/deleted&#34;,
+            params={&#34;page&#34;: page, &#34;per_page&#34;: per_page},
+        )
+
+    @_ret_json
+    def autocomplete_channels(
+        self, team_id: str, name: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Autocomplete public channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        name : str
+            Name or display name.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels/autocomplete&#34;,
+            params={&#34;name&#34;: name},
+        )
+
+    @_ret_json
+    def search_channels(
+        self, team_id: str, term: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Search public channels on a team.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        term : str
+            The search term to match against the name or display name of
+            channels.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{Teams.endpoint}/{team_id}/channels/search&#34;,
+            body_json={&#34;term&#34;: term},
+        )
+
+    @_ret_json
+    def get_channel_by_name(
+        self, team_id: str, channel_name: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get channel from the provided team ID and channel name strings.
+
+        Parameters
+        ----------
+        team_id : str
+            Team GUID.
+        channel_name : str
+            Channel Name.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/{team_id}/channels/name/{channel_name}&#34;
+        )
+
+    @_ret_json
+    def get_channel_by_name_and_team_name(
+        self, team_name: str, channel_name: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a channel from the provided team channel name strings.
+
+        Parameters
+        ----------
+        team_name : str
+            Team name.
+        channel_name : str
+            Channel Name.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Teams.endpoint}/name/{team_name}/channels/name/{channel_name}&#34;
+        )
+
+    @_ret_json
+    def get_channel_members(
+        self, channel_id: str, page: int = 0, per_page: int = 60
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a page of members for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        page : int, default=0
+            The page to select.
+        per_page : int, default=60
+            The number of members per page (max: 200).
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{self.endpoint}/{channel_id}/members&#34;,
+            params={&#34;page&#34;: page, &#34;per_page&#34;: per_page},
+        )
+
+    @_ret_json
+    def add_user(
+        self, channel_id: str, user_id: str, post_root_id: str | None = None
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Add a user to a channel by creating a channel member object.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            The ID of user to add into the channel.
+        post_root_id : str, optional
+            The ID of root post where link to add channel member originates.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        options: Any = {&#34;user_id&#34;: user_id}
+
+        if post_root_id:
+            options[&#34;post_root_id&#34;] = post_root_id
+
+        return self.client.post(
+            f&#34;{self.endpoint}/{channel_id}/members&#34;, body_json=options
+        )
+
+    @_ret_json
+    def get_channel_members_by_ids(
+        self, channel_id: str, user_ids: List[str]
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a list of channel members based on the provided user IDs.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_ids : list of str
+            List of user IDs.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.post(
+            f&#34;{self.endpoint}/{channel_id}/members/ids&#34;, body_json=user_ids
+        )
+
+    @_ret_json
+    def get_channel_member(
+        self, channel_id: str, user_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get a channel member.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}&#34;
+        )
+
+    @_ret_json
+    def remove_channel_member(
+        self, channel_id: str, user_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Delete a channel member,removing them from the channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.delete(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}&#34;
+        )
+
+    @_ret_json
+    def update_channel_roles(
+        self, channel_id: str, user_id: str, roles: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a user&#39;s roles for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+        roles : str
+            Space-delimited channel roles to assign to the user.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}/roles&#34;,
+            body_json={&#34;roles&#34;: roles},
+        )
+
+    @_ret_json
+    def update_scheme_derived_roles_of_channel_member(
+        self,
+        channel_id: str,
+        user_id: str,
+        body_json: Dict[str, Any],
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update the scheme-derived roles of a channel member.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;scheme_admin&#34;: true,
+                &#34;scheme_user&#34;: true
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}/schemeRoles&#34;,
+            body_json=body_json,
+        )
+
+    @_ret_json
+    def update_channel_notifications(
+        self,
+        channel_id: str,
+        user_id: str,
+        body_json: Dict[str, Any],
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Update a user&#39;s notification properties for a channel.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+        user_id : str
+            User GUID.
+        body_json : dict
+            A JSON serializable object to include in the body of the request.
+            Example:
+            {
+                &#34;email&#34;: &#34;string&#34;,
+                &#34;push&#34;: &#34;string&#34;,
+                &#34;desktop&#34;: &#34;string&#34;,
+                &#34;mark_unread&#34;: &#34;string&#34;
+            }
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(
+            f&#34;{self.endpoint}/{channel_id}/members/{user_id}/notify_props&#34;,
+            body_json=body_json,
+        )
+
+    @_ret_json
+    def view_channel(
+        self, user_id: str, channel_id: str, prev_channel_id: str | None = None
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Perform all the actions involved in viewing a channel.
+
+        This includes marking channels as read, clearing push notifications,
+        and updating the active channel.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        channel_id : str
+            The channel ID that is being viewed. Use a blank string to indicate
+            that all channels have lost focus.
+        prev_channel_id : str, optional
+            The channel ID of the previous channel, used when switching
+            channels. Providing this ID will cause push notifications to
+            clear on the channel being switched to.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        options: Any = {&#34;channel_id&#34;: channel_id}
+
+        if prev_channel_id:
+            options[&#34;prev_channel_id&#34;] = prev_channel_id
+
+        return self.client.post(
+            f&#34;{self.endpoint}/members/{user_id}/view&#34;, body_json=options
+        )
+
+    @_ret_json
+    def get_channel_members_for_user(
+        self, user_id: str, team_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get channel memberships and roles for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        team_id : str
+            Team GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Users.endpoint}/{user_id}/teams/{team_id}/channels/members&#34;
+        )
+
+    @_ret_json
+    def get_channels_for_user(
+        self, user_id: str, team_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get all the channels on a team for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        team_id : str
+            Team GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Users.endpoint}/{user_id}/teams/{team_id}/channels&#34;
+        )
+
+    @_ret_json
+    def get_unread_messages(
+        self, user_id: str, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Get the total unread messages and mentions for a channel for a user.
+
+        Parameters
+        ----------
+        user_id : str
+            User GUID.
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.get(
+            f&#34;{Users.endpoint}/{user_id}/channels/{channel_id}/unread&#34;
+        )
+
+    @_ret_json
+    def set_channel_scheme(
+        self, channel_id: str
+    ) -&gt; Any | Response | Awaitable[Any | Response]:
+        &#34;&#34;&#34;Set a channel&#39;s scheme.
+
+        More specifically sets the scheme_id value of a channel record.
+
+        Parameters
+        ----------
+        channel_id : str
+            Channel GUID.
+
+        Returns
+        -------
+        Any or Coroutine(...) -&gt; Any
+        or requests.Response or Coroutine(...) -&gt; requests.Response
+
+        &#34;&#34;&#34;
+        return self.client.put(f&#34;{self.endpoint}/{channel_id}/scheme&#34;)</code></pre>
+</details>
+<h3>Ancestors</h3>
+<ul class="hlist">
+<li><a title="scrapermost.endpoints.base.APIEndpoint" href="base.html#scrapermost.endpoints.base.APIEndpoint">APIEndpoint</a></li>
+</ul>
+<h3>Class variables</h3>
+<dl>
+<dt id="scrapermost.endpoints.channels.Channels.endpoint"><code class="name">var <span class="ident">endpoint</span> : str</code></dt>
+<dd>
+<div class="desc"></div>
+</dd>
+</dl>
+<h3>Methods</h3>
+<dl>
+<dt id="scrapermost.endpoints.channels.Channels.add_user"><code class="name flex">
+<span>async def <span class="ident">add_user</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.autocomplete_channels"><code class="name flex">
+<span>async def <span class="ident">autocomplete_channels</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.create_channel"><code class="name flex">
+<span>async def <span class="ident">create_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.create_direct_message_channel"><code class="name flex">
+<span>async def <span class="ident">create_direct_message_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.create_group_message_channel"><code class="name flex">
+<span>async def <span class="ident">create_group_message_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.delete_channel"><code class="name flex">
+<span>async def <span class="ident">delete_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel"><code class="name flex">
+<span>async def <span class="ident">get_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_by_name"><code class="name flex">
+<span>async def <span class="ident">get_channel_by_name</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_by_name_and_team_name"><code class="name flex">
+<span>async def <span class="ident">get_channel_by_name_and_team_name</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_member"><code class="name flex">
+<span>async def <span class="ident">get_channel_member</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_members"><code class="name flex">
+<span>async def <span class="ident">get_channel_members</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_members_by_ids"><code class="name flex">
+<span>async def <span class="ident">get_channel_members_by_ids</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_members_for_user"><code class="name flex">
+<span>async def <span class="ident">get_channel_members_for_user</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_pinned_posts"><code class="name flex">
+<span>async def <span class="ident">get_channel_pinned_posts</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channel_statistics"><code class="name flex">
+<span>async def <span class="ident">get_channel_statistics</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_channels_for_user"><code class="name flex">
+<span>async def <span class="ident">get_channels_for_user</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_deleted_channels"><code class="name flex">
+<span>async def <span class="ident">get_deleted_channels</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_list_of_channels_by_ids"><code class="name flex">
+<span>async def <span class="ident">get_list_of_channels_by_ids</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_public_channels"><code class="name flex">
+<span>async def <span class="ident">get_public_channels</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.get_unread_messages"><code class="name flex">
+<span>async def <span class="ident">get_unread_messages</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.patch_channel"><code class="name flex">
+<span>async def <span class="ident">patch_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.remove_channel_member"><code class="name flex">
+<span>async def <span class="ident">remove_channel_member</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.restore_channel"><code class="name flex">
+<span>async def <span class="ident">restore_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.search_channels"><code class="name flex">
+<span>async def <span class="ident">search_channels</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.set_channel_scheme"><code class="name flex">
+<span>async def <span class="ident">set_channel_scheme</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.update_channel"><code class="name flex">
+<span>async def <span class="ident">update_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.update_channel_notifications"><code class="name flex">
+<span>async def <span class="ident">update_channel_notifications</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.update_channel_roles"><code class="name flex">
+<span>async def <span class="ident">update_channel_roles</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.update_scheme_derived_roles_of_channel_member"><code class="name flex">
+<span>async def <span class="ident">update_scheme_derived_roles_of_channel_member</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+<dt id="scrapermost.endpoints.channels.Channels.view_channel"><code class="name flex">
+<span>async def <span class="ident">view_channel</span></span>(<span>*args: str, **kwargs: int) ‑> Union[Any, requests.models.Response]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Return the JSON-encoded content of the response.</p>
+<h2 id="returns">Returns</h2>
+<dl>
+<dt><code>Any</code> or <code>requests.Response</code></dt>
+<dd>The JSON-encoded content of the response.
+Otherwise if decoding failed, the raw response.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">async def wrapper(*args: str, **kwargs: int) -&gt; Any | Response:
+    &#34;&#34;&#34;Return the JSON-encoded content of the response.
+
+    Returns
+    -------
+    Any or requests.Response
+        The JSON-encoded content of the response.
+        Otherwise if decoding failed, the raw response.
+
+    &#34;&#34;&#34;
+    func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+    response: Response
+
+    if iscoroutine(func_ret):
+        response = await helper_async(func_ret)
+    else:
+        response = func_ret  # type: ignore
+
+    try:
+        return response.json()
+
+    except (JSONDecodeError, ValueError):
+        return response</code></pre>
+</details>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="scrapermost.endpoints" href="index.html">scrapermost.endpoints</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="scrapermost.endpoints.channels.Channels" href="#scrapermost.endpoints.channels.Channels">Channels</a></code></h4>
+<ul class="">
+<li><code><a title="scrapermost.endpoints.channels.Channels.add_user" href="#scrapermost.endpoints.channels.Channels.add_user">add_user</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.autocomplete_channels" href="#scrapermost.endpoints.channels.Channels.autocomplete_channels">autocomplete_channels</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.create_channel" href="#scrapermost.endpoints.channels.Channels.create_channel">create_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.create_direct_message_channel" href="#scrapermost.endpoints.channels.Channels.create_direct_message_channel">create_direct_message_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.create_group_message_channel" href="#scrapermost.endpoints.channels.Channels.create_group_message_channel">create_group_message_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.delete_channel" href="#scrapermost.endpoints.channels.Channels.delete_channel">delete_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.endpoint" href="#scrapermost.endpoints.channels.Channels.endpoint">endpoint</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel" href="#scrapermost.endpoints.channels.Channels.get_channel">get_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_by_name" href="#scrapermost.endpoints.channels.Channels.get_channel_by_name">get_channel_by_name</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_by_name_and_team_name" href="#scrapermost.endpoints.channels.Channels.get_channel_by_name_and_team_name">get_channel_by_name_and_team_name</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_member" href="#scrapermost.endpoints.channels.Channels.get_channel_member">get_channel_member</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_members" href="#scrapermost.endpoints.channels.Channels.get_channel_members">get_channel_members</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_members_by_ids" href="#scrapermost.endpoints.channels.Channels.get_channel_members_by_ids">get_channel_members_by_ids</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_members_for_user" href="#scrapermost.endpoints.channels.Channels.get_channel_members_for_user">get_channel_members_for_user</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_pinned_posts" href="#scrapermost.endpoints.channels.Channels.get_channel_pinned_posts">get_channel_pinned_posts</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channel_statistics" href="#scrapermost.endpoints.channels.Channels.get_channel_statistics">get_channel_statistics</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_channels_for_user" href="#scrapermost.endpoints.channels.Channels.get_channels_for_user">get_channels_for_user</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_deleted_channels" href="#scrapermost.endpoints.channels.Channels.get_deleted_channels">get_deleted_channels</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_list_of_channels_by_ids" href="#scrapermost.endpoints.channels.Channels.get_list_of_channels_by_ids">get_list_of_channels_by_ids</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_public_channels" href="#scrapermost.endpoints.channels.Channels.get_public_channels">get_public_channels</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.get_unread_messages" href="#scrapermost.endpoints.channels.Channels.get_unread_messages">get_unread_messages</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.patch_channel" href="#scrapermost.endpoints.channels.Channels.patch_channel">patch_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.remove_channel_member" href="#scrapermost.endpoints.channels.Channels.remove_channel_member">remove_channel_member</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.restore_channel" href="#scrapermost.endpoints.channels.Channels.restore_channel">restore_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.search_channels" href="#scrapermost.endpoints.channels.Channels.search_channels">search_channels</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.set_channel_scheme" href="#scrapermost.endpoints.channels.Channels.set_channel_scheme">set_channel_scheme</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.update_channel" href="#scrapermost.endpoints.channels.Channels.update_channel">update_channel</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.update_channel_notifications" href="#scrapermost.endpoints.channels.Channels.update_channel_notifications">update_channel_notifications</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.update_channel_roles" href="#scrapermost.endpoints.channels.Channels.update_channel_roles">update_channel_roles</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.update_scheme_derived_roles_of_channel_member" href="#scrapermost.endpoints.channels.Channels.update_scheme_derived_roles_of_channel_member">update_scheme_derived_roles_of_channel_member</a></code></li>
+<li><code><a title="scrapermost.endpoints.channels.Channels.view_channel" href="#scrapermost.endpoints.channels.Channels.view_channel">view_channel</a></code></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>

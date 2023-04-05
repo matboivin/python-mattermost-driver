@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
+<meta name="generator" content="pdoc 0.10.0" />
+<title>scrapermost.driver.options API documentation</title>
+<meta name="description" content="Mattermost API connection settings class." />
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
+<link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
+<link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
+<style>:root{--highlight-color:#fe9}.flex{display:flex !important}body{line-height:1.5em}#content{padding:20px}#sidebar{padding:30px;overflow:hidden}#sidebar > *:last-child{margin-bottom:2cm}.http-server-breadcrumbs{font-size:130%;margin:0 0 15px 0}#footer{font-size:.75em;padding:5px 30px;border-top:1px solid #ddd;text-align:right}#footer p{margin:0 0 0 1em;display:inline-block}#footer p:last-child{margin-right:30px}h1,h2,h3,h4,h5{font-weight:300}h1{font-size:2.5em;line-height:1.1em}h2{font-size:1.75em;margin:1em 0 .50em 0}h3{font-size:1.4em;margin:25px 0 10px 0}h4{margin:0;font-size:105%}h1:target,h2:target,h3:target,h4:target,h5:target,h6:target{background:var(--highlight-color);padding:.2em 0}a{color:#058;text-decoration:none;transition:color .3s ease-in-out}a:hover{color:#e82}.title code{font-weight:bold}h2[id^="header-"]{margin-top:2em}.ident{color:#900}pre code{background:#f8f8f8;font-size:.8em;line-height:1.4em}code{background:#f2f2f1;padding:1px 4px;overflow-wrap:break-word}h1 code{background:transparent}pre{background:#f8f8f8;border:0;border-top:1px solid #ccc;border-bottom:1px solid #ccc;margin:1em 0;padding:1ex}#http-server-module-list{display:flex;flex-flow:column}#http-server-module-list div{display:flex}#http-server-module-list dt{min-width:10%}#http-server-module-list p{margin-top:0}.toc ul,#index{list-style-type:none;margin:0;padding:0}#index code{background:transparent}#index h3{border-bottom:1px solid #ddd}#index ul{padding:0}#index h4{margin-top:.6em;font-weight:bold}@media (min-width:200ex){#index .two-column{column-count:2}}@media (min-width:300ex){#index .two-column{column-count:3}}dl{margin-bottom:2em}dl dl:last-child{margin-bottom:4em}dd{margin:0 0 1em 3em}#header-classes + dl > dd{margin-bottom:3em}dd dd{margin-left:2em}dd p{margin:10px 0}.name{background:#eee;font-weight:bold;font-size:.85em;padding:5px 10px;display:inline-block;min-width:40%}.name:hover{background:#e0e0e0}dt:target .name{background:var(--highlight-color)}.name > span:first-child{white-space:nowrap}.name.class > span:nth-child(2){margin-left:.4em}.inherited{color:#999;border-left:5px solid #eee;padding-left:1em}.inheritance em{font-style:normal;font-weight:bold}.desc h2{font-weight:400;font-size:1.25em}.desc h3{font-size:1em}.desc dt code{background:inherit}.source summary,.git-link-div{color:#666;text-align:right;font-weight:400;font-size:.8em;text-transform:uppercase}.source summary > *{white-space:nowrap;cursor:pointer}.git-link{color:inherit;margin-left:1em}.source pre{max-height:500px;overflow:auto;margin:0}.source pre code{font-size:12px;overflow:visible}.hlist{list-style:none}.hlist li{display:inline}.hlist li:after{content:',\2002'}.hlist li:last-child:after{content:none}.hlist .hlist{display:inline;padding-left:1em}img{max-width:100%}td{padding:0 .5em}.admonition{padding:.1em .5em;margin-bottom:1em}.admonition-title{font-weight:bold}.admonition.note,.admonition.info,.admonition.important{background:#aef}.admonition.todo,.admonition.versionadded,.admonition.tip,.admonition.hint{background:#dfd}.admonition.warning,.admonition.versionchanged,.admonition.deprecated{background:#fd4}.admonition.error,.admonition.danger,.admonition.caution{background:lightpink}</style>
+<style media="screen and (min-width: 700px)">@media screen and (min-width:700px){#sidebar{width:30%;height:100vh;overflow:auto;position:sticky;top:0}#content{width:70%;max-width:100ch;padding:3em 4em;border-left:1px solid #ddd}pre code{font-size:1em}.item .name{font-size:1em}main{display:flex;flex-direction:row-reverse;justify-content:flex-end}.toc ul ul,#index ul{padding-left:1.5em}.toc > ul > li{margin-top:.5em}}</style>
+<style media="print">@media print{#sidebar h1{page-break-before:always}.source{display:none}}@media print{*{background:transparent !important;color:#000 !important;box-shadow:none !important;text-shadow:none !important}a[href]:after{content:" (" attr(href) ")";font-size:90%}a[href][title]:after{content:none}abbr[title]:after{content:" (" attr(title) ")"}.ir a:after,a[href^="javascript:"]:after,a[href^="#"]:after{content:""}pre,blockquote{border:1px solid #999;page-break-inside:avoid}thead{display:table-header-group}tr,img{page-break-inside:avoid}img{max-width:100% !important}@page{margin:0.5cm}p,h2,h3{orphans:3;widows:3}h1,h2,h3,h4,h5,h6{page-break-after:avoid}}</style>
+<script defer src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/highlight.min.js" integrity="sha256-Uv3H6lx7dJmRfRvH8TH6kJD1TSK1aFcwgx+mdg3epi8=" crossorigin></script>
+<script>window.addEventListener('DOMContentLoaded', () => hljs.initHighlighting())</script>
+</head>
+<body>
+<main>
+<article id="content">
+<header>
+<h1 class="title">Module <code>scrapermost.driver.options</code></h1>
+</header>
+<section id="section-intro">
+<p>Mattermost API connection settings class.</p>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">&#34;&#34;&#34;Mattermost API connection settings class.&#34;&#34;&#34;
+
+from typing import Any, Dict
+
+
+class DriverOptions:
+    &#34;&#34;&#34;Class to define and group the connection options.
+
+    Settings configure the driver, client and websocket connections to the API.
+
+    Attributes
+    ----------
+    debug : bool, default=False
+        Whether to run debugging mode.
+    scheme : str, default=&#39;https&#39;
+        The protocol to be used to access the Mattermost server.
+    hostname : str, default=&#39;localhost&#39;
+        The Mattermost server host name (example: &#39;mattermost.server.com&#39;).
+    port : int, default=8065
+        The post to be used to access the Mattermost server.
+    basepath : str, default=&#39;/api/v4&#39;
+        The path to the API endoint.
+    login_id : str, default=None
+        The user account&#39;s email address or username.
+    password : str, default=None
+        The user&#39;s password.
+    token : str, default=None
+        The user&#39;s token.
+    mfa_token : Any, default=None
+        The Multi-Factor Authentication token. If MFA is enabled, the user has
+        to provide a secure one-time code.
+    auth : Any, default=None
+        An authentication class used by the httpx client when sending requests.
+    verify : bool, default=True
+        Whether instantiating a httpx client with SSL verification enabled.
+    http2 : bool, default=False
+        Whether instantiating a httpx client with HTTP/2.
+    proxy : str, default=None
+        Proxy URL for every request.
+    request_timeout : int, default=None
+        The timeout configuration used by the httpx client when sending
+        request. If none, use default httpx client timeout (5 seconds).
+    timeout : float, default=30
+        The Mattermost websocket connection&#39;s timeout in seconds.
+    keepalive : bool, default=False
+        Whether to keep the websocket connection alive.
+    keepalive_delay : float, default=5
+        Duration in seconds between two keepalive transmissions.
+    websocket_kw_args : dict, default=None
+        Parameters to pass to aiohttp.ClientSession.ws_connect() to create a
+        websocket connection.
+
+    &#34;&#34;&#34;
+
+    def __init__(self, options: Dict[str, Any]) -&gt; None:
+        &#34;&#34;&#34;Send a DELETE request.
+
+        Parameters
+        ----------
+        options : dict
+            The driver options as a dict.
+
+        Raises
+        ------
+        RuntimeError
+            If &#39;login_id&#39; and &#39;password&#39; or &#39;token&#39; are missing.
+
+        &#34;&#34;&#34;
+        if not all(
+            [options.get(&#34;login_id&#34;), options.get(&#34;password&#34;)]
+        ) and not options.get(&#34;token&#34;):
+            raise RuntimeError(
+                &#34;Required options are &#39;login_id&#39; and &#39;password&#39;, &#34;
+                &#34;or &#39;token.&#39;&#34;
+            )
+
+        self.debug: bool = options.get(&#34;debug&#34;, False)
+        self.scheme: str = options.get(&#34;scheme&#34;, &#34;https&#34;)
+        self.hostname: str = options.get(&#34;hostname&#34;, &#34;localhost&#34;)
+        self.port: int = options.get(&#34;port&#34;, 8065)
+        self.basepath: str = options.get(&#34;basepath&#34;, &#34;/api/v4&#34;)
+        self.login_id: str | None = options.get(&#34;login_id&#34;)
+        self.password: str | None = options.get(&#34;password&#34;)
+        self.token: str | None = options.get(&#34;token&#34;)
+        self.mfa_token: Any | None = options.get(&#34;mfa_token&#34;)
+        # httpx client options
+        self.auth: Any | None = options.get(&#34;auth&#34;)
+        self.verify: bool = options.get(&#34;verify&#34;, True)
+        self.http2: bool = options.get(&#34;http2&#34;, False)
+        self.proxy: str | None = options.get(&#34;proxy&#34;)
+        self.request_timeout: int | None = options.get(&#34;request_timeout&#34;)
+        # websocket options
+        self.timeout: float = options.get(&#34;timeout&#34;, 30)
+        self.keepalive: bool = options.get(&#34;keepalive&#34;, False)
+        self.keepalive_delay: float = options.get(&#34;keepalive_delay&#34;, 5)
+        self.websocket_kw_args: Dict[str, Any] = options.get(
+            &#34;websocket_kw_args&#34;, {}
+        )</code></pre>
+</details>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+</section>
+<section>
+<h2 class="section-title" id="header-classes">Classes</h2>
+<dl>
+<dt id="scrapermost.driver.options.DriverOptions"><code class="flex name class">
+<span>class <span class="ident">DriverOptions</span></span>
+<span>(</span><span>options: Dict[str, Any])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Class to define and group the connection options.</p>
+<p>Settings configure the driver, client and websocket connections to the API.</p>
+<h2 id="attributes">Attributes</h2>
+<dl>
+<dt><strong><code>debug</code></strong> :&ensp;<code>bool</code>, default=<code>False</code></dt>
+<dd>Whether to run debugging mode.</dd>
+<dt><strong><code>scheme</code></strong> :&ensp;<code>str</code>, default=<code>'https'</code></dt>
+<dd>The protocol to be used to access the Mattermost server.</dd>
+<dt><strong><code>hostname</code></strong> :&ensp;<code>str</code>, default=<code>'localhost'</code></dt>
+<dd>The Mattermost server host name (example: 'mattermost.server.com').</dd>
+<dt><strong><code>port</code></strong> :&ensp;<code>int</code>, default=<code>8065</code></dt>
+<dd>The post to be used to access the Mattermost server.</dd>
+<dt><strong><code>basepath</code></strong> :&ensp;<code>str</code>, default=<code>'/api/v4'</code></dt>
+<dd>The path to the API endoint.</dd>
+<dt><strong><code>login_id</code></strong> :&ensp;<code>str</code>, default=<code>None</code></dt>
+<dd>The user account's email address or username.</dd>
+<dt><strong><code>password</code></strong> :&ensp;<code>str</code>, default=<code>None</code></dt>
+<dd>The user's password.</dd>
+<dt><strong><code>token</code></strong> :&ensp;<code>str</code>, default=<code>None</code></dt>
+<dd>The user's token.</dd>
+<dt><strong><code>mfa_token</code></strong> :&ensp;<code>Any</code>, default=<code>None</code></dt>
+<dd>The Multi-Factor Authentication token. If MFA is enabled, the user has
+to provide a secure one-time code.</dd>
+<dt><strong><code>auth</code></strong> :&ensp;<code>Any</code>, default=<code>None</code></dt>
+<dd>An authentication class used by the httpx client when sending requests.</dd>
+<dt><strong><code>verify</code></strong> :&ensp;<code>bool</code>, default=<code>True</code></dt>
+<dd>Whether instantiating a httpx client with SSL verification enabled.</dd>
+<dt><strong><code>http2</code></strong> :&ensp;<code>bool</code>, default=<code>False</code></dt>
+<dd>Whether instantiating a httpx client with HTTP/2.</dd>
+<dt><strong><code>proxy</code></strong> :&ensp;<code>str</code>, default=<code>None</code></dt>
+<dd>Proxy URL for every request.</dd>
+<dt><strong><code>request_timeout</code></strong> :&ensp;<code>int</code>, default=<code>None</code></dt>
+<dd>The timeout configuration used by the httpx client when sending
+request. If none, use default httpx client timeout (5 seconds).</dd>
+<dt><strong><code>timeout</code></strong> :&ensp;<code>float</code>, default=<code>30</code></dt>
+<dd>The Mattermost websocket connection's timeout in seconds.</dd>
+<dt><strong><code>keepalive</code></strong> :&ensp;<code>bool</code>, default=<code>False</code></dt>
+<dd>Whether to keep the websocket connection alive.</dd>
+<dt><strong><code>keepalive_delay</code></strong> :&ensp;<code>float</code>, default=<code>5</code></dt>
+<dd>Duration in seconds between two keepalive transmissions.</dd>
+<dt><strong><code>websocket_kw_args</code></strong> :&ensp;<code>dict</code>, default=<code>None</code></dt>
+<dd>Parameters to pass to aiohttp.ClientSession.ws_connect() to create a
+websocket connection.</dd>
+</dl>
+<p>Send a DELETE request.</p>
+<h2 id="parameters">Parameters</h2>
+<dl>
+<dt><strong><code>options</code></strong> :&ensp;<code>dict</code></dt>
+<dd>The driver options as a dict.</dd>
+</dl>
+<h2 id="raises">Raises</h2>
+<dl>
+<dt><code>RuntimeError</code></dt>
+<dd>If 'login_id' and 'password' or 'token' are missing.</dd>
+</dl></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">class DriverOptions:
+    &#34;&#34;&#34;Class to define and group the connection options.
+
+    Settings configure the driver, client and websocket connections to the API.
+
+    Attributes
+    ----------
+    debug : bool, default=False
+        Whether to run debugging mode.
+    scheme : str, default=&#39;https&#39;
+        The protocol to be used to access the Mattermost server.
+    hostname : str, default=&#39;localhost&#39;
+        The Mattermost server host name (example: &#39;mattermost.server.com&#39;).
+    port : int, default=8065
+        The post to be used to access the Mattermost server.
+    basepath : str, default=&#39;/api/v4&#39;
+        The path to the API endoint.
+    login_id : str, default=None
+        The user account&#39;s email address or username.
+    password : str, default=None
+        The user&#39;s password.
+    token : str, default=None
+        The user&#39;s token.
+    mfa_token : Any, default=None
+        The Multi-Factor Authentication token. If MFA is enabled, the user has
+        to provide a secure one-time code.
+    auth : Any, default=None
+        An authentication class used by the httpx client when sending requests.
+    verify : bool, default=True
+        Whether instantiating a httpx client with SSL verification enabled.
+    http2 : bool, default=False
+        Whether instantiating a httpx client with HTTP/2.
+    proxy : str, default=None
+        Proxy URL for every request.
+    request_timeout : int, default=None
+        The timeout configuration used by the httpx client when sending
+        request. If none, use default httpx client timeout (5 seconds).
+    timeout : float, default=30
+        The Mattermost websocket connection&#39;s timeout in seconds.
+    keepalive : bool, default=False
+        Whether to keep the websocket connection alive.
+    keepalive_delay : float, default=5
+        Duration in seconds between two keepalive transmissions.
+    websocket_kw_args : dict, default=None
+        Parameters to pass to aiohttp.ClientSession.ws_connect() to create a
+        websocket connection.
+
+    &#34;&#34;&#34;
+
+    def __init__(self, options: Dict[str, Any]) -&gt; None:
+        &#34;&#34;&#34;Send a DELETE request.
+
+        Parameters
+        ----------
+        options : dict
+            The driver options as a dict.
+
+        Raises
+        ------
+        RuntimeError
+            If &#39;login_id&#39; and &#39;password&#39; or &#39;token&#39; are missing.
+
+        &#34;&#34;&#34;
+        if not all(
+            [options.get(&#34;login_id&#34;), options.get(&#34;password&#34;)]
+        ) and not options.get(&#34;token&#34;):
+            raise RuntimeError(
+                &#34;Required options are &#39;login_id&#39; and &#39;password&#39;, &#34;
+                &#34;or &#39;token.&#39;&#34;
+            )
+
+        self.debug: bool = options.get(&#34;debug&#34;, False)
+        self.scheme: str = options.get(&#34;scheme&#34;, &#34;https&#34;)
+        self.hostname: str = options.get(&#34;hostname&#34;, &#34;localhost&#34;)
+        self.port: int = options.get(&#34;port&#34;, 8065)
+        self.basepath: str = options.get(&#34;basepath&#34;, &#34;/api/v4&#34;)
+        self.login_id: str | None = options.get(&#34;login_id&#34;)
+        self.password: str | None = options.get(&#34;password&#34;)
+        self.token: str | None = options.get(&#34;token&#34;)
+        self.mfa_token: Any | None = options.get(&#34;mfa_token&#34;)
+        # httpx client options
+        self.auth: Any | None = options.get(&#34;auth&#34;)
+        self.verify: bool = options.get(&#34;verify&#34;, True)
+        self.http2: bool = options.get(&#34;http2&#34;, False)
+        self.proxy: str | None = options.get(&#34;proxy&#34;)
+        self.request_timeout: int | None = options.get(&#34;request_timeout&#34;)
+        # websocket options
+        self.timeout: float = options.get(&#34;timeout&#34;, 30)
+        self.keepalive: bool = options.get(&#34;keepalive&#34;, False)
+        self.keepalive_delay: float = options.get(&#34;keepalive_delay&#34;, 5)
+        self.websocket_kw_args: Dict[str, Any] = options.get(
+            &#34;websocket_kw_args&#34;, {}
+        )</code></pre>
+</details>
+</dd>
+</dl>
+</section>
+</article>
+<nav id="sidebar">
+<h1>Index</h1>
+<div class="toc">
+<ul></ul>
+</div>
+<ul id="index">
+<li><h3>Super-module</h3>
+<ul>
+<li><code><a title="scrapermost.driver" href="index.html">scrapermost.driver</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-classes">Classes</a></h3>
+<ul>
+<li>
+<h4><code><a title="scrapermost.driver.options.DriverOptions" href="#scrapermost.driver.options.DriverOptions">DriverOptions</a></code></h4>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+</main>
+<footer id="footer">
+<p>Generated by <a href="https://pdoc3.github.io/pdoc" title="pdoc: Python API documentation generator"><cite>pdoc</cite> 0.10.0</a>.</p>
+</footer>
+</body>
+</html>
