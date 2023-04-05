@@ -78,7 +78,7 @@
 <li><code>login_id</code> (user account's email address or username) and <code>password</code></li>
 <li>or <code>token</code></li>
 </ul>
-<p><strong>Full list of Driver options <a href="scrapermost/driver/options.py">here</a>.</strong></p>
+<p><strong>Full list of Driver options <a href="driver/options.py">here</a>.</strong></p>
 <p>Example with synchronous driver:</p>
 <pre><code class="language-python">from scrapermost import Driver
 
@@ -123,7 +123,7 @@ response: Any = await driver.users.get_user(user_id=&quot;me&quot;)
 </code></pre>
 <p><br /></p>
 <h3 id="connect-to-the-websocket-api">Connect to the Websocket API</h3>
-<p>It is possible to use a <a href="scrapermost/driver/websocket.py">websocket</a> to listen to Mattermost events (<a href="https://api.mattermost.com/#tag/WebSocket">event list here</a>).</p>
+<p>It is possible to use a <a href="driver/websocket.py">websocket</a> to listen to Mattermost events (<a href="https://api.mattermost.com/#tag/WebSocket">event list here</a>).</p>
 <p>Create a function to handle every Mattermost websocket event:</p>
 <pre><code class="language-python">from typing import Any, Dict
 
