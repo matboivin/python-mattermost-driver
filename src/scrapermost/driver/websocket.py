@@ -201,8 +201,11 @@ class Websocket:
 
                 await event_handler(message)
 
-            except (TypeError, ValueError) as err:
-                logger.error(err)
+            except (TypeError, ValueError):
+                pass
+
+            except RuntimeError:
+                break
 
         logger.debug("Cancelling heartbeat task...")
         keep_alive.cancel()
