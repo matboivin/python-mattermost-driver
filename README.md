@@ -34,7 +34,7 @@ This repository is a fork of [Python Mattermost Driver](https://github.com/Vaelo
 
 ### Installation
 
-As this project is not published to Pypi, follow the guidelines below.
+As this project is not published to Pypi yet, follow the guidelines below.
 
 1. Clone the repository and change it to your working directory.
 
@@ -113,7 +113,7 @@ async def connect_driver_to_server(driver: AsyncDriver) -> None:
 
 ### Use the Web service API
 
-You can make api calls by using calling `Driver.endpointofchoice`. For example, if you want to get a user's data (`http://your-mattermost-url.com/api/v4/users/{user_id}`), you would use `Driver.users.get_user(user_id)`. The returned data will be in JSON format.
+You can make api calls by using calling `Driver.endpointofchoice`. For example, if you want to get a user's data (`http://your-mattermost-url.com/api/v4/users/{user_id}`), you would use `Driver.users.get_user(user_id)`. The returned data will be either in JSON format or the raw response.
 
 Example with [asynchronous driver](src/scrapermost/driver/async_driver.py):
 
@@ -134,14 +134,14 @@ Create a function to handle every Mattermost websocket event:
 ```python
 from typing import Any, Dict
 
-from scrapermost import Posted
+from scrapermost.events import Posted
 
 # Minimalist event handler example
-async def my_event_handler(event: Dict[str, Any]):
+async def my_event_handler(event: Dict[str, Any]) -> None:
     if event.get("event") == "posted":  # event is a new post
         post: Posted = Posted(event)
 
-        print(post)
+        ...
 ```
 
 Assuming `Driver.login()` was called, initialize the websocket connection to the Mattermost server using `Driver.init_websocket()`.

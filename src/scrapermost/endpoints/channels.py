@@ -6,7 +6,7 @@ from typing import Any, Awaitable, Dict, List
 
 from requests import Response
 
-from .base import APIEndpoint
+from .base import APIEndpoint, _ret_json
 from .teams import Teams
 from .users import Users
 
@@ -92,9 +92,10 @@ class Channels(APIEndpoint):
 
     endpoint: str = "channels"
 
+    @_ret_json
     def create_channel(
         self, body_json: Dict[str, Any] | None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new channel.
 
         Parameters
@@ -115,13 +116,15 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(self.endpoint, body_json=body_json)
 
+    @_ret_json
     def create_direct_message_channel(
         self, first_user_id: str, second_user_id: str
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new direct message channel between two users.
 
         Parameters
@@ -134,6 +137,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -141,9 +145,10 @@ class Channels(APIEndpoint):
             body_json=[first_user_id, second_user_id],
         )
 
+    @_ret_json
     def create_group_message_channel(
         self, user_ids: List[str]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new group message channel to group of users.
 
         Parameters
@@ -154,13 +159,15 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/group", body_json=user_ids)
 
+    @_ret_json
     def get_list_of_channels_by_ids(
         self, team_id: str, channel_ids: List[str]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of public channels on a team by ID.
 
         Parameters
@@ -173,12 +180,14 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
             f"{Teams.endpoint}/{team_id}/channels/ids", body_json=channel_ids
         )
 
+    @_ret_json
     def get_channel(
         self, channel_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -197,9 +206,10 @@ class Channels(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{channel_id}")
 
+    @_ret_json
     def update_channel(
         self, channel_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a channel.
 
         Parameters
@@ -220,13 +230,17 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
             f"{self.endpoint}/{channel_id}", body_json=body_json
         )
 
-    def delete_channel(self, channel_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def delete_channel(
+        self, channel_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Archive a channel.
 
         Parameters
@@ -237,13 +251,15 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/{channel_id}")
 
+    @_ret_json
     def patch_channel(
         self, channel_id: str, body_json: Dict[str, Any]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a channel partially by providing only the fields to update.
 
         Parameters
@@ -263,13 +279,17 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
             f"{self.endpoint}/{channel_id}/patch", body_json=body_json
         )
 
-    def restore_channel(self, channel_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def restore_channel(
+        self, channel_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Restore channel from the provided channel ID string.
 
         Parameters
@@ -280,12 +300,14 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
             f"{self.endpoint}/{channel_id}/restore",
         )
 
+    @_ret_json
     def get_channel_statistics(
         self, channel_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -306,6 +328,7 @@ class Channels(APIEndpoint):
             f"{self.endpoint}/{channel_id}/stats",
         )
 
+    @_ret_json
     def get_channel_pinned_posts(
         self, channel_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -324,6 +347,7 @@ class Channels(APIEndpoint):
         """
         return self.client.get(f"{self.endpoint}/{channel_id}/pinned")
 
+    @_ret_json
     def get_public_channels(
         self, team_id: str, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -349,6 +373,7 @@ class Channels(APIEndpoint):
             params={"page": page, "per_page": per_page},
         )
 
+    @_ret_json
     def get_deleted_channels(
         self, team_id: str, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -374,6 +399,7 @@ class Channels(APIEndpoint):
             params={"page": page, "per_page": per_page},
         )
 
+    @_ret_json
     def autocomplete_channels(
         self, team_id: str, name: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -397,7 +423,10 @@ class Channels(APIEndpoint):
             params={"name": name},
         )
 
-    def search_channels(self, team_id: str, term: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def search_channels(
+        self, team_id: str, term: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Search public channels on a team.
 
         Parameters
@@ -411,6 +440,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -418,6 +448,7 @@ class Channels(APIEndpoint):
             body_json={"term": term},
         )
 
+    @_ret_json
     def get_channel_by_name(
         self, team_id: str, channel_name: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -440,6 +471,7 @@ class Channels(APIEndpoint):
             f"{Teams.endpoint}/{team_id}/channels/name/{channel_name}"
         )
 
+    @_ret_json
     def get_channel_by_name_and_team_name(
         self, team_name: str, channel_name: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -462,6 +494,7 @@ class Channels(APIEndpoint):
             f"{Teams.endpoint}/name/{team_name}/channels/name/{channel_name}"
         )
 
+    @_ret_json
     def get_channel_members(
         self, channel_id: str, page: int = 0, per_page: int = 60
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -487,9 +520,10 @@ class Channels(APIEndpoint):
             params={"page": page, "per_page": per_page},
         )
 
+    @_ret_json
     def add_user(
         self, channel_id: str, user_id: str, post_root_id: str | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Add a user to a channel by creating a channel member object.
 
         Parameters
@@ -504,6 +538,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         options: Any = {"user_id": user_id}
@@ -515,9 +550,10 @@ class Channels(APIEndpoint):
             f"{self.endpoint}/{channel_id}/members", body_json=options
         )
 
+    @_ret_json
     def get_channel_members_by_ids(
         self, channel_id: str, user_ids: List[str]
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of channel members based on the provided user IDs.
 
         Parameters
@@ -530,12 +566,14 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
             f"{self.endpoint}/{channel_id}/members/ids", body_json=user_ids
         )
 
+    @_ret_json
     def get_channel_member(
         self, channel_id: str, user_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -558,9 +596,10 @@ class Channels(APIEndpoint):
             f"{self.endpoint}/{channel_id}/members/{user_id}"
         )
 
+    @_ret_json
     def remove_channel_member(
         self, channel_id: str, user_id: str
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete a channel member,removing them from the channel.
 
         Parameters
@@ -573,15 +612,17 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(
             f"{self.endpoint}/{channel_id}/members/{user_id}"
         )
 
+    @_ret_json
     def update_channel_roles(
         self, channel_id: str, user_id: str, roles: str
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user's roles for a channel.
 
         Parameters
@@ -596,6 +637,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -603,12 +645,13 @@ class Channels(APIEndpoint):
             body_json={"roles": roles},
         )
 
+    @_ret_json
     def update_scheme_derived_roles_of_channel_member(
         self,
         channel_id: str,
         user_id: str,
         body_json: Dict[str, Any],
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update the scheme-derived roles of a channel member.
 
         Parameters
@@ -628,6 +671,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -635,12 +679,13 @@ class Channels(APIEndpoint):
             body_json=body_json,
         )
 
+    @_ret_json
     def update_channel_notifications(
         self,
         channel_id: str,
         user_id: str,
         body_json: Dict[str, Any],
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user's notification properties for a channel.
 
         Parameters
@@ -662,6 +707,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -669,9 +715,10 @@ class Channels(APIEndpoint):
             body_json=body_json,
         )
 
+    @_ret_json
     def view_channel(
         self, user_id: str, channel_id: str, prev_channel_id: str | None = None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Perform all the actions involved in viewing a channel.
 
         This includes marking channels as read, clearing push notifications,
@@ -692,6 +739,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         options: Any = {"channel_id": channel_id}
@@ -703,6 +751,7 @@ class Channels(APIEndpoint):
             f"{self.endpoint}/members/{user_id}/view", body_json=options
         )
 
+    @_ret_json
     def get_channel_members_for_user(
         self, user_id: str, team_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -725,6 +774,7 @@ class Channels(APIEndpoint):
             f"{Users.endpoint}/{user_id}/teams/{team_id}/channels/members"
         )
 
+    @_ret_json
     def get_channels_for_user(
         self, user_id: str, team_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -747,6 +797,7 @@ class Channels(APIEndpoint):
             f"{Users.endpoint}/{user_id}/teams/{team_id}/channels"
         )
 
+    @_ret_json
     def get_unread_messages(
         self, user_id: str, channel_id: str
     ) -> Any | Response | Awaitable[Any | Response]:
@@ -769,7 +820,10 @@ class Channels(APIEndpoint):
             f"{Users.endpoint}/{user_id}/channels/{channel_id}/unread"
         )
 
-    def set_channel_scheme(self, channel_id: str) -> Any | Awaitable[Any]:
+    @_ret_json
+    def set_channel_scheme(
+        self, channel_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Set a channel's scheme.
 
         More specifically sets the scheme_id value of a channel record.
@@ -782,6 +836,7 @@ class Channels(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(f"{self.endpoint}/{channel_id}/scheme")

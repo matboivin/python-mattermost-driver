@@ -20,7 +20,6 @@ repos:
         --remove-unused-variables,
         --remove-all-unused-imports,
       ]
-      exclude: "tests"
 
   - repo: https://github.com/psf/black
     rev: 23.1.0
@@ -36,13 +35,14 @@ repos:
         types-requests,
       ]
       args: [--config-file=./pyproject.toml]
+      exclude: "examples"
 
   - repo: https://github.com/pycqa/pydocstyle
     rev: 6.3.0
     hooks:
     - id: pydocstyle
-      additional_dependencies: [ 'tomli']
-      args: ['--ignore=D105,D107,D213,D203,D204,D416']
+      additional_dependencies: ["tomli"]
+      args: ["--ignore=D105,D107,D213,D203,D204,D416"]
 
   - repo: local
     hooks:
@@ -51,9 +51,9 @@ repos:
       entry: pycodestyle
       language: system
       args: [
-        '--exclude=*init*',
-        '--ignore=E722,E126,W503',
-        '--max-line-length=79',
+        "--exclude=*init*",
+        "--ignore=E722,E126,W503",
+        "--max-line-length=79",
       ]
       files: \.py$
 
@@ -61,13 +61,13 @@ repos:
     rev: 1.7.4
     hooks:
     - id: bandit
-      args: ['--skip=B105,B324,B501']
+      args: ["--skip=B105,B324,B501"]
 
   - repo: https://github.com/executablebooks/mdformat
     rev: 0.7.16
     hooks:
     - id: mdformat
-      args: ['--number']
+      args: ["--number"]
       exclude: .gitlab
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
@@ -82,4 +82,4 @@ repos:
     - id: check-added-large-files
     - id: detect-private-key
     - id: no-commit-to-branch
-      args: ['--branch', 'main']
+      args: ["--branch", "main"]

@@ -3,7 +3,9 @@
 from dataclasses import dataclass
 from typing import Any, Awaitable, Dict
 
-from .base import APIEndpoint
+from requests import Response
+
+from .base import APIEndpoint, _ret_json
 
 
 @dataclass
@@ -24,9 +26,10 @@ class Opengraph(APIEndpoint):
 
     endpoint: str = "opengraph"
 
+    @_ret_json
     def get_opengraph_metadata_for_url(
         self, body_json: Dict[str, Any] | None
-    ) -> Any | Awaitable[Any]:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Get Open Graph Metadata for a specif URL.
 
         Parameters
@@ -37,6 +40,7 @@ class Opengraph(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(self.endpoint, body_json=body_json)

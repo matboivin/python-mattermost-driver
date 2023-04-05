@@ -8,19 +8,6 @@ from abc import ABC
 from logging import DEBUG, INFO, Logger, getLogger
 from typing import Any, Dict
 
-from httpx import HTTPStatusError
-from requests import Response
-
-from scrapermost.exceptions import (
-    ContentTooLarge,
-    FeatureDisabled,
-    InvalidOrMissingParameters,
-    MethodNotAllowed,
-    NoAccessTokenProvided,
-    NotEnoughPermissions,
-    ResourceNotFound,
-)
-
 from .options import DriverOptions
 
 logger: Logger = getLogger("scrapermost.client")
@@ -49,8 +36,6 @@ class BaseClient(ABC):
 
     Static methods
     --------------
-    _check_response(response)
-        Raise custom exception from response status code.
     activate_verbose_logging()
         Enable trace level logging in httpx.
 
@@ -207,57 +192,6 @@ class BaseClient(ABC):
         self._cookies = cookies
 
     # ######################################################## Static methods #
-
-    @staticmethod
-    def _check_response(response: Response) -> None:
-        """Raise custom exception from response status code.
-
-        Parameters
-        ----------
-        response : requests.Response
-            Response to the HTTP request.
-        json : bool
-            Whether to return the json-encoded content of the response.
-
-        Raises
-        ------
-        httox.HTTPStatusError
-            If any httpx.HTTPError occurred.
-
-        """
-        try:
-            response.raise_for_status()
-            logger.debug(response)
-
-        except HTTPStatusError as err:
-            message: Any
-
-            try:
-                data: Any = err.response.json()
-                message = data.get("message", data)
-
-            except ValueError:
-                logger.debug("Could not convert response to json.")
-                message = response.text
-
-            logger.error(message)
-
-            if err.response.status_code == 400:
-                raise InvalidOrMissingParameters(message) from err
-            if err.response.status_code == 401:
-                raise NoAccessTokenProvided(message) from err
-            if err.response.status_code == 403:
-                raise NotEnoughPermissions(message) from err
-            if err.response.status_code == 404:
-                raise ResourceNotFound(message) from err
-            if err.response.status_code == 405:
-                raise MethodNotAllowed(message) from err
-            if err.response.status_code == 413:
-                raise ContentTooLarge(message) from err
-            if err.response.status_code == 501:
-                raise FeatureDisabled(message) from err
-
-            raise
 
     @staticmethod
     def activate_verbose_logging() -> None:

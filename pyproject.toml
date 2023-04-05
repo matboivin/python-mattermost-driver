@@ -1,11 +1,14 @@
 [tool.poetry]
 name = "scrapermost"
 version = "8.0.0"
-description = "A Python Mattermost Driver"
-authors = ["Christian Plümer <github@kuuku.net>"]
+description = "A Python library to use Mattermost APIv4."
+authors = [
+  "Christian Plümer <github@kuuku.net>",
+  "mboivin <mboivin@student.42.fr>"
+]
 license = "MIT"
 readme = "README.md"
-repository = "https://github.com/Vaelor/python-mattermost-driver"
+repository = "https://github.com/matboivin/scrapermost"
 
 classifiers=[
     'Development Status :: 5 - Production/Stable',

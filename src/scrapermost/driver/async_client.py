@@ -4,13 +4,90 @@ This class holds information about the logged-in user and actually makes the
 requests to the Mattermost server.
 """
 
-from typing import Any, Dict, Tuple
+from typing import Any, Awaitable, Callable, Dict, Tuple
 
 from httpx import AsyncClient as HttpxAsyncClient
+from httpx import HTTPStatusError
 from requests import Response
+
+from scrapermost.exceptions import (
+    ContentTooLarge,
+    FeatureDisabled,
+    InvalidOrMissingParameters,
+    MethodNotAllowed,
+    NoAccessTokenProvided,
+    NotEnoughPermissions,
+    ResourceNotFound,
+)
 
 from .base_client import BaseClient, logger
 from .options import DriverOptions
+
+
+def _check_response(
+    async_func: Callable[..., Awaitable[Response]]
+) -> Callable[..., Awaitable[Response]]:
+    """Raise custom exception from response status code.
+
+    To be used as a decorator.
+
+    Parameters
+    ----------
+    async_func : Callable
+        The asynchronous function to decorate.
+
+    Returns
+    -------
+    Callable
+        The asynchronous wrapper function.
+
+    Raises
+    ------
+    httox.HTTPStatusError
+        If any httpx.HTTPError occurred.
+
+    """
+
+    async def wrapper(*args: str, **kwargs: int) -> Response:
+        try:
+            response: Response = await async_func(*args, **kwargs)
+
+            response.raise_for_status()
+            logger.debug(response)
+
+        except HTTPStatusError as err:
+            message: Any
+
+            try:
+                data: Dict[str, Any] = err.response.json()
+                message = data.get("message", data)
+
+            except ValueError:
+                logger.debug("Could not convert response to json.")
+                message = response.text
+
+            logger.error(message)
+
+            if err.response.status_code == 400:
+                raise InvalidOrMissingParameters(message) from err
+            if err.response.status_code == 401:
+                raise NoAccessTokenProvided(message) from err
+            if err.response.status_code == 403:
+                raise NotEnoughPermissions(message) from err
+            if err.response.status_code == 404:
+                raise ResourceNotFound(message) from err
+            if err.response.status_code == 405:
+                raise MethodNotAllowed(message) from err
+            if err.response.status_code == 413:
+                raise ContentTooLarge(message) from err
+            if err.response.status_code == 501:
+                raise FeatureDisabled(message) from err
+
+            raise
+
+        return response
+
+    return wrapper
 
 
 class AsyncClient(BaseClient):
@@ -23,16 +100,15 @@ class AsyncClient(BaseClient):
 
     Methods
     -------
-    get(endpoint, params=None, rec_json=True)
+    get(endpoint, params=None)
         Send an asynchronous GET request.
     post(
-        endpoint, body_json=None, params=None, data=None, files=None,
-        rec_json=True
-    )
+            endpoint, body_json=None, params=None, data=None, files=None,
+        )
         Send an asynchronous POST request.
-    put(endpoint, body_json=None, params=None, data=None, rec_json=True)
+    put(endpoint, body_json=None, params=None, data=None)
         Send an asynchronous PUT request.
-    delete(endpoint, params=None, rec_json=True)
+    delete(endpoint, params=None)
         Send an asynchronous DELETE request.
 
     """
@@ -79,12 +155,12 @@ class AsyncClient(BaseClient):
 
     # ############################################################### Methods #
 
+    @_check_response
     async def get(
         self,
         endpoint: str,
         params: Dict[str, Any] | None = None,
-        rec_json: bool = True,
-    ) -> Any | Response:
+    ) -> Response:
         """Send an asynchronous GET request.
 
         Parameters
@@ -93,13 +169,11 @@ class AsyncClient(BaseClient):
             The API endpoint to make the request to.
         params : dict, default=None
             Query parameters to include in the URL.
-        rec_json : bool, default=True
-            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any or requests.Response
-            The json-encoded content of the response or the raw response.
+        requests.Response
+            The raw response.
 
         Raises
         ------
@@ -112,26 +186,10 @@ class AsyncClient(BaseClient):
             params=params,
             headers=self.get_auth_header(),
         )
-        self._check_response(response)
-
-        if response.headers.get("Content-Type") != "application/json":
-            logger.debug(
-                "Could not convert response to JSON," "returning raw response."
-            )
-            return response
-
-        if rec_json:
-            try:
-                return response.json()
-
-            except ValueError:
-                logger.debug(
-                    "Could not convert response to JSON,"
-                    "returning raw response."
-                )
 
         return response
 
+    @_check_response
     async def post(
         self,
         endpoint: str,
@@ -139,8 +197,7 @@ class AsyncClient(BaseClient):
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
         files: Dict[str, Any] | None = None,
-        rec_json: bool = True,
-    ) -> Any | Response:
+    ) -> Response:
         """Send an asynchronous POST request.
 
         Parameters
@@ -155,13 +212,11 @@ class AsyncClient(BaseClient):
             Form data to include in the body of the request.
         files : dict, default=None
             Upload files to include in the body of the request.
-        rec_json : bool, default=True
-            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any or requests.Response
-            The json-encoded content of the response or the raw response.
+        requests.Response
+            The raw response.
 
         Raises
         ------
@@ -177,18 +232,17 @@ class AsyncClient(BaseClient):
             params=params,
             headers=self.get_auth_header(),
         )
-        self._check_response(response)
 
-        return response.json() if rec_json else response
+        return response
 
+    @_check_response
     async def put(
         self,
         endpoint: str,
         body_json: Dict[str, Any] | None = None,
         params: Dict[str, Any] | None = None,
         data: Dict[str, Any] | None = None,
-        rec_json: bool = True,
-    ) -> Any | Response:
+    ) -> Response:
         """Send an asynchronous PUT request.
 
         Parameters
@@ -201,13 +255,11 @@ class AsyncClient(BaseClient):
             Query parameters to include in the URL.
         data : dict, default=None
             Form data to include in the body of the request.
-        rec_json : bool, default=True
-            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any or requests.Response
-            The json-encoded content of the response or the raw response.
+        requests.Response
+            The raw response.
 
         Raises
         ------
@@ -222,16 +274,15 @@ class AsyncClient(BaseClient):
             params=params,
             headers=self.get_auth_header(),
         )
-        self._check_response(response)
 
-        return response.json() if rec_json else response
+        return response
 
+    @_check_response
     async def delete(
         self,
         endpoint: str,
         params: Dict[str, Any] | None = None,
-        rec_json: bool = True,
-    ) -> Any | Response:
+    ) -> Response:
         """Send an asynchronous DELETE request.
 
         Parameters
@@ -240,13 +291,11 @@ class AsyncClient(BaseClient):
             The API endpoint to make the request to.
         params : dict, default=None
             Query parameters to include in the URL.
-        rec_json : bool, default=True
-            Whether to return the json-encoded content of the response.
 
         Returns
         -------
-        Any or requests.Response
-            The json-encoded content of the response or the raw response.
+        requests.Response
+            The raw response.
 
         Raises
         ------
@@ -259,6 +308,5 @@ class AsyncClient(BaseClient):
             params=params,
             headers=self.get_auth_header(),
         )
-        self._check_response(response)
 
-        return response.json() if rec_json else response
+        return response
