@@ -34,7 +34,7 @@ This repository is a fork of [Python Mattermost Driver](https://github.com/Vaelo
 
 ### Installation
 
-As this project is not published to Pypi, follow the guidelines below.
+As this project is not published to Pypi yet, follow the guidelines below.
 
 1. Clone the repository and change it to your working directory.
 

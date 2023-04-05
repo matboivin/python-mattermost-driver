@@ -24,7 +24,8 @@ class Websocket:
     _token : str
         The session token.
     _websocket_kw_args : dict
-        Dict of websocket parameters for aiohttp.ClientSession.ws_connect().
+        Parameters to pass to aiohttp.ClientSession.ws_connect() to create a
+        websocket connection.
     _timeout : float
         Timeout in seconds for websocket to close.
     _keepalive : bool

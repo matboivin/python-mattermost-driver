@@ -15,7 +15,7 @@ class DriverOptions:
     scheme : str, default='https'
         The protocol to be used to access the Mattermost server.
     hostname : str, default='localhost'
-        The Mattermost server host name.
+        The Mattermost server host name (example: 'mattermost.server.com').
     port : int, default=8065
         The post to be used to access the Mattermost server.
     basepath : str, default='/api/v4'
@@ -47,6 +47,8 @@ class DriverOptions:
     keepalive_delay : float, default=5
         Duration in seconds between two keepalive transmissions.
     websocket_kw_args : dict, default=None
+        Parameters to pass to aiohttp.ClientSession.ws_connect() to create a
+        websocket connection.
 
     """
 
