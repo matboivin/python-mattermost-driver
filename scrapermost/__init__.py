@@ -1,4 +1,4 @@
-"""Mattermost driver classes."""
+""".. include:: ../README.md"""
 
 from .driver import AsyncClient, AsyncDriver, Client, Driver, Websocket
 

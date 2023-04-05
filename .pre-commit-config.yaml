@@ -43,6 +43,7 @@ repos:
     - id: pydocstyle
       additional_dependencies: ["tomli"]
       args: ["--ignore=D105,D107,D213,D203,D204,D416"]
+      exclude: "scrapermost/__init__.py"
 
   - repo: local
     hooks:
@@ -53,7 +54,7 @@ repos:
       args: [
         "--exclude=*init*",
         "--ignore=E722,E126,W503",
-        "--max-line-length=79",
+        "--max-line-length=79"
       ]
       files: \.py$
 
@@ -80,6 +81,7 @@ repos:
     - id: check-yaml
       args: [--allow-multiple-documents]
     - id: check-added-large-files
+      exclude: docs
     - id: detect-private-key
     - id: no-commit-to-branch
       args: ["--branch", "main"]

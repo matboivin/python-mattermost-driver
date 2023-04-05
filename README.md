@@ -67,9 +67,9 @@ At least the following options must be provided as a dict:
 - `login_id` (user account's email address or username) and `password`
 - or `token`
 
-**Full list of Driver options [here](src/scrapermost/driver/options.py).**
+**Full list of Driver options [here](scrapermost/driver/options.py).**
 
-Example with [synchronous driver](src/scrapermost/driver/driver.py):
+Example with synchronous driver:
 
 ```python
 from scrapermost import Driver
@@ -89,7 +89,7 @@ def connect_driver_to_server(driver: Driver) -> None:
     driver.login()
 ```
 
-Example with [asynchronous driver](src/scrapermost/driver/async_driver.py):
+Example with asynchronous driver:
 
 ```python
 from scrapermost import AsyncDriver
@@ -115,7 +115,7 @@ async def connect_driver_to_server(driver: AsyncDriver) -> None:
 
 You can make api calls by using calling `Driver.endpointofchoice`. For example, if you want to get a user's data (`http://your-mattermost-url.com/api/v4/users/{user_id}`), you would use `Driver.users.get_user(user_id)`. The returned data will be either in JSON format or the raw response.
 
-Example with [asynchronous driver](src/scrapermost/driver/async_driver.py):
+Example with asynchronous driver:
 
 ```python
 from typing import Any
@@ -127,7 +127,7 @@ response: Any = await driver.users.get_user(user_id="me")
 
 ### Connect to the Websocket API
 
-It is possible to use a [websocket](src/scrapermost/driver/websocket.py) to listen to Mattermost events ([event list here](https://api.mattermost.com/#tag/WebSocket)).
+It is possible to use a [websocket](scrapermost/driver/websocket.py) to listen to Mattermost events ([event list here](https://api.mattermost.com/#tag/WebSocket)).
 
 Create a function to handle every Mattermost websocket event:
 
@@ -146,13 +146,13 @@ async def my_event_handler(event: Dict[str, Any]) -> None:
 
 Assuming `Driver.login()` was called, initialize the websocket connection to the Mattermost server using `Driver.init_websocket()`.
 
-Example with [synchronous driver](src/scrapermost/driver/driver.py):
+Example with synchronous driver:
 
 ```python
 driver.init_websocket(my_event_handler, data_format="json")
 ```
 
-Example with [asynchronous driver](src/scrapermost/driver/async_driver.py):
+Example with asynchronous driver:
 
 ```python
 await driver.init_websocket(my_event_handler, data_format="json")
