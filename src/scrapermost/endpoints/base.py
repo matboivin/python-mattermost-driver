@@ -29,6 +29,7 @@ def _ret_json(
 ) -> Callable[..., Awaitable[Any | Response]]:
     """Return the JSON-encoded content of the response.
 
+    Handle both sync and async functions.
     To be used as a decorator.
 
     Parameters
@@ -43,22 +44,32 @@ def _ret_json(
 
     """
 
-    async def helper(func) -> Any:  # type: ignore
+    async def helper_async(func: Awaitable[Response]) -> Response:
+        """Run the asynchronous function."""
         return await func
 
     async def wrapper(*args: str, **kwargs: int) -> Any | Response:
+        """Return the JSON-encoded content of the response.
+
+        Returns
+        -------
+        Any or requests.Response
+            The JSON-encoded content of the response.
+            Otherwise if decoding failed, the raw response.
+
+        """
+        func_ret: Response | Awaitable[Response] = func(*args, **kwargs)
+        response: Response
+
+        if iscoroutine(func_ret):
+            response = await helper_async(func_ret)
+        else:
+            response = func_ret  # type: ignore
+
         try:
-            result: Any = await func(*args, **kwargs)  # type: ignore
-            response: Response
-
-            if iscoroutine(result):
-                response = await helper(result)
-            else:
-                response = result
-
             return response.json()
 
-        except JSONDecodeError:
+        except (JSONDecodeError, ValueError):
             return response
 
     return wrapper

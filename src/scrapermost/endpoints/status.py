@@ -55,7 +55,7 @@ class Status(APIEndpoint):
     @_ret_json
     def update_user_status(
         self, user_id: str, body_json: Dict[str, Any] | None = None
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Manually set a user's status.
 
         Parameters
@@ -68,6 +68,7 @@ class Status(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -77,7 +78,7 @@ class Status(APIEndpoint):
     @_ret_json
     def get_user_statuses_by_id(
         self, body_json: Dict[str, Any] | None = None
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of user statuses by ID from the server.
 
         Parameters
@@ -88,6 +89,7 @@ class Status(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/status/ids", body_json)

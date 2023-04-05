@@ -68,7 +68,9 @@ class Scheme(APIEndpoint):
         )
 
     @_ret_json
-    def create_scheme(self, body_json: Dict[str, Any]) -> Any:
+    def create_scheme(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new scheme.
 
         Parameters
@@ -85,6 +87,7 @@ class Scheme(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(self.endpoint, body_json=body_json)
@@ -109,7 +112,9 @@ class Scheme(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{scheme_id}")
 
     @_ret_json
-    def delete_scheme(self, scheme_id: str) -> Any:
+    def delete_scheme(
+        self, scheme_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Mark the scheme as deleted in the database.
 
         Parameters
@@ -120,12 +125,15 @@ class Scheme(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/{scheme_id}")
 
     @_ret_json
-    def patch_scheme(self, scheme_id: str, body_json: Dict[str, Any]) -> Any:
+    def patch_scheme(
+        self, scheme_id: str, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a scheme partially by providing only the fields to update.
 
         Parameters
@@ -143,6 +151,7 @@ class Scheme(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(

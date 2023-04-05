@@ -58,7 +58,9 @@ class Posts(APIEndpoint):
     endpoint: str = "posts"
 
     @_ret_json
-    def create_post(self, body_json: Dict[str, Any]) -> Any:
+    def create_post(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new post in a channel.
 
         To create the post as a comment on another post, provide root_id.
@@ -81,12 +83,15 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(self.endpoint, body_json=body_json)
 
     @_ret_json
-    def create_ephemeral_post(self, body_json: Dict[str, Any]) -> Any:
+    def create_ephemeral_post(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new ephemeral post in a channel.
 
         Parameters
@@ -105,6 +110,7 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -131,7 +137,9 @@ class Posts(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{post_id}")
 
     @_ret_json
-    def delete_post(self, post_id: str) -> Any:
+    def delete_post(
+        self, post_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Mark the post as deleted in the database.
 
         Parameters
@@ -142,12 +150,15 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/{post_id}")
 
     @_ret_json
-    def update_post(self, post_id: str, body_json: Dict[str, Any]) -> Any:
+    def update_post(
+        self, post_id: str, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a post.
 
         Parameters
@@ -168,6 +179,7 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -177,7 +189,7 @@ class Posts(APIEndpoint):
     @_ret_json
     def patch_post(
         self, post_id: str, body_json: Dict[str, Any] | None = None
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a post partially by providing only the fields to update.
 
         Parameters
@@ -200,6 +212,7 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -332,7 +345,7 @@ class Posts(APIEndpoint):
     @_ret_json
     def search_for_team_posts(
         self, team_id: str, body_json: Dict[str, Any]
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Search posts in the team and from the provided terms string.
 
         Parameters
@@ -354,6 +367,7 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -362,7 +376,9 @@ class Posts(APIEndpoint):
         )
 
     @_ret_json
-    def pin_post_to_channel(self, post_id: str) -> Any:
+    def pin_post_to_channel(
+        self, post_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Pin a post to the channel.
 
         Parameters
@@ -373,12 +389,15 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/{post_id}/pin")
 
     @_ret_json
-    def unpin_post_to_channel(self, post_id: str) -> Any:
+    def unpin_post_to_channel(
+        self, post_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Unpin a post to the channel.
 
         Parameters
@@ -389,12 +408,15 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/{post_id}/unpin")
 
     @_ret_json
-    def perform_post_action(self, post_id: str, action_id: str) -> Any:
+    def perform_post_action(
+        self, post_id: str, action_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Perform a post action.
 
         Parameters
@@ -407,6 +429,7 @@ class Posts(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(

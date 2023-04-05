@@ -40,7 +40,9 @@ class OAuth(APIEndpoint):
     endpoint: str = "oauth"
 
     @_ret_json
-    def register_oauth_app(self, body_json: Dict[str, Any]) -> Any:
+    def register_oauth_app(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Register an OAuth 2.0 client application.
 
         Parameters
@@ -62,6 +64,7 @@ class OAuth(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/apps", body_json=body_json)
@@ -110,7 +113,9 @@ class OAuth(APIEndpoint):
         return self.client.get(f"{self.endpoint}/apps/{app_id}")
 
     @_ret_json
-    def delete_oauth_app(self, app_id: str) -> Any:
+    def delete_oauth_app(
+        self, app_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete and unregister an OAuth 2.0 client application.
 
         Parameters
@@ -121,12 +126,15 @@ class OAuth(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/apps/{app_id}")
 
     @_ret_json
-    def regenerate_oauth_app_secret(self, app_id: str) -> Any:
+    def regenerate_oauth_app_secret(
+        self, app_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Regenerate the client secret for an OAuth 2.0 client app.
 
         Parameters
@@ -137,6 +145,7 @@ class OAuth(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/apps/{app_id}/regen_secret")

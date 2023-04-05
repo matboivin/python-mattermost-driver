@@ -47,7 +47,9 @@ class Webhooks(APIEndpoint):
     endpoint: str = "/hooks"
 
     @_ret_json
-    def create_incoming_hook(self, body_json: Dict[str, Any]) -> Any:
+    def create_incoming_hook(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create an incoming webhook for a channel.
 
         Parameters
@@ -66,6 +68,7 @@ class Webhooks(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -122,7 +125,7 @@ class Webhooks(APIEndpoint):
     @_ret_json
     def update_incoming_hook(
         self, hook_id: str, body_json: Dict[str, Any]
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update an incoming webhook given the hook ID.
 
         Parameters
@@ -144,6 +147,7 @@ class Webhooks(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -151,7 +155,9 @@ class Webhooks(APIEndpoint):
         )
 
     @_ret_json
-    def create_outgoing_hook(self, body_json: Dict[str, Any]) -> Any:
+    def create_outgoing_hook(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create an outgoing webhook for a team.
 
         Parameters
@@ -178,6 +184,7 @@ class Webhooks(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -240,7 +247,9 @@ class Webhooks(APIEndpoint):
         return self.client.get(f"{self.endpoint}/outgoing/{hook_id}")
 
     @_ret_json
-    def delete_outgoing_hook(self, hook_id: str) -> Any:
+    def delete_outgoing_hook(
+        self, hook_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete an outgoing webhook given the hook ID.
 
         Parameters
@@ -251,6 +260,7 @@ class Webhooks(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/outgoing/{hook_id}")
@@ -258,7 +268,7 @@ class Webhooks(APIEndpoint):
     @_ret_json
     def update_outgoing_hook(
         self, hook_id: str, body_json: Dict[str, Any]
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update an outgoing webhook given the hook ID.
 
         Parameters
@@ -278,6 +288,7 @@ class Webhooks(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -285,7 +296,9 @@ class Webhooks(APIEndpoint):
         )
 
     @_ret_json
-    def regenerate_token_outgoing_hook(self, hook_id: str) -> Any:
+    def regenerate_token_outgoing_hook(
+        self, hook_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Regenerate the token for the outgoing webhook.
 
         Parameters
@@ -296,6 +309,7 @@ class Webhooks(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -304,7 +318,7 @@ class Webhooks(APIEndpoint):
 
     def call_webhook(
         self, hook_id: str, body_json: Dict[str, Any] | None = None
-    ) -> Any:
+    ) -> Any | Awaitable[Any]:
         """Call a webhook.
 
         Parameters

@@ -59,7 +59,7 @@ class Preferences(APIEndpoint):
     @_ret_json
     def save_user_preferences(
         self, user_id: str, preferences: List[Dict[str, Any]]
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Save a list of the user's preferences.
 
         Parameters
@@ -81,6 +81,7 @@ class Preferences(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -90,7 +91,7 @@ class Preferences(APIEndpoint):
     @_ret_json
     def delete_user_preferences(
         self, user_id: str, preferences: List[Dict[str, Any]]
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete a list of the user's preferences.
 
         Parameters
@@ -112,6 +113,7 @@ class Preferences(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(

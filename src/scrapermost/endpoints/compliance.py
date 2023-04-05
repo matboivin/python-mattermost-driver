@@ -33,7 +33,7 @@ class Compliance(APIEndpoint):
     endpoint: str = "compliance"
 
     @_ret_json
-    def create_report(self) -> Any:
+    def create_report(self) -> Any | Response | Awaitable[Any | Response]:
         """Create and save a compliance report.
 
         Returns

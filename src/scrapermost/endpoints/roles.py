@@ -71,7 +71,9 @@ class Roles(APIEndpoint):
         return self.client.get(f"{self.endpoint}/name/{role_name}")
 
     @_ret_json
-    def patch_role(self, role_id: str, body_json: Dict[str, Any]) -> Any:
+    def patch_role(
+        self, role_id: str, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a role partially by providing only the fields to update.
 
         Parameters
@@ -90,6 +92,7 @@ class Roles(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(

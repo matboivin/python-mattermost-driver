@@ -41,7 +41,9 @@ class Brand(APIEndpoint):
         return self.client.get(f"{self.endpoint}/image")
 
     @_ret_json
-    def upload_brand_image(self, image: str) -> Any:
+    def upload_brand_image(
+        self, image: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Upload a brand image.
 
         Parameters
@@ -52,6 +54,7 @@ class Brand(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(

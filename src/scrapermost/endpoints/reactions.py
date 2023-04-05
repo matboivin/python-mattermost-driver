@@ -33,7 +33,9 @@ class Reactions(APIEndpoint):
     endpoint: str = "reactions"
 
     @_ret_json
-    def create_reaction(self, body_json: Dict[str, Any]) -> Any:
+    def create_reaction(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a reaction.
 
         Parameters
@@ -51,6 +53,7 @@ class Reactions(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(self.endpoint, body_json=body_json)
@@ -80,7 +83,7 @@ class Reactions(APIEndpoint):
         user_id: str,
         post_id: str,
         emoji_name: str,
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete a reaction made by a user from the given post.
 
         Parameters

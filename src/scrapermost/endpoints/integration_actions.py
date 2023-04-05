@@ -1,7 +1,9 @@
 """Endpoints for interactive actions for use by integrations."""
 
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any, Awaitable, Dict
+
+from requests import Response
 
 from .base import APIEndpoint, _ret_json
 
@@ -27,7 +29,9 @@ class IntegrationActions(APIEndpoint):
     endpoint: str = "actions"
 
     @_ret_json
-    def open_dialog(self, body_json: Dict[str, Any] | None) -> Any:
+    def open_dialog(
+        self, body_json: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Open an interactive dialog.
 
         Parameters
@@ -38,6 +42,7 @@ class IntegrationActions(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -45,7 +50,9 @@ class IntegrationActions(APIEndpoint):
         )
 
     @_ret_json
-    def submit_dialog(self, body_json: Dict[str, Any] | None) -> Any:
+    def submit_dialog(
+        self, body_json: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Submit a dialog.
 
         Parameters
@@ -56,6 +63,7 @@ class IntegrationActions(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(

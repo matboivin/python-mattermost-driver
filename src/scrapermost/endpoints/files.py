@@ -37,7 +37,9 @@ class Files(APIEndpoint):
     endpoint: str = "files"
 
     @_ret_json
-    def upload_file(self, channel_id: str, files: Dict[str, Any]) -> Any:
+    def upload_file(
+        self, channel_id: str, files: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Upload a file that can later be attached to a post.
 
         Parameters
@@ -50,16 +52,14 @@ class Files(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
             self.endpoint, data={"channel_id": channel_id}, files=files
         )
 
-    @_ret_json
-    def get_file(
-        self, file_id: str
-    ) -> Any | Response | Awaitable[Any | Response]:
+    def get_file(self, file_id: str) -> Any | Awaitable[Any]:
         """Get a file that has been uploaded previously.
 
         Parameters
@@ -70,7 +70,6 @@ class Files(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
-        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.get(f"{self.endpoint}/{file_id}")

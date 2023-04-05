@@ -42,7 +42,9 @@ class Emoji(APIEndpoint):
     endpoint: str = "emoji"
 
     @_ret_json
-    def create_custom_emoji(self, emoji_name: str, image: str) -> Any:
+    def create_custom_emoji(
+        self, emoji_name: str, image: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a custom emoji for the team.
 
         Parameters
@@ -55,6 +57,7 @@ class Emoji(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         emoji: Dict[str, Any] = {
@@ -117,7 +120,9 @@ class Emoji(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{emoji_id}")
 
     @_ret_json
-    def delete_custom_emoji(self, emoji_id: str) -> Any:
+    def delete_custom_emoji(
+        self, emoji_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete a custom emoji.
 
         Parameters
@@ -128,6 +133,7 @@ class Emoji(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/{emoji_id}")
@@ -173,7 +179,7 @@ class Emoji(APIEndpoint):
     @_ret_json
     def search_custom_emoji(
         self, term: str, prefix_only: str | None = None
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Search for custom emoji by name based on search criteria.
 
         Parameters
@@ -186,6 +192,7 @@ class Emoji(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(

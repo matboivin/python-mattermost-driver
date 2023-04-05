@@ -53,7 +53,9 @@ class SAML(APIEndpoint):
         return self.client.get(f"{self.endpoint}/metadata")
 
     @_ret_json
-    def upload_idp_certificate(self, files: Dict[str, Any]) -> Any:
+    def upload_idp_certificate(
+        self, files: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Upload IDP certificate.
 
         Parameters
@@ -64,6 +66,7 @@ class SAML(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -71,18 +74,23 @@ class SAML(APIEndpoint):
         )
 
     @_ret_json
-    def remove_idp_certificate(self) -> Any:
+    def remove_idp_certificate(
+        self,
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete the current IDP certificate being used.
 
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/certificate/idp")
 
     @_ret_json
-    def upload_public_certificate(self, files: Dict[str, Any] | None) -> Any:
+    def upload_public_certificate(
+        self, files: Dict[str, Any] | None
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Upload the public certificate to be used for encryption.
 
         Parameters
@@ -93,6 +101,7 @@ class SAML(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -100,18 +109,23 @@ class SAML(APIEndpoint):
         )
 
     @_ret_json
-    def remove_public_certificate(self) -> Any:
+    def remove_public_certificate(
+        self,
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete the current public certificate being used.
 
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/certificate/public")
 
     @_ret_json
-    def upload_private_key(self, files: Dict[str, Any]) -> Any:
+    def upload_private_key(
+        self, files: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Upload the private key to be used for encryption.
 
         Parameters
@@ -122,6 +136,7 @@ class SAML(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -129,12 +144,13 @@ class SAML(APIEndpoint):
         )
 
     @_ret_json
-    def remove_private_key(self) -> Any:
+    def remove_private_key(self) -> Any | Response | Awaitable[Any | Response]:
         """Delete the current private key being used.
 
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/certificate/private")

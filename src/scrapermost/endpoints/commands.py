@@ -40,7 +40,9 @@ class Commands(APIEndpoint):
     endpoint: str = "commands"
 
     @_ret_json
-    def create_command(self, body_json: Dict[str, Any]) -> Any:
+    def create_command(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a command for a team.
 
         Parameters
@@ -58,6 +60,7 @@ class Commands(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(self.endpoint, body_json=body_json)
@@ -78,6 +81,7 @@ class Commands(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.get(
@@ -109,7 +113,7 @@ class Commands(APIEndpoint):
     @_ret_json
     def update_command(
         self, command_id: str, body_json: Dict[str, Any]
-    ) -> Any:
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a command.
 
         Parameters
@@ -122,6 +126,7 @@ class Commands(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -129,7 +134,9 @@ class Commands(APIEndpoint):
         )
 
     @_ret_json
-    def delete_command(self, command_id: str) -> Any:
+    def delete_command(
+        self, command_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete a command based on command ID string.
 
         Parameters
@@ -140,12 +147,15 @@ class Commands(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/{command_id}")
 
     @_ret_json
-    def generate_new_token(self, command_id: str) -> Any:
+    def generate_new_token(
+        self, command_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Generate a new token for the command based on command ID string.
 
         Parameters
@@ -156,12 +166,15 @@ class Commands(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(f"{self.endpoint}/{command_id}/regen_token")
 
     @_ret_json
-    def execute_command(self, channel_id: str, command: str) -> Any:
+    def execute_command(
+        self, channel_id: str, command: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Execute a command on a team.
 
         Parameters
@@ -175,6 +188,7 @@ class Commands(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(

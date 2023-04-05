@@ -45,7 +45,9 @@ class Bots(APIEndpoint):
     endpoint: str = "bots"
 
     @_ret_json
-    def create_bot(self, body_json: Dict[str, Any]) -> Any:
+    def create_bot(
+        self, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new bot account on the system.
 
         Parameters
@@ -62,6 +64,7 @@ class Bots(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(self.endpoint, body_json=body_json)
@@ -93,7 +96,9 @@ class Bots(APIEndpoint):
         return self.client.get(self.endpoint, params=params)
 
     @_ret_json
-    def patch_bot(self, bot_id: str, body_json: Dict[str, Any]) -> Any:
+    def patch_bot(
+        self, bot_id: str, body_json: Dict[str, Any]
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Update a bot partially by providing only the fields to update.
 
         Parameters
@@ -106,6 +111,7 @@ class Bots(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.put(
@@ -137,7 +143,9 @@ class Bots(APIEndpoint):
         )
 
     @_ret_json
-    def disable_bot(self, bot_id: str) -> Any:
+    def disable_bot(
+        self, bot_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Disable a bot.
 
         Parameters
@@ -148,12 +156,15 @@ class Bots(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/{bot_id}/disable")
 
     @_ret_json
-    def enable_bot(self, bot_id: str) -> Any:
+    def enable_bot(
+        self, bot_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Enable a bot.
 
         Parameters
@@ -164,12 +175,15 @@ class Bots(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/{bot_id}/enable")
 
     @_ret_json
-    def assign_bot_to_user(self, bot_id: str, user_id: str) -> Any:
+    def assign_bot_to_user(
+        self, bot_id: str, user_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Assign a bot to a specified user.
 
         Parameters
@@ -182,6 +196,7 @@ class Bots(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(f"{self.endpoint}/{bot_id}/assign/{user_id}")
@@ -206,7 +221,9 @@ class Bots(APIEndpoint):
         return self.client.get(f"{self.endpoint}/{bot_id}/icon")
 
     @_ret_json
-    def set_bot_lhs_icon(self, bot_id: str, image: str) -> Any:
+    def set_bot_lhs_icon(
+        self, bot_id: str, image: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Set a bot's Left-Hand Sidebar icon image.
 
         Parameters
@@ -219,6 +236,7 @@ class Bots(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.post(
@@ -227,7 +245,9 @@ class Bots(APIEndpoint):
         )
 
     @_ret_json
-    def delete_bot_lhs_icon(self, bot_id: str) -> Any:
+    def delete_bot_lhs_icon(
+        self, bot_id: str
+    ) -> Any | Response | Awaitable[Any | Response]:
         """Delete a bot's Left-Hand Sidebar icon image.
 
         Parameters
@@ -238,6 +258,7 @@ class Bots(APIEndpoint):
         Returns
         -------
         Any or Coroutine(...) -> Any
+        or requests.Response or Coroutine(...) -> requests.Response
 
         """
         return self.client.delete(f"{self.endpoint}/{bot_id}/icon")
