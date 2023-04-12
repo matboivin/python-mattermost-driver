@@ -7,7 +7,7 @@ requests to the Mattermost server.
 from typing import Any, Callable, Dict, Tuple
 
 from httpx import Client as HttpxClient
-from httpx import HTTPStatusError
+from httpx import ConnectError, HTTPStatusError, RequestError
 from requests import Response
 
 from scrapermost.exceptions import (
@@ -41,8 +41,16 @@ def _check_response(func: Callable[..., Response]) -> Callable[..., Response]:
 
     Raises
     ------
-    httox.HTTPStatusError
-        If any httpx.HTTPError occurred.
+    exceptions.ContentTooLarge
+    exceptions.FeatureDisabled
+    exceptions.InvalidOrMissingParameters
+    exceptions.MethodNotAllowed
+    exceptions.NoAccessTokenProvided
+    exceptions.NotEnoughPermissions
+    exceptions.ResourceNotFound
+        If any httpx.HTTPStatusError occurred.
+    RuntimeError
+        If any httpx.RequestError occurred.
 
     """
 
@@ -61,10 +69,10 @@ def _check_response(func: Callable[..., Response]) -> Callable[..., Response]:
                 message = data.get("message", data)
 
             except ValueError:
-                logger.debug("Could not convert response to json.")
+                logger.debug("Could not convert response to JSON.")
                 message = response.text
 
-            logger.error(message)
+            logger.error(f"{err.response.status_code}: {message}")
 
             if err.response.status_code == 400:
                 raise InvalidOrMissingParameters(message) from err
@@ -82,6 +90,15 @@ def _check_response(func: Callable[..., Response]) -> Callable[..., Response]:
                 raise FeatureDisabled(message) from err
 
             raise
+
+        except ConnectError as err:
+            logger.error(f"httpx.ConnectError: {err}.")
+
+            raise RuntimeError("Failed to establish a connection to server.") from err
+
+        except RequestError as err:
+            logger.error(f"httpx.RequestError: {err}.")
+            raise RuntimeError(err) from err
 
         return response
 
@@ -175,7 +192,7 @@ class Client(BaseClient):
 
         Raises
         ------
-        httox.HTTPStatusError
+        httpx.HTTPStatusError
             If any httpx.HTTPError occurred.
 
         """
@@ -218,7 +235,7 @@ class Client(BaseClient):
 
         Raises
         ------
-        httox.HTTPStatusError
+        httpx.HTTPStatusError
             If any httpx.HTTPError occurred.
 
         """
@@ -261,7 +278,7 @@ class Client(BaseClient):
 
         Raises
         ------
-        httox.HTTPStatusError
+        httpx.HTTPStatusError
             If any httpx.HTTPError occurred.
 
         """
@@ -297,7 +314,7 @@ class Client(BaseClient):
 
         Raises
         ------
-        httox.HTTPStatusError
+        httpx.HTTPStatusError
             If any httpx.HTTPError occurred.
 
         """
