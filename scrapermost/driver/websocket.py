@@ -1,6 +1,6 @@
 """Class to use Mattermost websocket API."""
 
-from asyncio import sleep
+from asyncio import CancelledError, TimeoutError, sleep
 from logging import DEBUG, INFO, Logger, getLogger
 from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
 from typing import Any, Awaitable, Callable, Dict, Literal
@@ -73,7 +73,6 @@ class Websocket:
         self._websocket_kw_args: Dict[str, Any] = {
             "url": self._url,
             "proxy": options.proxy,
-            "receive_timeout": options.websocket_receive_timeout,
             "heartbeat": options.websocket_heartbeat,
             "ssl": ssl_context,
             **options.websocket_kw_args,
@@ -111,6 +110,7 @@ class Websocket:
         Raises
         ------
         RuntimeError
+        asyncio.TimeoutError
             If an error occured while listening to events.
 
         """
@@ -126,11 +126,13 @@ class Websocket:
 
                 await event_handler(message)
 
-            except (TypeError, ValueError):
-                pass
+            except (TypeError, ValueError) as err:
+                logger.debug(err)
 
             except (RuntimeError, ClientError) as err:
-                raise RuntimeError(f"{type(err): {err}}") from err
+                raise RuntimeError(
+                    f"Websocket event loop interrupted: {type(err): {err}}"
+                ) from err
 
     async def _authenticate_websocket(
         self,
@@ -149,6 +151,7 @@ class Websocket:
         Raises
         ------
         RuntimeError
+        asyncio.TimeoutError
             If couldn't connect websocket to server.
 
         """
@@ -202,6 +205,11 @@ class Websocket:
         data_format : 'json' or 'text', default='json'
             Whether to receive the websocket data as text or JSON.
 
+        Raises
+        ------
+        asyncio.TimeoutError
+            If the websocket connection timed out.
+
         """
         self._alive = True
 
@@ -218,18 +226,27 @@ class Websocket:
                             websocket, event_handler, data_format
                         )
 
+            except TimeoutError as err:
+                raise TimeoutError("Websocket connection timed out.") from err
+
             except RuntimeError as err:
                 logger.error(err)
                 await sleep(self._keepalive_delay)
 
-            except Exception as err:  # FIXME
-                logger.exception(
-                    f"Failed to establish websocket connection: {type(err)}"
-                    " thrown."
-                )
-                await sleep(self._keepalive_delay)
+            # FIXME
+            # except Exception as err:
+            #     logger.exception(
+            #         f"Websocket connection closed: {type(err)} thrown."
+            #     )
+            #     await sleep(self._keepalive_delay)
 
-        logger.debug("Websocket disconnected.")
+            except CancelledError:
+                pass
+
+            finally:
+                self._alive = False
+
+        logger.info("Websocket disconnected.")
 
     def disconnect(self) -> None:
         """Disconnect the websocket.
