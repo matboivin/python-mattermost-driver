@@ -20,8 +20,10 @@ class Driver(BaseDriver):
 
     Methods
     -------
-    init_websocket(event_handler, websocket_cls, data_format='json')
-        Initialize the websocket connection to the Mattermost server.
+    init_websocket(websocket_cls)
+        Initialize the websocket connection.
+    start_websocket(event_handler, data_format='json')
+        Start websocket listening loop.
     login()
         Log the user in.
     logout()
@@ -67,11 +69,45 @@ class Driver(BaseDriver):
 
     def init_websocket(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
         websocket_cls: Callable[..., Websocket] = Websocket,
+    ) -> None:
+        """Initialize the websocket connection.
+
+        Parameters
+        ----------
+        websocket_cls : function(), default=websocket.Websocket
+            The Websocket class constructor.
+
+        Returns
+        -------
+        asyncio.AbstractEventLoop
+            The event loop.
+
+        Raises
+        ------
+        asyncio.TimeoutError
+            If the websocket connection timed out.
+        aiohttp.client_exceptions.ClientConnectorError
+            If the name resolution failed.
+        aiohttp.client_exceptions.WSServerHandshakeError
+            If websocket server handshake failed.
+
+        """
+        self.websocket = websocket_cls(self.options, self.client.token)
+        loop: AbstractEventLoop = get_event_loop()
+
+        if loop.is_running():
+            run(self.websocket.connect())
+
+        else:
+            loop.run_until_complete(self.websocket.connect())
+
+    def start_websocket(
+        self,
+        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
         data_format: Literal["text", "json"] = "json",
     ) -> AbstractEventLoop:
-        """Initialize the websocket connection to the Mattermost server.
+        """Start websocket listening loop.
 
         This should be run after login(), because the websocket needs to
         authenticate.
@@ -82,8 +118,6 @@ class Driver(BaseDriver):
         ----------
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
-        websocket_cls : function(), default=websocket.Websocket
-            The Websocket class constructor.
         data_format : 'text' or 'json', default='json'
             Whether to receive the websocket data as text or JSON.
 
@@ -93,16 +127,20 @@ class Driver(BaseDriver):
             The event loop.
 
         """
-        self.websocket = websocket_cls(self.options, self.client.token)
+        if not self.websocket:
+            raise RuntimeError(
+                "Websocket not initialized. Use init_websocket() first."
+            )
+
         loop: AbstractEventLoop = get_event_loop()
 
         if loop.is_running():
-            run(self.websocket.connect(event_handler, data_format))
+            run(self.websocket.listen(event_handler, data_format))
 
         else:
             try:
                 loop.run_until_complete(
-                    self.websocket.connect(event_handler, data_format)
+                    self.websocket.listen(event_handler, data_format)
                 )
 
             except RuntimeError as err:
@@ -160,7 +198,7 @@ class Driver(BaseDriver):
 
         return result
 
-    def logout(self) -> Any:
+    async def logout(self) -> Any:
         """Log the user out.
 
         Returns
@@ -169,7 +207,7 @@ class Driver(BaseDriver):
             The json-encoded content of the response.
 
         """
-        result: Any = self.users.logout_user()
+        result: Any = await self.users.logout_user()
 
         self.client.token = ""
         self.client.user_id = ""

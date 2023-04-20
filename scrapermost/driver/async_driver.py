@@ -19,8 +19,10 @@ class AsyncDriver(BaseDriver):
 
     Methods
     -------
-    init_websocket(event_handler, websocket_cls, data_format='json')
-        Initialize the websocket connection to the Mattermost server.
+    init_websocket(websocket_cls)
+        Initialize the websocket connection.
+    start_websocket(event_handler, data_format='json')
+        Start websocket listening loop.
     login()
         Log the user in.
     logout()
@@ -66,11 +68,35 @@ class AsyncDriver(BaseDriver):
 
     async def init_websocket(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
         websocket_cls: Callable[..., Websocket] = Websocket,
+    ) -> None:
+        """Initialize the websocket connection.
+
+        Parameters
+        ----------
+        websocket_cls : function() default=websocket.Websocket
+            The Websocket class constructor.
+
+        Raises
+        ------
+        asyncio.TimeoutError
+            If the websocket connection timed out.
+        aiohttp.client_exceptions.ClientConnectorError
+            If the name resolution failed.
+        aiohttp.client_exceptions.WSServerHandshakeError
+            If websocket server handshake failed.
+
+        """
+        self.websocket = websocket_cls(self.options, self.client.token)
+
+        await self.websocket.connect()
+
+    async def start_websocket(
+        self,
+        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
         data_format: Literal["json", "text"] = "json",
     ) -> Any:
-        """Initialize the websocket connection to the Mattermost server.
+        """Start websocket listening loop.
 
         Unlike the Driver.init_websocket, this one assumes you are async aware
         and returns a coroutine that can be awaited. It will not return until
@@ -85,8 +111,6 @@ class AsyncDriver(BaseDriver):
         ----------
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
-        websocket_cls : function() default=websocket.Websocket
-            The Websocket class constructor.
         data_format : 'json' or 'text', default='json'
             Whether to receive the websocket data as text or JSON.
 
@@ -95,9 +119,12 @@ class AsyncDriver(BaseDriver):
         Any
 
         """
-        self.websocket = websocket_cls(self.options, self.client.token)
+        if not self.websocket:
+            raise RuntimeError(
+                "Websocket not initialized. Use init_websocket() first."
+            )
 
-        return await self.websocket.connect(event_handler, data_format)
+        return await self.websocket.listen(event_handler, data_format)
 
     async def login(self) -> Any | Response:
         """Log the user in.

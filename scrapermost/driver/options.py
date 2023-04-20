@@ -44,8 +44,6 @@ class DriverOptions:
         The Mattermost websocket connection's heartbeat in seconds.
         Send ping message every heartbeat seconds and wait pong response,
         if pong response is not received then close connection.
-    websocket_receive_timeout : float, default=10
-        Timeout for websocket to receive complete message.
     websocket_keepalive_delay : float, default=5
         Duration in seconds between two keepalive transmissions.
     websocket_kw_args : dict, default=None
@@ -94,9 +92,6 @@ class DriverOptions:
         # websocket options
         self.websocket_heartbeat: float = options.get(
             "websocket_heartbeat", 10
-        )
-        self.websocket_receive_timeout: float = options.get(
-            "websocket_receive_timeout", 10
         )
         self.websocket_keepalive_delay: float = options.get(
             "websocket_keepalive_delay", 5

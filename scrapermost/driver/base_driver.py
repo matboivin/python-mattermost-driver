@@ -323,7 +323,7 @@ class BaseDriver(ABC):
 
     # ############################################################### Methods #
 
-    def disconnect_websocket(self) -> None:
+    async def disconnect_websocket(self) -> None:
         """Disconnect the driver from the server."""
         if self.websocket:
-            self.websocket.disconnect()
+            await self.websocket.disconnect()
