@@ -231,23 +231,29 @@ class Websocket:
             If websocket server handshake failed.
 
         """
-        while self._alive:
-            try:
-                await self._authenticate_websocket(event_handler)
-                await self._start_loop(event_handler, data_format)
+        try:
+            await self._authenticate_websocket(event_handler)
 
-            except (RuntimeError, ConnectionResetError) as err:
-                logger.error(err)
-                await sleep(self._keepalive_delay)
+        except RuntimeError as err:
+            logger.error(err)
 
-            except Exception as err:  # FIXME
-                logger.exception(
-                    f"Websocket connection closed: {type(err)} thrown."
-                )
-                await sleep(self._keepalive_delay)
+        else:
+            while self._alive:
+                try:
+                    await self._start_loop(event_handler, data_format)
 
-            except CancelledError:
-                pass
+                except (RuntimeError, ConnectionResetError) as err:
+                    logger.error(err)
+                    await sleep(self._keepalive_delay)
+
+                except Exception as err:  # FIXME
+                    logger.exception(
+                        f"Websocket connection closed: {type(err)} thrown."
+                    )
+                    await sleep(self._keepalive_delay)
+
+                except CancelledError:
+                    pass
 
         if self.websocket and not self.websocket.closed:
             await self.websocket.close()
