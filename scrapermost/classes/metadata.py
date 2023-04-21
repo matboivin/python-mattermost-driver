@@ -28,11 +28,11 @@ class EmbedMetadata:
         Raises
         ------
         KeyError
-            If a key is missing from event.
+            If 'type' key is missing from event.
 
         """
         self.type: str = attr["type"]
-        self.url: str = attr["url"]
+        self.url: str = attr.get("url", "")
         self.data: Dict[str, Any] = attr.get("data", {})
 
 
