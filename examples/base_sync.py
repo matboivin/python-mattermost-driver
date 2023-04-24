@@ -1,10 +1,11 @@
 """Start driver and connect to a Mattermost server."""
 
 import os
+from asyncio import AbstractEventLoop
 from typing import Any, Dict
 
-import requests
 from dotenv import load_dotenv
+from requests import ConnectionError
 
 from scrapermost import Driver
 from scrapermost.events import Posted
@@ -21,9 +22,12 @@ async def print_new_post(event: Dict[str, Any]) -> None:
 
     """
     if event.get("event") == "posted":
-        post: Posted = Posted(event)
-
-        print(f"New Post: {post.post.message}")
+        try:
+            post: Posted = Posted(event)
+        except KeyError as err:
+            print(f"Posted message missing key: {err}")
+        else:
+            print(f"New Post: {post.post.message}")
 
 
 def connect_driver_to_server(driver: Driver) -> None:
@@ -35,18 +39,28 @@ def connect_driver_to_server(driver: Driver) -> None:
         The Mattermost client.
 
     """
+    loop: AbstractEventLoop | None = None
+
     try:
         driver.login()
         print(f"Driver connected to {driver.options.hostname}.")
 
-    except (requests.exceptions.ConnectionError, NoAccessTokenProvided) as err:
+        loop = driver.init_websocket(loop=loop)
+        print("Established websocket connecttion.")
+
+    except (ConnectionError, NoAccessTokenProvided) as err:
         print(f"Driver login failed: {err}")
 
+    except RuntimeError as err:
+        print(err)
+
     else:
-        driver.init_websocket(print_new_post, data_format="json")
+        driver.start_websocket(print_new_post, data_format="json", loop=loop)
 
     finally:
-        driver.disconnect_websocket()
+        if loop:
+            loop.run_until_complete(driver.disconnect_websocket())
+            loop.run_until_complete(driver.logout())
 
 
 def init_driver(server_host: str, email: str, password: str) -> Driver:
@@ -83,13 +97,13 @@ def entrypoint() -> None:
     email: str | None = os.getenv("EMAIL")
     password: str | None = os.getenv("PASSWORD")
 
-    if all([host, email, password]):
-        driver: Driver = init_driver(host, email, password)
-
-        connect_driver_to_server(driver)
-
-    else:
+    if not all([host, email, password]):
         print("Error: Missing parameters in env.")
+        return
+
+    driver: Driver = init_driver(host, email, password)
+
+    connect_driver_to_server(driver)
 
 
 if __name__ == "__main__":
@@ -99,4 +113,4 @@ if __name__ == "__main__":
         entrypoint()
 
     except KeyboardInterrupt:
-        print("Program ended.")
+        print("Program interrupted by user.")
