@@ -1,6 +1,6 @@
 """Class to use Mattermost websocket API."""
 
-from asyncio import CancelledError, TimeoutError, sleep
+from asyncio import TimeoutError, sleep
 from logging import DEBUG, INFO, Logger, getLogger
 from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
 from typing import Any, Awaitable, Callable, Dict, Literal
@@ -252,17 +252,6 @@ class Websocket:
                     )
                     await sleep(self._keepalive_delay)
 
-                except CancelledError:
-                    pass
-
-        if self.websocket and not self.websocket.closed:
-            await self.websocket.close()
-
-        if self._session and not self._session.closed:
-            await self._session.close()
-
-        logger.info("Websocket disconnected.")
-
     async def connect(self) -> None:
         """Initialize the websocket object.
 
@@ -305,11 +294,13 @@ class Websocket:
             logger.info("Disconnecting websocket...")
             self._alive = False
 
-        else:
             if self.websocket and not self.websocket.closed:
                 await self.websocket.close()
 
             if self._session and not self._session.closed:
                 await self._session.close()
 
+            logger.info("Websocket disconnected.")
+
+        else:
             logger.debug("Can't disconnect websocket: Not connected.")

@@ -17,7 +17,7 @@ This repository is a fork of [Python Mattermost Driver](https://github.com/Vaelo
    1. [Initialize client and connect to a Mattermost server](#initialize-client-and-connect-to-a-mattermost-server)
    2. [Use the Web service API](#use-the-web-service-api)
    3. [Connect to the Websocket API](#connect-to-the-websocket-api)
-   4. [Disconnect websocket](#disconnect-websocket)
+   4. [Disconnect](#disconnect)
 3. [License](#license)
 4. [Acknowledgments](#acknowledgments)
 
@@ -56,6 +56,8 @@ $ source `poetry env info --path`/bin/activate
 
 2. Use it as a library.
 
+> Example usage in the [`examples` folder](examples/).
+
 <br />
 
 ### Initialize client and connect to a Mattermost server
@@ -72,7 +74,10 @@ At least the following options must be provided as a dict:
 Example with synchronous driver:
 
 ```python
-from scrapermost import Driver
+from requests import ConnectionError
+from scrapermost import AsyncDriver
+from scrapermost.exceptions import NoAccessTokenProvided
+
 
 def init_driver(server_host: str, email: str, password: str) -> Driver:
     return Driver(
@@ -86,13 +91,19 @@ def init_driver(server_host: str, email: str, password: str) -> Driver:
     )
 
 def connect_driver_to_server(driver: Driver) -> None:
-    driver.login()
+    try:
+        driver.login()
+    except (ConnectionError, NoAccessTokenProvided) as err:
+        print(f"Driver login failed: {err}")
 ```
 
 Example with asynchronous driver:
 
 ```python
+from requests import ConnectionError
 from scrapermost import AsyncDriver
+from scrapermost.exceptions import NoAccessTokenProvided
+
 
 def init_driver(server_host: str, email: str, password: str) -> AsyncDriver:
     return AsyncDriver(
@@ -106,7 +117,10 @@ def init_driver(server_host: str, email: str, password: str) -> AsyncDriver:
     )
 
 async def connect_driver_to_server(driver: AsyncDriver) -> None:
-    await driver.login()
+    try:
+        await driver.login()
+    except (ConnectionError, NoAccessTokenProvided) as err:
+        print(f"Driver login failed: {err}")
 ```
 
 <br />
@@ -137,8 +151,8 @@ from typing import Any, Dict
 from scrapermost.events import Posted
 
 # Minimalist event handler example
-async def my_event_handler(event: Dict[str, Any]) -> None:
-    if event.get("event") == "posted":  # event is a new post
+async def handle_new_post(event: Dict[str, Any]) -> None:
+    if event.get("event") == "posted":
         post: Posted = Posted(event)
 
         ...
@@ -149,21 +163,28 @@ Assuming `Driver.login()` was called, initialize the websocket connection to the
 Example with synchronous driver:
 
 ```python
-driver.init_websocket(my_event_handler, data_format="json")
+from asyncio import AbstractEventLoop
+
+loop: AbstractEventLoop = driver.init_websocket()
+driver.start_websocket(handle_new_post, data_format="json", loop=loop)
 ```
 
 Example with asynchronous driver:
 
 ```python
-await driver.init_websocket(my_event_handler, data_format="json")
+await driver.init_websocket()
+await driver.start_websocket(handle_new_post, data_format="json")
 ```
 
 <br />
 
-### Disconnect websocket
+### Disconnect
+
+Example with asynchronous driver:
 
 ```python
-driver.disconnect_websocket()
+await driver.disconnect_websocket()
+await driver.logout()
 ```
 
 <br />

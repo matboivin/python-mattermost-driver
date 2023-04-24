@@ -1,6 +1,6 @@
 """Class defining the synchronous driver."""
 
-from asyncio import AbstractEventLoop, get_event_loop, run
+from asyncio import AbstractEventLoop, get_event_loop
 from typing import Any, Awaitable, Callable, Dict, Literal, Tuple
 
 from requests import Response
@@ -20,9 +20,9 @@ class Driver(BaseDriver):
 
     Methods
     -------
-    init_websocket(websocket_cls)
+    init_websocket(websocket_cls, loop=None)
         Initialize the websocket connection.
-    start_websocket(event_handler, data_format='json')
+    start_websocket(event_handler, data_format='json', loop=None)
         Start websocket listening loop.
     login()
         Log the user in.
@@ -70,13 +70,16 @@ class Driver(BaseDriver):
     def init_websocket(
         self,
         websocket_cls: Callable[..., Websocket] = Websocket,
-    ) -> None:
+        loop: AbstractEventLoop | None = None,
+    ) -> AbstractEventLoop:
         """Initialize the websocket connection.
 
         Parameters
         ----------
         websocket_cls : function(), default=websocket.Websocket
             The Websocket class constructor.
+        loop : asyncio.AbstractEventLoop, default=None
+            The running event loop.
 
         Returns
         -------
@@ -94,18 +97,22 @@ class Driver(BaseDriver):
 
         """
         self.websocket = websocket_cls(self.options, self.client.token)
-        loop: AbstractEventLoop = get_event_loop()
 
-        if loop.is_running():
-            run(self.websocket.connect())
+        if loop and loop.is_running():
+            loop.create_task(self.websocket.connect())
 
         else:
+            loop = get_event_loop()
+
             loop.run_until_complete(self.websocket.connect())
+
+        return loop
 
     def start_websocket(
         self,
         event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
         data_format: Literal["text", "json"] = "json",
+        loop: AbstractEventLoop | None = None,
     ) -> AbstractEventLoop:
         """Start websocket listening loop.
 
@@ -120,6 +127,8 @@ class Driver(BaseDriver):
             The function to handle the websocket events.
         data_format : 'text' or 'json', default='json'
             Whether to receive the websocket data as text or JSON.
+        loop : asyncio.AbstractEventLoop, default=None
+            The running event loop.
 
         Returns
         -------
@@ -132,19 +141,15 @@ class Driver(BaseDriver):
                 "Websocket not initialized. Use init_websocket() first."
             )
 
-        loop: AbstractEventLoop = get_event_loop()
-
-        if loop.is_running():
-            run(self.websocket.listen(event_handler, data_format))
+        if loop and loop.is_running():
+            loop.create_task(self.websocket.listen(event_handler, data_format))
 
         else:
-            try:
-                loop.run_until_complete(
-                    self.websocket.listen(event_handler, data_format)
-                )
+            loop = get_event_loop()
 
-            except RuntimeError as err:
-                logger.error(err)
+            loop.run_until_complete(
+                self.websocket.listen(event_handler, data_format)
+            )
 
         return loop
 

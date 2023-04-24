@@ -1,11 +1,11 @@
 """Start driver and connect to a Mattermost server."""
 
-import asyncio
 import os
+from asyncio import run
 from typing import Any, Dict
 
-import requests
 from dotenv import load_dotenv
+from requests import ConnectionError
 
 from scrapermost import AsyncDriver
 from scrapermost.events import Posted
@@ -22,9 +22,12 @@ async def print_new_post(event: Dict[str, Any]) -> None:
 
     """
     if event.get("event") == "posted":
-        post: Posted = Posted(event)
-
-        print(f"New Post: {post.post.message}")
+        try:
+            post: Posted = Posted(event)
+        except KeyError as err:
+            print(f"Posted message missing key: {err}")
+        else:
+            print(f"New Post: {post.post.message}")
 
 
 async def connect_driver_to_server(driver: AsyncDriver) -> None:
@@ -40,14 +43,21 @@ async def connect_driver_to_server(driver: AsyncDriver) -> None:
         await driver.login()
         print(f"Driver connected to {driver.options.hostname}.")
 
-    except (requests.exceptions.ConnectionError, NoAccessTokenProvided) as err:
+        await driver.init_websocket()
+        print("Established websocket connecttion.")
+
+    except (ConnectionError, NoAccessTokenProvided) as err:
         print(f"Driver login failed: {err}")
 
+    except RuntimeError as err:
+        print(err)
+
     else:
-        await driver.init_websocket(print_new_post, data_format="json")
+        await driver.start_websocket(print_new_post, data_format="json")
 
     finally:
-        driver.disconnect_websocket()
+        await driver.disconnect_websocket()
+        await driver.logout()
 
 
 def init_driver(server_host: str, email: str, password: str) -> AsyncDriver:
@@ -84,20 +94,20 @@ async def entrypoint() -> None:
     email: str | None = os.getenv("EMAIL")
     password: str | None = os.getenv("PASSWORD")
 
-    if all([host, email, password]):
-        driver: AsyncDriver = init_driver(host, email, password)
-
-        await connect_driver_to_server(driver)
-
-    else:
+    if not all([host, email, password]):
         print("Error: Missing parameters in env.")
+        return
+
+    driver: AsyncDriver = init_driver(host, email, password)
+
+    await connect_driver_to_server(driver)
 
 
 if __name__ == "__main__":
     load_dotenv()
 
     try:
-        asyncio.run(entrypoint())
+        run(entrypoint())
 
     except KeyboardInterrupt:
-        print("Program ended.")
+        print("Program interrupted by user.")
