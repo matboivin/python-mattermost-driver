@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and updating slash commands."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -41,7 +41,7 @@ class Commands(APIEndpoint):
 
     @_ret_json
     def create_command(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a command for a team.
 
@@ -112,7 +112,7 @@ class Commands(APIEndpoint):
 
     @_ret_json
     def update_command(
-        self, command_id: str, body_json: Dict[str, Any]
+        self, command_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a command.
 

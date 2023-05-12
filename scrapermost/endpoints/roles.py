@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and updating roles."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -72,7 +72,7 @@ class Roles(APIEndpoint):
 
     @_ret_json
     def patch_role(
-        self, role_id: str, body_json: Dict[str, Any]
+        self, role_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a role partially by providing only the fields to update.
 

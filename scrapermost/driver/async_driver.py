@@ -1,6 +1,6 @@
 """Class defining the asynchronous driver."""
 
-from typing import Any, Awaitable, Callable, Dict, Literal, Tuple
+from typing import Any, Awaitable, Callable, Literal
 
 from requests import Response
 
@@ -30,7 +30,7 @@ class AsyncDriver(BaseDriver):
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: dict[str, Any]) -> None:
         """Initialize driver.
 
         Parameters
@@ -48,7 +48,7 @@ class AsyncDriver(BaseDriver):
 
         return self
 
-    async def __aexit__(self, *exc_info: Tuple[Any]) -> Any:
+    async def __aexit__(self, *exc_info: tuple[Any]) -> Any:
         return await self.client.__aexit__(*exc_info)
 
     # ############################################################ Properties #
@@ -93,7 +93,7 @@ class AsyncDriver(BaseDriver):
 
     async def start_websocket(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
+        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
         data_format: Literal["json", "text"] = "json",
     ) -> Any:
         """Start websocket listening loop.

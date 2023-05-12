@@ -1,7 +1,7 @@
 """Class defining the 'post_edited' event."""
 
 from json import loads
-from typing import Any, Dict
+from typing import Any
 
 from scrapermost.classes import Post
 
@@ -18,7 +18,7 @@ class PostEdited(WebsocketEvent):
 
     """
 
-    def __init__(self, event: Dict[str, Any]) -> None:
+    def __init__(self, event: dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters

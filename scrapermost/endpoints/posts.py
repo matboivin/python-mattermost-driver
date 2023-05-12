@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and interacting with posts."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -59,7 +59,7 @@ class Posts(APIEndpoint):
 
     @_ret_json
     def create_post(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new post in a channel.
 
@@ -90,7 +90,7 @@ class Posts(APIEndpoint):
 
     @_ret_json
     def create_ephemeral_post(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new ephemeral post in a channel.
 
@@ -157,7 +157,7 @@ class Posts(APIEndpoint):
 
     @_ret_json
     def update_post(
-        self, post_id: str, body_json: Dict[str, Any]
+        self, post_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a post.
 
@@ -188,7 +188,7 @@ class Posts(APIEndpoint):
 
     @_ret_json
     def patch_post(
-        self, post_id: str, body_json: Dict[str, Any] | None = None
+        self, post_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a post partially by providing only the fields to update.
 
@@ -242,7 +242,7 @@ class Posts(APIEndpoint):
 
     @_ret_json
     def get_list_of_flagged_posts(
-        self, user_id: str, params: Dict[str, Any] | None = None
+        self, user_id: str, params: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a page of flagged posts of a user provided user ID string.
 
@@ -292,7 +292,7 @@ class Posts(APIEndpoint):
 
     @_ret_json
     def get_posts_for_channel(
-        self, channel_id: str, params: Dict[str, Any] | None = None
+        self, channel_id: str, params: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a page of posts in a channel.
 
@@ -318,7 +318,7 @@ class Posts(APIEndpoint):
         self,
         user_id: str,
         channel_id: str,
-        params: Dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get posts around oldest unread.
 
@@ -344,7 +344,7 @@ class Posts(APIEndpoint):
 
     @_ret_json
     def search_for_team_posts(
-        self, team_id: str, body_json: Dict[str, Any]
+        self, team_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Search posts in the team and from the provided terms string.
 

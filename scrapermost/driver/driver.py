@@ -1,7 +1,7 @@
 """Class defining the synchronous driver."""
 
 from asyncio import AbstractEventLoop, get_event_loop
-from typing import Any, Awaitable, Callable, Dict, Literal, Tuple
+from typing import Any, Awaitable, Callable, Literal
 
 from requests import Response
 
@@ -31,7 +31,7 @@ class Driver(BaseDriver):
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: dict[str, Any]) -> None:
         """Initialize driver.
 
         Parameters
@@ -49,7 +49,7 @@ class Driver(BaseDriver):
 
         return self
 
-    def __exit__(self, *exc_info: Tuple[Any]) -> Any:
+    def __exit__(self, *exc_info: tuple[Any]) -> Any:
         return self.client.__exit__(*exc_info)
 
     # ############################################################ Properties #
@@ -110,7 +110,7 @@ class Driver(BaseDriver):
 
     def start_websocket(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
+        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
         data_format: Literal["text", "json"] = "json",
         loop: AbstractEventLoop | None = None,
     ) -> AbstractEventLoop:

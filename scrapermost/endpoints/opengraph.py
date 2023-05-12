@@ -1,7 +1,7 @@
 """Endpoint for getting Open Graph metadata."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -28,7 +28,7 @@ class Opengraph(APIEndpoint):
 
     @_ret_json
     def get_opengraph_metadata_for_url(
-        self, body_json: Dict[str, Any] | None
+        self, body_json: dict[str, Any] | None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get Open Graph Metadata for a specif URL.
 

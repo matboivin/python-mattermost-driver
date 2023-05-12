@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and interacting with users."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -101,7 +101,7 @@ class Users(APIEndpoint):
     endpoint: str = "users"
 
     def login_user(
-        self, body_json: Dict[str, Any] | None
+        self, body_json: dict[str, Any] | None
     ) -> Any | Awaitable[Any]:
         """Login to Mattermost server.
 
@@ -132,8 +132,8 @@ class Users(APIEndpoint):
     @_ret_json
     def create_user(
         self,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
+        body_json: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new user on the system.
 
@@ -159,7 +159,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def get_users(
-        self, params: Dict[str, Any] | None = None
+        self, params: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a page of a list of users.
 
@@ -178,7 +178,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def get_users_by_ids(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of users based on a provided list of user IDs.
 
@@ -197,7 +197,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def get_users_by_usernames(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of users based on a provided list of usernames.
 
@@ -218,7 +218,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def search_users(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of users based on search criteria in the request body.
 
@@ -237,7 +237,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def autocomplete_users(
-        self, params: Dict[str, Any] | None = None
+        self, params: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Autocomplete users.
 
@@ -293,7 +293,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def update_user(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user by providing the user object.
 
@@ -337,7 +337,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def patch_user(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user partially.
 
@@ -362,7 +362,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def update_user_role(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user's system-level roles.
 
@@ -387,7 +387,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def update_user_active_status(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update user active or inactive status.
 
@@ -429,7 +429,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def set_user_profile_image(
-        self, user_id: str, files: Dict[str, Any]
+        self, user_id: str, files: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Set user's profile image.
 
@@ -473,7 +473,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def reset_password(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Reset password.
 
@@ -497,7 +497,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def update_user_mfa(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Activate multi-factor authentication for the user.
 
@@ -539,7 +539,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def check_mfa(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Check if a user has multi-factor authentication active.
 
@@ -558,7 +558,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def update_user_password(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user's password.
 
@@ -581,7 +581,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def send_password_reset_mail(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Send an email containing a link for resetting the user's password.
 
@@ -644,7 +644,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def revoke_user_session(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Revoke a user session from the provided user ID and session ID.
 
@@ -688,7 +688,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def attach_mobile_device(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Attach a mobile device ID to the currently logged in session.
 
@@ -728,7 +728,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def verify_user_email(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Verify the email used by a user to sign-up their account with.
 
@@ -749,7 +749,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def send_verification_mail(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Send verification email.
 
@@ -770,7 +770,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def switch_login_method(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Send verification email.
 
@@ -791,7 +791,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def create_user_access_token(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a user access token.
 
@@ -838,7 +838,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def disable_personal_access_token(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Disable a personal access token.
 
@@ -861,7 +861,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def enable_personal_access_token(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Re-enable a personal access token that has been disabled.
 
@@ -882,7 +882,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def search_tokens(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of tokens based on search criteria in the request body.
 
@@ -903,7 +903,7 @@ class Users(APIEndpoint):
 
     @_ret_json
     def update_user_authentication_method(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user's authentication method.
 

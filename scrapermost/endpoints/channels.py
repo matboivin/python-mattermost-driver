@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from logging import INFO, Logger, getLogger
-from typing import Any, Awaitable, Dict, List
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -94,7 +94,7 @@ class Channels(APIEndpoint):
 
     @_ret_json
     def create_channel(
-        self, body_json: Dict[str, Any] | None
+        self, body_json: dict[str, Any] | None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new channel.
 
@@ -147,7 +147,7 @@ class Channels(APIEndpoint):
 
     @_ret_json
     def create_group_message_channel(
-        self, user_ids: List[str]
+        self, user_ids: list[str]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new group message channel to group of users.
 
@@ -166,7 +166,7 @@ class Channels(APIEndpoint):
 
     @_ret_json
     def get_list_of_channels_by_ids(
-        self, team_id: str, channel_ids: List[str]
+        self, team_id: str, channel_ids: list[str]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of public channels on a team by ID.
 
@@ -208,7 +208,7 @@ class Channels(APIEndpoint):
 
     @_ret_json
     def update_channel(
-        self, channel_id: str, body_json: Dict[str, Any]
+        self, channel_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a channel.
 
@@ -258,7 +258,7 @@ class Channels(APIEndpoint):
 
     @_ret_json
     def patch_channel(
-        self, channel_id: str, body_json: Dict[str, Any]
+        self, channel_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a channel partially by providing only the fields to update.
 
@@ -552,7 +552,7 @@ class Channels(APIEndpoint):
 
     @_ret_json
     def get_channel_members_by_ids(
-        self, channel_id: str, user_ids: List[str]
+        self, channel_id: str, user_ids: list[str]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of channel members based on the provided user IDs.
 
@@ -650,7 +650,7 @@ class Channels(APIEndpoint):
         self,
         channel_id: str,
         user_id: str,
-        body_json: Dict[str, Any],
+        body_json: dict[str, Any],
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update the scheme-derived roles of a channel member.
 
@@ -684,7 +684,7 @@ class Channels(APIEndpoint):
         self,
         channel_id: str,
         user_id: str,
-        body_json: Dict[str, Any],
+        body_json: dict[str, Any],
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a user's notification properties for a channel.
 

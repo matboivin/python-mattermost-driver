@@ -4,7 +4,7 @@ Example usages: configuration and logging.
 """
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -97,7 +97,7 @@ class System(APIEndpoint):
 
     @_ret_json
     def send_test_email(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Send a test email.
 
@@ -131,7 +131,7 @@ class System(APIEndpoint):
 
     @_ret_json
     def update_configuration(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Submit a new configuration for the server to use.
 
@@ -165,7 +165,7 @@ class System(APIEndpoint):
 
     @_ret_json
     def get_client_configuration(
-        self, params: Dict[str, Any]
+        self, params: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a subset of the server configuration needed by the client.
 
@@ -184,7 +184,7 @@ class System(APIEndpoint):
 
     @_ret_json
     def upload_license_file(
-        self, files: Dict[str, Any] | None
+        self, files: dict[str, Any] | None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Upload a license to enable enterprise features.
 
@@ -217,7 +217,7 @@ class System(APIEndpoint):
 
     @_ret_json
     def get_client_license(
-        self, params: Dict[str, Any]
+        self, params: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a subset of the server license needed by the client.
 
@@ -319,7 +319,7 @@ class System(APIEndpoint):
 
     @_ret_json
     def get_analytics(
-        self, params: Dict[str, Any]
+        self, params: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get some analytics data about the system.
 
@@ -352,7 +352,7 @@ class System(APIEndpoint):
 
     @_ret_json
     def test_aws_s3_connection(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Test AWS S3 connection.
 

@@ -3,7 +3,7 @@
 from asyncio import TimeoutError, sleep
 from logging import DEBUG, INFO, Logger, getLogger
 from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
-from typing import Any, Awaitable, Callable, Dict, Literal
+from typing import Any, Awaitable, Callable, Literal
 
 from aiohttp import (
     ClientConnectorError,
@@ -80,7 +80,7 @@ class Websocket:
             if not options.verify:
                 ssl_context.verify_mode = CERT_NONE
 
-        self._websocket_kw_args: Dict[str, Any] = {
+        self._websocket_kw_args: dict[str, Any] = {
             "url": self._url,
             "proxy": options.proxy,
             "heartbeat": options.websocket_heartbeat,
@@ -104,7 +104,7 @@ class Websocket:
 
     async def _start_loop(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
+        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
         data_format: Literal["json", "text"] = "json",
     ) -> None:
         """Start loop to listen to websocket events.
@@ -126,7 +126,7 @@ class Websocket:
 
         while self._alive:
             try:
-                message: str | Dict[str, Any] = (
+                message: str | dict[str, Any] = (
                     await self.websocket.receive_json()  # type: ignore
                     if data_format == "json"
                     else await self.websocket.receive_str()  # type: ignore
@@ -149,7 +149,7 @@ class Websocket:
 
     async def _authenticate_websocket(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
+        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
     ) -> None:
         """Send a authentication challenge over a websocket.
 
@@ -167,7 +167,7 @@ class Websocket:
         logger.debug("Authenticating websocket")
 
         # Send the following JSON to authenticate
-        auth_challenge: Dict[str, Any] = {
+        auth_challenge: dict[str, Any] = {
             "seq": 1,
             "action": "authentication_challenge",
             "data": {"token": self._token},
@@ -177,7 +177,7 @@ class Websocket:
 
         while self._alive:
             try:
-                message: Dict[
+                message: dict[
                     str, Any
                 ] = await self.websocket.receive_json()  # type: ignore
 
@@ -209,7 +209,7 @@ class Websocket:
 
     async def listen(
         self,
-        event_handler: Callable[[str | Dict[str, Any]], Awaitable[None]],
+        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
         data_format: Literal["json", "text"] = "json",
     ) -> None:
         """Authenticate the websocket and start event loop.

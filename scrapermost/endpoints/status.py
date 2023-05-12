@@ -1,7 +1,7 @@
 """Endpoints for getting and updating user statuses."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -54,7 +54,7 @@ class Status(APIEndpoint):
 
     @_ret_json
     def update_user_status(
-        self, user_id: str, body_json: Dict[str, Any] | None = None
+        self, user_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Manually set a user's status.
 
@@ -77,7 +77,7 @@ class Status(APIEndpoint):
 
     @_ret_json
     def get_user_statuses_by_id(
-        self, body_json: Dict[str, Any] | None = None
+        self, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of user statuses by ID from the server.
 

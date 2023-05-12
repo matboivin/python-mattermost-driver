@@ -1,7 +1,7 @@
 """Endpoints for uploading and interacting with files."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -38,7 +38,7 @@ class Files(APIEndpoint):
 
     @_ret_json
     def upload_file(
-        self, channel_id: str, files: Dict[str, Any]
+        self, channel_id: str, files: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Upload a file that can later be attached to a post.
 

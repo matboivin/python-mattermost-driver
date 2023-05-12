@@ -1,6 +1,6 @@
 """Class defining the 'hello' event."""
 
-from typing import Any, Dict
+from typing import Any
 
 from .base import WebsocketEvent
 
@@ -17,7 +17,7 @@ class Hello(WebsocketEvent):
 
     """
 
-    def __init__(self, event: Dict[str, Any]) -> None:
+    def __init__(self, event: dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
@@ -36,7 +36,7 @@ class Hello(WebsocketEvent):
         if event.get("event") != "hello":
             raise TypeError(f"Event type '{event.get('event')}' was passed.")
 
-        data: Dict[str, Any] = event["data"]
+        data: dict[str, Any] = event["data"]
 
         super().__init__(event)
 

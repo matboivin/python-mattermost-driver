@@ -4,7 +4,7 @@ This class holds information about the logged-in user and actually makes the
 requests to the Mattermost server.
 """
 
-from typing import Any, Callable, Dict, Tuple
+from typing import Any, Callable
 
 from httpx import Client as HttpxClient
 from httpx import ConnectError, HTTPStatusError, RequestError
@@ -65,7 +65,7 @@ def _check_response(func: Callable[..., Response]) -> Callable[..., Response]:
             message: Any
 
             try:
-                data: Dict[str, Any] = err.response.json()
+                data: dict[str, Any] = err.response.json()
                 message = data.get("message", data)
 
             except ValueError:
@@ -94,7 +94,9 @@ def _check_response(func: Callable[..., Response]) -> Callable[..., Response]:
         except ConnectError as err:
             logger.error(f"httpx.ConnectError: {err}.")
 
-            raise RuntimeError("Failed to establish a connection to server.") from err
+            raise RuntimeError(
+                "Failed to establish a connection to server."
+            ) from err
 
         except RequestError as err:
             logger.error(f"httpx.RequestError: {err}.")
@@ -152,7 +154,7 @@ class Client(BaseClient):
 
         return self
 
-    def __exit__(self, *exc_info: Tuple[Any]) -> Any:
+    def __exit__(self, *exc_info: tuple[Any]) -> Any:
         return self.httpx_client.__exit__(*exc_info)
 
     # ############################################################ Properties #
@@ -174,7 +176,7 @@ class Client(BaseClient):
     def get(
         self,
         endpoint: str,
-        params: Dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Response:
         """Send a GET request.
 
@@ -208,10 +210,10 @@ class Client(BaseClient):
     def post(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
-        files: Dict[str, Any] | None = None,
+        body_json: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
+        files: dict[str, Any] | None = None,
     ) -> Response:
         """Send a POST request.
 
@@ -254,9 +256,9 @@ class Client(BaseClient):
     def put(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
+        body_json: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
     ) -> Response:
         """Send a PUT request.
 
@@ -296,7 +298,7 @@ class Client(BaseClient):
     def delete(
         self,
         endpoint: str,
-        params: Dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Response:
         """Send a DELETE request.
 

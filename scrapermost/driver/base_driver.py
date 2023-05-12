@@ -2,7 +2,7 @@
 
 from abc import ABC
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Dict
+from typing import Any
 
 from ..endpoints import *
 from .options import DriverOptions
@@ -34,7 +34,7 @@ class BaseDriver(ABC):
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: dict[str, Any]) -> None:
         """Initialize driver.
 
         Parameters

@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and updating webhooks."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -48,7 +48,7 @@ class Webhooks(APIEndpoint):
 
     @_ret_json
     def create_incoming_hook(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create an incoming webhook for a channel.
 
@@ -124,7 +124,7 @@ class Webhooks(APIEndpoint):
 
     @_ret_json
     def update_incoming_hook(
-        self, hook_id: str, body_json: Dict[str, Any]
+        self, hook_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update an incoming webhook given the hook ID.
 
@@ -156,7 +156,7 @@ class Webhooks(APIEndpoint):
 
     @_ret_json
     def create_outgoing_hook(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create an outgoing webhook for a team.
 
@@ -267,7 +267,7 @@ class Webhooks(APIEndpoint):
 
     @_ret_json
     def update_outgoing_hook(
-        self, hook_id: str, body_json: Dict[str, Any]
+        self, hook_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update an outgoing webhook given the hook ID.
 
@@ -317,7 +317,7 @@ class Webhooks(APIEndpoint):
         )
 
     def call_webhook(
-        self, hook_id: str, body_json: Dict[str, Any] | None = None
+        self, hook_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Awaitable[Any]:
         """Call a webhook.
 

@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and updating bot users."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -46,7 +46,7 @@ class Bots(APIEndpoint):
 
     @_ret_json
     def create_bot(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new bot account on the system.
 
@@ -71,7 +71,7 @@ class Bots(APIEndpoint):
 
     @_ret_json
     def get_bots(
-        self, params: Dict[str, Any]
+        self, params: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a page of a list of bots.
 
@@ -97,7 +97,7 @@ class Bots(APIEndpoint):
 
     @_ret_json
     def patch_bot(
-        self, bot_id: str, body_json: Dict[str, Any]
+        self, bot_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a bot partially by providing only the fields to update.
 

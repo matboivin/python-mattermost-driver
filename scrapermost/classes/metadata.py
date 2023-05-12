@@ -1,6 +1,6 @@
 """Class defining metadata."""
 
-from typing import Any, Dict
+from typing import Any
 
 
 class EmbedMetadata:
@@ -17,7 +17,7 @@ class EmbedMetadata:
 
     """
 
-    def __init__(self, attr: Dict[str, Any]) -> None:
+    def __init__(self, attr: dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
@@ -33,7 +33,7 @@ class EmbedMetadata:
         """
         self.type: str = attr["type"]
         self.url: str = attr.get("url", "")
-        self.data: Dict[str, Any] = attr.get("data", {})
+        self.data: dict[str, Any] = attr.get("data", {})
 
 
 class FileMetadata:
@@ -78,7 +78,7 @@ class FileMetadata:
 
     """
 
-    def __init__(self, attr: Dict[str, Any]) -> None:
+    def __init__(self, attr: dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters

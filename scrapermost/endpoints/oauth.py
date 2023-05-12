@@ -1,7 +1,7 @@
 """Endpoints to configure and interact as an OAuth 2.0 service provider."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -41,7 +41,7 @@ class OAuth(APIEndpoint):
 
     @_ret_json
     def register_oauth_app(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Register an OAuth 2.0 client application.
 
