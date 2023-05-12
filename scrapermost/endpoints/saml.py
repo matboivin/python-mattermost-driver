@@ -1,7 +1,7 @@
 """Endpoints for configuring and interacting with SAML."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -54,7 +54,7 @@ class SAML(APIEndpoint):
 
     @_ret_json
     def upload_idp_certificate(
-        self, files: Dict[str, Any]
+        self, files: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Upload IDP certificate.
 
@@ -89,7 +89,7 @@ class SAML(APIEndpoint):
 
     @_ret_json
     def upload_public_certificate(
-        self, files: Dict[str, Any] | None
+        self, files: dict[str, Any] | None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Upload the public certificate to be used for encryption.
 
@@ -124,7 +124,7 @@ class SAML(APIEndpoint):
 
     @_ret_json
     def upload_private_key(
-        self, files: Dict[str, Any]
+        self, files: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Upload the private key to be used for encryption.
 

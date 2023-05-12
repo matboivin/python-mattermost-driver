@@ -1,6 +1,6 @@
 """Class defining a post."""
 
-from typing import Any, Dict, List
+from typing import Any
 
 from .metadata import EmbedMetadata, FileMetadata
 
@@ -52,7 +52,7 @@ class Post:
 
     """
 
-    def __init__(self, attr: Dict[str, Any]) -> None:
+    def __init__(self, attr: dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
@@ -78,15 +78,15 @@ class Post:
         self.original_id: str = attr["original_id"]
         self.message: str = attr["message"]
         self.type: str = attr["type"]
-        self.props: Dict[str, Any] = attr["props"]
+        self.props: dict[str, Any] = attr["props"]
         self.hashtags: str = attr["hashtags"]
         self.pending_post_id: str = attr["pending_post_id"]
         self.reply_count: int = attr["reply_count"]
         self.last_reply_at: int = attr["last_reply_at"]
         self.participants: Any = attr["participants"]
-        self.metadata: Dict[str, List[Any]] = {}
+        self.metadata: dict[str, list[Any]] = {}
 
-        metadata: Dict[str, Any] = attr.get("metadata", {})
+        metadata: dict[str, Any] = attr.get("metadata", {})
 
         if metadata.get("embeds"):
             self.metadata["embeds"] = [

@@ -1,6 +1,6 @@
 """Mattermost API connection settings class."""
 
-from typing import Any, Dict
+from typing import Any
 
 
 class DriverOptions:
@@ -52,7 +52,7 @@ class DriverOptions:
 
     """
 
-    def __init__(self, options: Dict[str, Any]) -> None:
+    def __init__(self, options: dict[str, Any]) -> None:
         """Send a DELETE request.
 
         Parameters
@@ -96,6 +96,6 @@ class DriverOptions:
         self.websocket_keepalive_delay: float = options.get(
             "websocket_keepalive_delay", 5
         )
-        self.websocket_kw_args: Dict[str, Any] = options.get(
+        self.websocket_kw_args: dict[str, Any] = options.get(
             "websocket_kw_args", {}
         )

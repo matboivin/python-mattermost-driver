@@ -6,7 +6,7 @@ requests to the Mattermost server.
 
 from abc import ABC
 from logging import DEBUG, INFO, Logger, getLogger
-from typing import Any, Dict
+from typing import Any
 
 from .options import DriverOptions
 
@@ -203,7 +203,7 @@ class BaseClient(ABC):
 
     # ############################################################### Methods #
 
-    def get_auth_header(self) -> Dict[str, str] | None:
+    def get_auth_header(self) -> dict[str, str] | None:
         """Get Authorization header.
 
         Returns

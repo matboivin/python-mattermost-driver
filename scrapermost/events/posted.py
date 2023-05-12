@@ -1,7 +1,7 @@
 """Class defining the 'posted' event."""
 
 from json import loads
-from typing import Any, Dict
+from typing import Any
 
 from scrapermost.classes import Post
 
@@ -30,7 +30,7 @@ class Posted(WebsocketEvent):
 
     """
 
-    def __init__(self, event: Dict[str, Any]) -> None:
+    def __init__(self, event: dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
@@ -50,7 +50,7 @@ class Posted(WebsocketEvent):
             raise TypeError(f"Event type '{event.get('event')}' was passed.")
 
         super().__init__(event)
-        data: Dict[str, Any] = event["data"]
+        data: dict[str, Any] = event["data"]
 
         self.post: Post
 

@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and interacting with teams."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict, List, Literal
+from typing import Any, Awaitable, Literal
 
 from requests import Response
 
@@ -172,7 +172,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def update_team(
-        self, team_id: str, body_json: Dict[str, Any]
+        self, team_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a team by providing the team object.
 
@@ -227,7 +227,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def patch_team(
-        self, team_id: str, body_json: Dict[str, Any] | None = None
+        self, team_id: str, body_json: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a team partially by providing only the fields to update.
 
@@ -275,7 +275,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def search_teams(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Search teams based on search term and options provided.
 
@@ -415,7 +415,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def add_multiple_users_to_team(
-        self, team_id: str, users_per_team: List[Dict[str, Any]]
+        self, team_id: str, users_per_team: list[dict[str, Any]]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Add a number of users to the team by user_id.
 
@@ -514,7 +514,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def get_team_members_by_id(
-        self, team_id: str, user_ids: List[str]
+        self, team_id: str, user_ids: list[str]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get a list of team members based on a provided array of user IDs.
 
@@ -575,7 +575,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def set_team_icon(
-        self, team_id: str, files: Dict[str, Any]
+        self, team_id: str, files: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Set the team icon for the team.
 
@@ -646,7 +646,7 @@ class Teams(APIEndpoint):
         self,
         team_id: str,
         user_id: str,
-        body_json: Dict[str, Any],
+        body_json: dict[str, Any],
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a team member's scheme_admin/scheme_user properties.
 
@@ -677,7 +677,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def get_team_unreads_for_user(
-        self, user_id: str, params: Dict[str, Any] | None = None
+        self, user_id: str, params: dict[str, Any] | None = None
     ) -> Any | Response | Awaitable[Any | Response]:
         """Get team unreads for a user.
 
@@ -731,7 +731,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def invite_users_to_team_by_mail(
-        self, team_id: str, email_addresses: List[str]
+        self, team_id: str, email_addresses: list[str]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Invite users to the existing team using their email addresses.
 
@@ -755,7 +755,7 @@ class Teams(APIEndpoint):
 
     @_ret_json
     def import_team_from_other_app(
-        self, team_id: str, data: Dict[str, Any]
+        self, team_id: str, data: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Import a team into a existing team.
 

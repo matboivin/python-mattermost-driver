@@ -4,10 +4,10 @@ This class holds information about the logged-in user and actually makes the
 requests to the Mattermost server.
 """
 
-from typing import Any, Awaitable, Callable, Dict, Tuple
+from typing import Any, Awaitable, Callable
 
 from httpx import AsyncClient as HttpxAsyncClient
-from httpx import HTTPStatusError, ConnectError, RequestError
+from httpx import ConnectError, HTTPStatusError, RequestError
 from requests import Response
 
 from scrapermost.exceptions import (
@@ -67,7 +67,7 @@ def _check_response(
             message: Any
 
             try:
-                data: Dict[str, Any] = err.response.json()
+                data: dict[str, Any] = err.response.json()
                 message = data.get("message", data)
 
             except ValueError:
@@ -96,7 +96,9 @@ def _check_response(
         except ConnectError as err:
             logger.error(f"httpx.ConnectError: {err}.")
 
-            raise RuntimeError("Failed to establish a connection to server.") from err
+            raise RuntimeError(
+                "Failed to establish a connection to server."
+            ) from err
 
         except RequestError as err:
             logger.error(f"httpx.RequestError: {err}.")
@@ -154,7 +156,7 @@ class AsyncClient(BaseClient):
 
         return self
 
-    async def __aexit__(self, *exc_info: Tuple[Any]) -> Any:
+    async def __aexit__(self, *exc_info: tuple[Any]) -> Any:
         return await self.httpx_client.__aexit__(*exc_info)
 
     # ############################################################ Properties #
@@ -176,7 +178,7 @@ class AsyncClient(BaseClient):
     async def get(
         self,
         endpoint: str,
-        params: Dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Response:
         """Send an asynchronous GET request.
 
@@ -210,10 +212,10 @@ class AsyncClient(BaseClient):
     async def post(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
-        files: Dict[str, Any] | None = None,
+        body_json: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
+        files: dict[str, Any] | None = None,
     ) -> Response:
         """Send an asynchronous POST request.
 
@@ -256,9 +258,9 @@ class AsyncClient(BaseClient):
     async def put(
         self,
         endpoint: str,
-        body_json: Dict[str, Any] | None = None,
-        params: Dict[str, Any] | None = None,
-        data: Dict[str, Any] | None = None,
+        body_json: dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
+        data: dict[str, Any] | None = None,
     ) -> Response:
         """Send an asynchronous PUT request.
 
@@ -298,7 +300,7 @@ class AsyncClient(BaseClient):
     async def delete(
         self,
         endpoint: str,
-        params: Dict[str, Any] | None = None,
+        params: dict[str, Any] | None = None,
     ) -> Response:
         """Send an asynchronous DELETE request.
 

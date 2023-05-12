@@ -1,6 +1,6 @@
 """Generic base class for websocket events."""
 
-from typing import Any, Dict
+from typing import Any
 
 
 class WebsocketEvent:
@@ -19,7 +19,7 @@ class WebsocketEvent:
 
     """
 
-    def __init__(self, event: Dict[str, Any]) -> None:
+    def __init__(self, event: dict[str, Any]) -> None:
         """Initialize the attributes.
 
         Parameters
@@ -34,5 +34,5 @@ class WebsocketEvent:
 
         """
         self.event_type: str = event["event"]
-        self.broadcast: Dict[str, Any] = event["broadcast"]
+        self.broadcast: dict[str, Any] = event["broadcast"]
         self.seq: int = event["seq"]

@@ -2,7 +2,7 @@
 
 from dataclasses import dataclass
 from json import dumps
-from typing import Any, Awaitable, Dict, Literal
+from typing import Any, Awaitable, Literal
 
 from requests import Response
 
@@ -60,7 +60,7 @@ class Emoji(APIEndpoint):
         or requests.Response or Coroutine(...) -> requests.Response
 
         """
-        emoji: Dict[str, Any] = {
+        emoji: dict[str, Any] = {
             "name": emoji_name,
             "creator_id": self.client.user_id,
         }

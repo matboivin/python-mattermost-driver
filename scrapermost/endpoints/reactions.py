@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and removing emoji reactions."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -34,7 +34,7 @@ class Reactions(APIEndpoint):
 
     @_ret_json
     def create_reaction(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a reaction.
 

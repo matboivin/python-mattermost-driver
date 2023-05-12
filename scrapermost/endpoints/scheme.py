@@ -1,7 +1,7 @@
 """Endpoints for creating, getting and updating and deleting schemes."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict, Literal
+from typing import Any, Awaitable, Literal
 
 from requests import Response
 
@@ -69,7 +69,7 @@ class Scheme(APIEndpoint):
 
     @_ret_json
     def create_scheme(
-        self, body_json: Dict[str, Any]
+        self, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Create a new scheme.
 
@@ -132,7 +132,7 @@ class Scheme(APIEndpoint):
 
     @_ret_json
     def patch_scheme(
-        self, scheme_id: str, body_json: Dict[str, Any]
+        self, scheme_id: str, body_json: dict[str, Any]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Update a scheme partially by providing only the fields to update.
 

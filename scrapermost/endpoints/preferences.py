@@ -1,7 +1,7 @@
 """Endpoints for saving and modifying user preferences."""
 
 from dataclasses import dataclass
-from typing import Any, Awaitable, Dict, List
+from typing import Any, Awaitable
 
 from requests import Response
 
@@ -58,7 +58,7 @@ class Preferences(APIEndpoint):
 
     @_ret_json
     def save_user_preferences(
-        self, user_id: str, preferences: List[Dict[str, Any]]
+        self, user_id: str, preferences: list[dict[str, Any]]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Save a list of the user's preferences.
 
@@ -90,7 +90,7 @@ class Preferences(APIEndpoint):
 
     @_ret_json
     def delete_user_preferences(
-        self, user_id: str, preferences: List[Dict[str, Any]]
+        self, user_id: str, preferences: list[dict[str, Any]]
     ) -> Any | Response | Awaitable[Any | Response]:
         """Delete a list of the user's preferences.
 
