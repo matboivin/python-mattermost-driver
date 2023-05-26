@@ -76,22 +76,23 @@ def _check_response(
 
             logger.error(f"{err.response.status_code}: {message}")
 
-            if err.response.status_code == 400:
-                raise InvalidOrMissingParameters(message) from err
-            if err.response.status_code == 401:
-                raise NoAccessTokenProvided(message) from err
-            if err.response.status_code == 403:
-                raise NotEnoughPermissions(message) from err
-            if err.response.status_code == 404:
-                raise ResourceNotFound(message) from err
-            if err.response.status_code == 405:
-                raise MethodNotAllowed(message) from err
-            if err.response.status_code == 413:
-                raise ContentTooLarge(message) from err
-            if err.response.status_code == 501:
-                raise FeatureDisabled(message) from err
-
-            raise
+            match err.response.status_code:
+                case 400:
+                    raise InvalidOrMissingParameters(message) from err
+                case 401:
+                    raise NoAccessTokenProvided(message) from err
+                case 403:
+                    raise NotEnoughPermissions(message) from err
+                case 404:
+                    raise ResourceNotFound(message) from err
+                case 405:
+                    raise MethodNotAllowed(message) from err
+                case 413:
+                    raise ContentTooLarge(message) from err
+                case 501:
+                    raise FeatureDisabled(message) from err
+                case _:
+                    raise
 
         except ConnectError as err:
             logger.error(f"httpx.ConnectError: {err}.")
@@ -121,9 +122,7 @@ class AsyncClient(BaseClient):
     -------
     get(endpoint, params=None)
         Send an asynchronous GET request.
-    post(
-            endpoint, body_json=None, params=None, data=None, files=None,
-        )
+    post(endpoint, body_json=None, params=None, data=None, files=None)
         Send an asynchronous POST request.
     put(endpoint, body_json=None, params=None, data=None)
         Send an asynchronous PUT request.

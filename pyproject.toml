@@ -36,7 +36,7 @@ pycodestyle = "^2.10.0"
 pylint = "^2.16.4"
 
 [tool.black]
-target-version = ["py39"]
+target-version = ["py310"]
 line-length = 79
 include = '\.pyi?$'
 exclude = '''

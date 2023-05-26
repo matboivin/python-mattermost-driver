@@ -91,6 +91,35 @@ class AsyncDriver(BaseDriver):
 
         await self.websocket.connect()
 
+    async def reconnect_websocket(
+        self,
+        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
+        data_format: Literal["json", "text"] = "json",
+    ) -> Any:
+        """Reconnect and restart websocket listening loop.
+
+        Parameters
+        ----------
+        event_handler : async function(str or dict) -> None
+            The function to handle the websocket events.
+        data_format : 'json' or 'text', default='json'
+            Whether to receive the websocket data as text or JSON.
+
+        Returns
+        -------
+        Any
+
+        """
+        if not self.websocket:
+            raise RuntimeError(
+                "Websocket not initialized. Use init_websocket() first."
+            )
+
+        if not self.websocket.websocket:
+            await self.websocket.connect()
+
+        return await self.websocket.listen(event_handler, data_format)
+
     async def start_websocket(
         self,
         event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],

@@ -44,16 +44,16 @@ class Websocket:
     -------
     is_connected()
         Return whether the websocket is connected.
+    connect()
+        Initialize the websocket object.
+    disconnect()
+        Disconnect the websocket.
     _start_loop(event_handler, data_format='json')
         Start loop to listen to websocket events.
     _authenticate_websocket(event_handler)
         Send a authentication challenge over a websocket.
     listen(event_handler, data_format='json')
         Authenticate the websocket and start event loop.
-    connect()
-        Initialize the websocket object.
-    disconnect()
-        Disconnect the websocket.
 
     """
 
@@ -101,6 +101,61 @@ class Websocket:
     def is_connected(self) -> bool:
         """Return whether the websocket is connected."""
         return self._alive
+
+    async def connect(self) -> None:
+        """Initialize the websocket object.
+
+        Raises
+        ------
+        asyncio.TimeoutError
+            If the websocket connection timed out.
+        aiohttp.client_exceptions.ClientConnectorError
+            If the name resolution failed.
+        aiohttp.client_exceptions.WSServerHandshakeError
+            If websocket server handshake failed.
+
+        """
+        self._session = ClientSession()
+
+        try:
+            self.websocket = await self._session.ws_connect(
+                **self._websocket_kw_args
+            )
+            self._alive = True
+
+        except (
+            ClientConnectorError,
+            TimeoutError,
+            WSServerHandshakeError,
+        ) as err:
+            if self._session and not self._session.closed:
+                await self._session.close()
+
+            raise RuntimeError(
+                f"Failed to establish websocket connection: {type(err)}: {err}"
+            ) from err
+
+    async def disconnect(self) -> None:
+        """Disconnect the websocket.
+
+        Set `self._alive` to False to end listening loop.
+
+        """
+        self._alive = False
+
+        if self.websocket or self._session:
+            logger.info("Disconnecting websocket...")
+
+            if self.websocket and not self.websocket.closed:
+                await self.websocket.close()
+
+            if self._session and not self._session.closed:
+                await self._session.close()
+
+            logger.info("Websocket disconnected.")
+
+        else:
+            logger.debug("Can't disconnect websocket: Not connected.")
 
     async def _start_loop(
         self,
@@ -197,9 +252,10 @@ class Websocket:
             # ok response
             await event_handler(message)
 
-            if (message.get("status") == "OK" and message.get("seq") == 1) or (
-                message.get("event") == "hello" and message.get("seq") == 0
-            ):
+            if (
+                message.get("status") == "OK"
+                and (message.get("seq") == 1 or message.get("seq_reply") == 1)
+            ) or (message.get("event") == "hello" and message.get("seq") == 0):
                 logger.info("Websocket authentication: Success.")
                 return
 
@@ -223,12 +279,14 @@ class Websocket:
 
         Raises
         ------
+        RuntimeError
+            If the websocket authentication failed.
         asyncio.TimeoutError
             If the websocket connection timed out.
         aiohttp.client_exceptions.ClientConnectorError
             If the name resolution failed.
         aiohttp.client_exceptions.WSServerHandshakeError
-            If websocket server handshake failed.
+            If the websocket server handshake failed.
 
         """
         try:
@@ -236,71 +294,20 @@ class Websocket:
 
         except RuntimeError as err:
             logger.error(err)
+            raise
 
-        else:
-            while self._alive:
-                try:
-                    await self._start_loop(event_handler, data_format)
+        while self._alive:
+            try:
+                await self._start_loop(event_handler, data_format)
 
-                except (RuntimeError, ConnectionResetError) as err:
-                    logger.error(err)
-                    await sleep(self._keepalive_delay)
+            except (ConnectionResetError, RuntimeError) as err:
+                logger.error(err)
+                break
 
-                except Exception as err:  # FIXME
-                    logger.exception(
-                        f"Websocket connection closed: {type(err)} thrown."
-                    )
-                    await sleep(self._keepalive_delay)
+            except Exception as err:  # FIXME
+                logger.exception(
+                    f"Websocket connection closed: {type(err)} thrown."
+                )
+                await sleep(self._keepalive_delay)
 
-    async def connect(self) -> None:
-        """Initialize the websocket object.
-
-        Raises
-        ------
-        asyncio.TimeoutError
-            If the websocket connection timed out.
-        aiohttp.client_exceptions.ClientConnectorError
-            If the name resolution failed.
-        aiohttp.client_exceptions.WSServerHandshakeError
-            If websocket server handshake failed.
-
-        """
-        self._session = ClientSession()
-
-        try:
-            self.websocket = await self._session.ws_connect(
-                **self._websocket_kw_args
-            )
-            self._alive = True
-
-        except (
-            ClientConnectorError,
-            TimeoutError,
-            WSServerHandshakeError,
-        ) as err:
-            if self._session and not self._session.closed:
-                await self._session.close()
-            raise RuntimeError(
-                f"Failed to establish websocket connection: {type(err)}: {err}"
-            ) from err
-
-    async def disconnect(self) -> None:
-        """Disconnect the websocket.
-
-        Set `self._alive` to False to end listening loop.
-
-        """
-        if self.is_connected():
-            logger.info("Disconnecting websocket...")
-            self._alive = False
-
-            if self.websocket and not self.websocket.closed:
-                await self.websocket.close()
-
-            if self._session and not self._session.closed:
-                await self._session.close()
-
-            logger.info("Websocket disconnected.")
-
-        else:
-            logger.debug("Can't disconnect websocket: Not connected.")
+        await self.disconnect()
