@@ -1,6 +1,8 @@
 """Class to use Mattermost websocket API."""
 
+from asyncio import Task
 from asyncio import TimeoutError as AsyncioTimeoutError
+from asyncio import create_task
 from json import loads
 from logging import DEBUG, INFO, Logger, getLogger
 from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
@@ -34,13 +36,13 @@ class Websocket:
         websocket connection.
     _alive : bool, default=False
         Whether the websocket is connected.
+    _background_tasks : set of asyncio.Task
+        Message processing tasks running in background.
 
     Methods
     -------
     _authenticate_websocket(websocket, event_handler)
         Send a authentication challenge over a websocket.
-    _test_connection()
-        End loop if no message has been received in the timeout defined.
     _listen(websocket, event_handler, data_format='json')
         Start loop to listen to websocket events.
     is_connected()
@@ -61,9 +63,6 @@ class Websocket:
             The websocket options.
         token : str
             The user token.
-        timeout : float, default=600
-            Timeout in seconds for websocket to close if no message is
-            received (default: 600 sec which is equivalent to 1 hour).
 
         """
         scheme: str = "wss" if options.scheme == "https" else "ws"
@@ -71,8 +70,8 @@ class Websocket:
             f"{scheme}://{options.hostname}:{options.port}{options.basepath}"
             "/websocket"
         )
-
         ssl_context: SSLContext | None = None
+
         if options.scheme == "https":
             ssl_context = create_default_context(purpose=Purpose.SERVER_AUTH)
             if not options.verify:
@@ -86,6 +85,7 @@ class Websocket:
         }
         self._token: str = token
         self._alive: bool = False
+        self._background_tasks: set[Task[None]] = set()
 
         if options.debug:
             logger.setLevel(DEBUG)
@@ -101,7 +101,7 @@ class Websocket:
 
         Parameters
         ----------
-        websocket : aiohttp.ClientWebSocketResponse, default=None
+        websocket : aiohttp.ClientWebSocketResponse
             The client-side websocket to connect to server.
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
@@ -164,7 +164,7 @@ class Websocket:
 
         Parameters
         ----------
-        websocket : aiohttp.ClientWebSocketResponse, default=None
+        websocket : aiohttp.ClientWebSocketResponse
             The client-side websocket to connect to server.
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
@@ -195,10 +195,14 @@ class Websocket:
 
                     case WSMsgType.TEXT:
                         if data_format == "json":
-                            await event_handler(loads(message.data))
+                            message = loads(message.data)
 
-                        else:
-                            await event_handler(message)
+                        task: Task[None] = create_task(
+                            event_handler(message)  # type: ignore
+                        )
+
+                        self._background_tasks.add(task)
+                        task.add_done_callback(self._background_tasks.discard)
 
     def is_connected(self) -> bool:
         """Return whether the websocket is connected."""
