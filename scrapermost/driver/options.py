@@ -40,13 +40,7 @@ class DriverOptions:
     request_timeout : int, default=None
         The timeout configuration used by the httpx client when sending
         request. If none, use default httpx client timeout (5 seconds).
-    websocket_heartbeat : float, default=10
-        The Mattermost websocket connection's heartbeat in seconds.
-        Send ping message every heartbeat seconds and wait pong response,
-        if pong response is not received then close connection.
-    websocket_keepalive_delay : float, default=5
-        Duration in seconds between two keepalive transmissions.
-    websocket_kw_args : dict, default=None
+    websocket_options : dict, default=None
         Parameters to pass to aiohttp.ClientSession.ws_connect() to create a
         websocket connection.
 
@@ -90,12 +84,6 @@ class DriverOptions:
         self.proxy: str | None = options.get("proxy")
         self.request_timeout: int | None = options.get("request_timeout")
         # websocket options
-        self.websocket_heartbeat: float = options.get(
-            "websocket_heartbeat", 10
-        )
-        self.websocket_keepalive_delay: float = options.get(
-            "websocket_keepalive_delay", 5
-        )
-        self.websocket_kw_args: dict[str, Any] = options.get(
-            "websocket_kw_args", {}
+        self.websocket_options: dict[str, Any] = options.get(
+            "websocket_options", {}
         )
