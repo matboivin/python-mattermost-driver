@@ -20,7 +20,7 @@ class Driver(BaseDriver):
 
     Methods
     -------
-    init_websocket(websocket_cls, loop=None)
+    init_websocket(websocket_cls)
         Initialize the websocket connection.
     start_websocket(event_handler, data_format='json', loop=None)
         Start websocket listening loop.
@@ -70,43 +70,16 @@ class Driver(BaseDriver):
     def init_websocket(
         self,
         websocket_cls: Callable[..., Websocket] = Websocket,
-        loop: AbstractEventLoop | None = None,
-    ) -> AbstractEventLoop:
+    ) -> None:
         """Initialize the websocket connection.
 
         Parameters
         ----------
         websocket_cls : function(), default=websocket.Websocket
             The Websocket class constructor.
-        loop : asyncio.AbstractEventLoop, default=None
-            The running event loop.
-
-        Returns
-        -------
-        asyncio.AbstractEventLoop
-            The event loop.
-
-        Raises
-        ------
-        asyncio.TimeoutError
-            If the websocket connection timed out.
-        aiohttp.client_exceptions.ClientConnectorError
-            If the name resolution failed.
-        aiohttp.client_exceptions.WSServerHandshakeError
-            If websocket server handshake failed.
 
         """
         self.websocket = websocket_cls(self.options, self.client.token)
-
-        if loop and loop.is_running():
-            loop.create_task(self.websocket.connect())
-
-        else:
-            loop = get_event_loop()
-
-            loop.run_until_complete(self.websocket.connect())
-
-        return loop
 
     def start_websocket(
         self,
@@ -135,20 +108,33 @@ class Driver(BaseDriver):
         asyncio.AbstractEventLoop
             The event loop.
 
+        Raises
+        ------
+        asyncio.TimeoutError
+            If the websocket connection timed out.
+        aiohttp.client_exceptions.ClientConnectorError
+            If the name resolution failed.
+        aiohttp.client_exceptions.WSServerHandshakeError
+            If websocket server handshake failed.
+
         """
         if not self.websocket:
-            raise RuntimeError(
-                "Websocket not initialized. Use init_websocket() first."
-            )
+            self.init_websocket()
 
         if loop and loop.is_running():
-            loop.create_task(self.websocket.listen(event_handler, data_format))
+            loop.create_task(
+                self.websocket.connect(  # type: ignore
+                    event_handler, data_format
+                )
+            )
 
         else:
             loop = get_event_loop()
 
             loop.run_until_complete(
-                self.websocket.listen(event_handler, data_format)
+                self.websocket.connect(  # type: ignore
+                    event_handler, data_format
+                )
             )
 
         return loop

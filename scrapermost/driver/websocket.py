@@ -1,15 +1,16 @@
 """Class to use Mattermost websocket API."""
 
-from asyncio import TimeoutError, sleep
+from asyncio import TimeoutError as AsyncioTimeoutError
+from json import loads
 from logging import DEBUG, INFO, Logger, getLogger
 from ssl import CERT_NONE, Purpose, SSLContext, create_default_context
 from typing import Any, Awaitable, Callable, Literal
 
 from aiohttp import (
     ClientConnectorError,
-    ClientError,
     ClientSession,
     ClientWebSocketResponse,
+    WSMsgType,
     WSServerHandshakeError,
 )
 
@@ -28,32 +29,26 @@ class Websocket:
         Websocket server URL.
     _token : str
         The session token.
-    _websocket_kw_args : dict
+    _ws_options : dict
         Parameters to pass to aiohttp.ClientSession.ws_connect() to create a
         websocket connection.
-    _keepalive_delay : float
-        Duration in seconds between two keepalive transmissions.
     _alive : bool, default=False
         Whether the websocket is connected.
-    _session : aiohttp.ClientSession, default=None
-        The client session object.
-    websocket : aiohttp.ClientWebSocketResponse, default=None
-        The client-side websocket to connect to server.
 
     Methods
     -------
+    _authenticate_websocket(websocket, event_handler)
+        Send a authentication challenge over a websocket.
+    _test_connection()
+        End loop if no message has been received in the timeout defined.
+    _listen(websocket, event_handler, data_format='json')
+        Start loop to listen to websocket events.
     is_connected()
         Return whether the websocket is connected.
-    connect()
-        Initialize the websocket object.
+    connect(event_handler, data_format='json')
+        Connect the websocket to server.
     disconnect()
         Disconnect the websocket.
-    _start_loop(event_handler, data_format='json')
-        Start loop to listen to websocket events.
-    _authenticate_websocket(event_handler)
-        Send a authentication challenge over a websocket.
-    listen(event_handler, data_format='json')
-        Authenticate the websocket and start event loop.
 
     """
 
@@ -66,6 +61,9 @@ class Websocket:
             The websocket options.
         token : str
             The user token.
+        timeout : float, default=600
+            Timeout in seconds for websocket to close if no message is
+            received (default: 600 sec which is equivalent to 1 hour).
 
         """
         scheme: str = "wss" if options.scheme == "https" else "ws"
@@ -80,136 +78,31 @@ class Websocket:
             if not options.verify:
                 ssl_context.verify_mode = CERT_NONE
 
-        self._websocket_kw_args: dict[str, Any] = {
+        self._ws_options: dict[str, Any] = {
             "url": self._url,
             "proxy": options.proxy,
-            "heartbeat": options.websocket_heartbeat,
             "ssl": ssl_context,
-            **options.websocket_kw_args,
+            **options.websocket_options,
         }
         self._token: str = token
-        self._keepalive_delay: float = options.websocket_keepalive_delay
         self._alive: bool = False
-        self._session: ClientSession | None = None
-        self.websocket: ClientWebSocketResponse | None = None
 
         if options.debug:
             logger.setLevel(DEBUG)
 
     # ############################################################### Methods #
 
-    def is_connected(self) -> bool:
-        """Return whether the websocket is connected."""
-        return self._alive
-
-    async def connect(self) -> None:
-        """Initialize the websocket object.
-
-        Raises
-        ------
-        asyncio.TimeoutError
-            If the websocket connection timed out.
-        aiohttp.client_exceptions.ClientConnectorError
-            If the name resolution failed.
-        aiohttp.client_exceptions.WSServerHandshakeError
-            If websocket server handshake failed.
-
-        """
-        self._session = ClientSession()
-
-        try:
-            self.websocket = await self._session.ws_connect(
-                **self._websocket_kw_args
-            )
-            self._alive = True
-
-        except (
-            ClientConnectorError,
-            TimeoutError,
-            WSServerHandshakeError,
-        ) as err:
-            if self._session and not self._session.closed:
-                await self._session.close()
-
-            raise RuntimeError(
-                f"Failed to establish websocket connection: {type(err)}: {err}"
-            ) from err
-
-    async def disconnect(self) -> None:
-        """Disconnect the websocket.
-
-        Set `self._alive` to False to end listening loop.
-
-        """
-        self._alive = False
-
-        if self.websocket or self._session:
-            logger.info("Disconnecting websocket...")
-
-            if self.websocket and not self.websocket.closed:
-                await self.websocket.close()
-
-            if self._session and not self._session.closed:
-                await self._session.close()
-
-            logger.info("Websocket disconnected.")
-
-        else:
-            logger.debug("Can't disconnect websocket: Not connected.")
-
-    async def _start_loop(
-        self,
-        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
-        data_format: Literal["json", "text"] = "json",
-    ) -> None:
-        """Start loop to listen to websocket events.
-
-        Parameters
-        ----------
-        event_handler : async function(str or dict) -> None
-            The function to handle the websocket events.
-        data_format : 'json' or 'text', default='json'
-            Whether to receive the websocket data as text or JSON.
-
-        Raises
-        ------
-        RuntimeError
-            If an error occured while listening to events.
-
-        """
-        logger.debug("Start websocket event loop.")
-
-        while self._alive:
-            try:
-                message: str | dict[str, Any] = (
-                    await self.websocket.receive_json()  # type: ignore
-                    if data_format == "json"
-                    else await self.websocket.receive_str()  # type: ignore
-                )
-
-                await event_handler(message)
-
-            except (TypeError, ValueError) as err:
-                logger.debug(err)
-
-            except TimeoutError as err:
-                raise RuntimeError(
-                    "Websocket event loop interrupted: time out."
-                ) from err
-
-            except (RuntimeError, ClientError) as err:
-                raise RuntimeError(
-                    f"Websocket event loop interrupted: {type(err): {err}}"
-                ) from err
-
     async def _authenticate_websocket(
         self,
+        websocket: ClientWebSocketResponse,
         event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
     ) -> None:
         """Send a authentication challenge over a websocket.
 
         Parameters
         ----------
+        websocket : aiohttp.ClientWebSocketResponse, default=None
+            The client-side websocket to connect to server.
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
 
@@ -228,13 +121,11 @@ class Websocket:
             "data": {"token": self._token},
         }
 
-        await self.websocket.send_json(auth_challenge)  # type: ignore
+        await websocket.send_json(auth_challenge)
 
         while self._alive:
             try:
-                message: dict[
-                    str, Any
-                ] = await self.websocket.receive_json()  # type: ignore
+                message: dict[str, Any] = await websocket.receive_json()
 
             except TimeoutError as err:
                 raise RuntimeError(
@@ -263,15 +154,18 @@ class Websocket:
                 f"Websocket authentication failed: Received {message}"
             )
 
-    async def listen(
+    async def _listen(
         self,
+        websocket: ClientWebSocketResponse,
         event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
         data_format: Literal["json", "text"] = "json",
     ) -> None:
-        """Authenticate the websocket and start event loop.
+        """Start loop to listen to websocket events.
 
         Parameters
         ----------
+        websocket : aiohttp.ClientWebSocketResponse, default=None
+            The client-side websocket to connect to server.
         event_handler : async function(str or dict) -> None
             The function to handle the websocket events.
         data_format : 'json' or 'text', default='json'
@@ -289,25 +183,82 @@ class Websocket:
             If the websocket server handshake failed.
 
         """
-        try:
-            await self._authenticate_websocket(event_handler)
-
-        except RuntimeError as err:
-            logger.error(err)
-            raise
+        logger.debug("Start websocket event loop.")
 
         while self._alive:
-            try:
-                await self._start_loop(event_handler, data_format)
+            async for message in websocket:
+                match message.type:
+                    case WSMsgType.ERROR | WSMsgType.CLOSED:
+                        logger.error(f"{message.type}: {message.data}")
+                        self._alive = False
+                        return
 
-            except (ConnectionResetError, RuntimeError) as err:
-                logger.error(err)
-                break
+                    case WSMsgType.TEXT:
+                        if data_format == "json":
+                            await event_handler(loads(message.data))
 
-            except Exception as err:  # FIXME
-                logger.exception(
-                    f"Websocket connection closed: {type(err)} thrown."
-                )
-                await sleep(self._keepalive_delay)
+                        else:
+                            await event_handler(message)
 
-        await self.disconnect()
+    def is_connected(self) -> bool:
+        """Return whether the websocket is connected."""
+        return self._alive
+
+    async def connect(
+        self,
+        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
+        data_format: Literal["json", "text"] = "json",
+    ) -> None:
+        """Connect the websocket to server.
+
+        Parameters
+        ----------
+        event_handler : async function(str or dict) -> None
+            The function to handle the websocket events.
+        data_format : 'json' or 'text', default='json'
+            Whether to receive the websocket data as text or JSON.
+
+        Raises
+        ------
+        asyncio.TimeoutError
+            If the websocket connection timed out.
+        aiohttp.client_exceptions.ClientConnectorError
+            If the name resolution failed.
+        aiohttp.client_exceptions.WSServerHandshakeError
+            If websocket server handshake failed.
+        RuntimeError
+            If any error occured.
+
+        """
+        async with ClientSession() as session:
+            async with session.ws_connect(**self._ws_options) as websocket:
+                self._alive = True
+
+                try:
+                    await self._authenticate_websocket(
+                        websocket, event_handler
+                    )
+                    await self._listen(websocket, event_handler, data_format)
+
+                except (
+                    ConnectionResetError,
+                    ClientConnectorError,
+                    WSServerHandshakeError,
+                    AsyncioTimeoutError,
+                    RuntimeError,
+                ) as err:
+                    logger.error(err)
+                    self._alive = False
+
+        logger.info("Websocket disconnected.")
+
+    async def disconnect(
+        self,
+    ) -> None:
+        """Disconnect the websocket.
+
+        Set `self._alive` to False to end listening loop.
+
+        """
+        logger.info("Disconnecting websocket...")
+        self._alive = False

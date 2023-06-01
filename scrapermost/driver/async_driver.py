@@ -66,7 +66,7 @@ class AsyncDriver(BaseDriver):
 
     # ############################################################### Methods #
 
-    async def init_websocket(
+    def init_websocket(
         self,
         websocket_cls: Callable[..., Websocket] = Websocket,
     ) -> None:
@@ -77,48 +77,8 @@ class AsyncDriver(BaseDriver):
         websocket_cls : function() default=websocket.Websocket
             The Websocket class constructor.
 
-        Raises
-        ------
-        asyncio.TimeoutError
-            If the websocket connection timed out.
-        aiohttp.client_exceptions.ClientConnectorError
-            If the name resolution failed.
-        aiohttp.client_exceptions.WSServerHandshakeError
-            If websocket server handshake failed.
-
         """
         self.websocket = websocket_cls(self.options, self.client.token)
-
-        await self.websocket.connect()
-
-    async def reconnect_websocket(
-        self,
-        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
-        data_format: Literal["json", "text"] = "json",
-    ) -> Any:
-        """Reconnect and restart websocket listening loop.
-
-        Parameters
-        ----------
-        event_handler : async function(str or dict) -> None
-            The function to handle the websocket events.
-        data_format : 'json' or 'text', default='json'
-            Whether to receive the websocket data as text or JSON.
-
-        Returns
-        -------
-        Any
-
-        """
-        if not self.websocket:
-            raise RuntimeError(
-                "Websocket not initialized. Use init_websocket() first."
-            )
-
-        if not self.websocket.websocket:
-            await self.websocket.connect()
-
-        return await self.websocket.listen(event_handler, data_format)
 
     async def start_websocket(
         self,
@@ -147,13 +107,22 @@ class AsyncDriver(BaseDriver):
         -------
         Any
 
+        Raises
+        ------
+        asyncio.TimeoutError
+            If the websocket connection timed out.
+        aiohttp.client_exceptions.ClientConnectorError
+            If the name resolution failed.
+        aiohttp.client_exceptions.WSServerHandshakeError
+            If websocket server handshake failed.
+
         """
         if not self.websocket:
-            raise RuntimeError(
-                "Websocket not initialized. Use init_websocket() first."
-            )
+            self.init_websocket()
 
-        return await self.websocket.listen(event_handler, data_format)
+        return await self.websocket.connect(  # type: ignore
+            event_handler, data_format
+        )
 
     async def login(self) -> Any | Response:
         """Log the user in.
