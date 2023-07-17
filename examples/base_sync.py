@@ -24,8 +24,10 @@ async def print_new_post(event: Dict[str, Any]) -> None:
     if event.get("event") == "posted":
         try:
             post: Posted = Posted(event)
+
         except KeyError as err:
             print(f"Posted message missing key: {err}")
+
         else:
             print(f"New Post: {post.post.message}")
 
@@ -43,19 +45,11 @@ def connect_driver_to_server(driver: Driver) -> None:
 
     try:
         driver.login()
+        driver.start_websocket(print_new_post, loop=loop)
         print(f"Driver connected to {driver.options.hostname}.")
 
-        loop = driver.init_websocket(loop=loop)
-        print("Established websocket connecttion.")
-
-    except (ConnectionError, NoAccessTokenProvided) as err:
+    except (ConnectionError, NoAccessTokenProvided, RuntimeError) as err:
         print(f"Driver login failed: {err}")
-
-    except RuntimeError as err:
-        print(err)
-
-    else:
-        driver.start_websocket(print_new_post, data_format="json", loop=loop)
 
     finally:
         if loop:

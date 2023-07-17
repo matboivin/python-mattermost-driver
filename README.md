@@ -166,14 +166,14 @@ Example with synchronous driver:
 from asyncio import AbstractEventLoop
 
 loop: AbstractEventLoop = driver.init_websocket()
-driver.start_websocket(handle_new_post, data_format="json", loop=loop)
+driver.start_websocket(handle_new_post, loop=loop)
 ```
 
 Example with asynchronous driver:
 
 ```python
 await driver.init_websocket()
-await driver.start_websocket(handle_new_post, data_format="json")
+await driver.start_websocket(handle_new_post)
 ```
 
 <br />

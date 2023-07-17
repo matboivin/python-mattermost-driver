@@ -156,7 +156,7 @@ class Client(BaseClient):
     def __exit__(self, *exc_info: tuple[Any]) -> Any:
         return self.httpx_client.__exit__(*exc_info)
 
-    # ############################################################ Properties #
+    # Properties ##############################################################
 
     @property
     def httpx_client(self) -> HttpxClient:
@@ -169,7 +169,7 @@ class Client(BaseClient):
         """
         return self._httpx_client
 
-    # ############################################################### Methods #
+    # Methods #################################################################
 
     @_check_response
     def get(

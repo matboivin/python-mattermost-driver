@@ -69,7 +69,7 @@ class BaseClient(ABC):
             logger.setLevel(DEBUG)
             self.activate_verbose_logging()
 
-    # ############################################################ Properties #
+    # Properties ##############################################################
 
     @property
     def httpx_client(self):  # type: ignore
@@ -191,7 +191,7 @@ class BaseClient(ABC):
         """
         self._cookies = cookies
 
-    # ######################################################## Static methods #
+    # Static methods ##########################################################
 
     @staticmethod
     def activate_verbose_logging() -> None:
@@ -201,7 +201,7 @@ class BaseClient(ABC):
         httpx_log.setLevel("TRACE")
         httpx_log.propagate = True
 
-    # ############################################################### Methods #
+    # Methods #################################################################
 
     def get_auth_header(self) -> dict[str, str] | None:
         """Get Authorization header.
