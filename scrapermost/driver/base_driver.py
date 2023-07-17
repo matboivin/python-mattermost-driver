@@ -20,12 +20,12 @@ class BaseDriver(ABC):
 
     Attributes
     ----------
+    _websocket : websocket.Websocket, default=None
+        The websocket to listen to Mattermost events.
     options : options.DriverOptions
         The options to configure how to connect to the Mattermost API.
     client : client.AsyncClient or client.Client
         The Mattermost client to interact with Web Service API.
-    websocket : websocket.Websocket, default=None
-        The websocket to listen to Mattermost events.
 
     Methods
     -------
@@ -43,14 +43,14 @@ class BaseDriver(ABC):
             The options as a dict.
 
         """
+        self._websocket: Websocket | None = None
         self.options: DriverOptions = DriverOptions(options)
-        self.websocket: Websocket | None = None
 
         if self.options.debug:
             logger.setLevel(DEBUG)
             logger.warning("Not suitable for production.")
 
-    # ############################################################ Properties #
+    # Properties ##############################################################
 
     @property
     def client(self):  # type: ignore
@@ -321,9 +321,9 @@ class BaseDriver(ABC):
         """
         return Bots(self.client)
 
-    # ############################################################### Methods #
+    # Methods #################################################################
 
     async def disconnect_websocket(self) -> None:
         """Disconnect the driver from the server."""
-        if self.websocket:
-            await self.websocket.disconnect()
+        if self._websocket:
+            await self._websocket.disconnect()

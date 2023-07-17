@@ -1,12 +1,12 @@
 """Class defining the asynchronous driver."""
 
-from typing import Any, Awaitable, Callable, Literal
+from typing import Any, Callable
 
 from requests import Response
 
 from .async_client import AsyncClient
 from .base_driver import BaseDriver, logger
-from .websocket import Websocket
+from .websocket import Handler, Websocket
 
 
 class AsyncDriver(BaseDriver):
@@ -19,9 +19,9 @@ class AsyncDriver(BaseDriver):
 
     Methods
     -------
-    init_websocket(websocket_cls)
+    _init_websocket(websocket_cls)
         Initialize the websocket connection.
-    start_websocket(event_handler, data_format='json')
+    start_websocket(event_handler)
         Start websocket listening loop.
     login()
         Log the user in.
@@ -51,7 +51,7 @@ class AsyncDriver(BaseDriver):
     async def __aexit__(self, *exc_info: tuple[Any]) -> Any:
         return await self.client.__aexit__(*exc_info)
 
-    # ############################################################ Properties #
+    # Properties ##############################################################
 
     @property
     def client(self) -> AsyncClient:
@@ -64,9 +64,9 @@ class AsyncDriver(BaseDriver):
         """
         return self._client
 
-    # ############################################################### Methods #
+    # Methods #################################################################
 
-    def init_websocket(
+    def _init_websocket(
         self,
         websocket_cls: Callable[..., Websocket] = Websocket,
     ) -> None:
@@ -78,12 +78,11 @@ class AsyncDriver(BaseDriver):
             The Websocket class constructor.
 
         """
-        self.websocket = websocket_cls(self.options, self.client.token)
+        self._websocket = websocket_cls(self.options, self.client.token)
 
     async def start_websocket(
         self,
-        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
-        data_format: Literal["json", "text"] = "json",
+        event_handler: Handler,
     ) -> Any:
         """Start websocket listening loop.
 
@@ -98,10 +97,8 @@ class AsyncDriver(BaseDriver):
 
         Parameters
         ----------
-        event_handler : async function(str or dict) -> None
+        event_handler : async function(dict) -> None
             The function to handle the websocket events.
-        data_format : 'json' or 'text', default='json'
-            Whether to receive the websocket data as text or JSON.
 
         Returns
         -------
@@ -117,12 +114,10 @@ class AsyncDriver(BaseDriver):
             If websocket server handshake failed.
 
         """
-        if not self.websocket:
-            self.init_websocket()
+        if not self._websocket:
+            self._init_websocket()
 
-        return await self.websocket.connect(  # type: ignore
-            event_handler, data_format
-        )
+        return await self._websocket.connect(event_handler)  # type: ignore
 
     async def login(self) -> Any | Response:
         """Log the user in.

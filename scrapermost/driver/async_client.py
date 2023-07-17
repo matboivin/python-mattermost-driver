@@ -158,7 +158,7 @@ class AsyncClient(BaseClient):
     async def __aexit__(self, *exc_info: tuple[Any]) -> Any:
         return await self.httpx_client.__aexit__(*exc_info)
 
-    # ############################################################ Properties #
+    # Properties ##############################################################
 
     @property
     def httpx_client(self) -> HttpxAsyncClient:
@@ -171,7 +171,7 @@ class AsyncClient(BaseClient):
         """
         return self._httpx_client
 
-    # ############################################################### Methods #
+    # Methods #################################################################
 
     @_check_response
     async def get(

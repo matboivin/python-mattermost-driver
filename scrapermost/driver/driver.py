@@ -1,13 +1,13 @@
 """Class defining the synchronous driver."""
 
 from asyncio import AbstractEventLoop, get_event_loop
-from typing import Any, Awaitable, Callable, Literal
+from typing import Any, Callable
 
 from requests import Response
 
 from .base_driver import BaseDriver, logger
 from .client import Client
-from .websocket import Websocket
+from .websocket import Handler, Websocket
 
 
 class Driver(BaseDriver):
@@ -20,9 +20,9 @@ class Driver(BaseDriver):
 
     Methods
     -------
-    init_websocket(websocket_cls)
+    _init_websocket(websocket_cls)
         Initialize the websocket connection.
-    start_websocket(event_handler, data_format='json', loop=None)
+    start_websocket(event_handler, loop=None)
         Start websocket listening loop.
     login()
         Log the user in.
@@ -42,7 +42,7 @@ class Driver(BaseDriver):
         """
         super().__init__(options)
 
-        self._client = Client(self.options)
+        self._client: Client = Client(self.options)
 
     def __enter__(self) -> Any:
         self.client.__enter__()
@@ -52,7 +52,7 @@ class Driver(BaseDriver):
     def __exit__(self, *exc_info: tuple[Any]) -> Any:
         return self.client.__exit__(*exc_info)
 
-    # ############################################################ Properties #
+    # Properties ##############################################################
 
     @property
     def client(self) -> Client:
@@ -65,9 +65,9 @@ class Driver(BaseDriver):
         """
         return self._client
 
-    # ############################################################### Methods #
+    # Methods #################################################################
 
-    def init_websocket(
+    def _init_websocket(
         self,
         websocket_cls: Callable[..., Websocket] = Websocket,
     ) -> None:
@@ -79,12 +79,11 @@ class Driver(BaseDriver):
             The Websocket class constructor.
 
         """
-        self.websocket = websocket_cls(self.options, self.client.token)
+        self._websocket = websocket_cls(self.options, self.client.token)
 
     def start_websocket(
         self,
-        event_handler: Callable[[str | dict[str, Any]], Awaitable[None]],
-        data_format: Literal["text", "json"] = "json",
+        event_handler: Handler,
         loop: AbstractEventLoop | None = None,
     ) -> AbstractEventLoop:
         """Start websocket listening loop.
@@ -96,10 +95,8 @@ class Driver(BaseDriver):
 
         Parameters
         ----------
-        event_handler : async function(str or dict) -> None
+        event_handler : async function(dict) -> None
             The function to handle the websocket events.
-        data_format : 'text' or 'json', default='json'
-            Whether to receive the websocket data as text or JSON.
         loop : asyncio.AbstractEventLoop, default=None
             The running event loop.
 
@@ -118,23 +115,19 @@ class Driver(BaseDriver):
             If websocket server handshake failed.
 
         """
-        if not self.websocket:
-            self.init_websocket()
+        if not self._websocket:
+            self._init_websocket()
 
         if loop and loop.is_running():
             loop.create_task(
-                self.websocket.connect(  # type: ignore
-                    event_handler, data_format
-                )
+                self._websocket.connect(event_handler)  # type: ignore
             )
 
         else:
             loop = get_event_loop()
 
             loop.run_until_complete(
-                self.websocket.connect(  # type: ignore
-                    event_handler, data_format
-                )
+                self._websocket.connect(event_handler)  # type: ignore
             )
 
         return loop
