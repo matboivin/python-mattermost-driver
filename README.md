@@ -158,21 +158,17 @@ async def handle_new_post(event: Dict[str, Any]) -> None:
         ...
 ```
 
-Assuming `Driver.login()` was called, initialize the websocket connection to the Mattermost server using `Driver.init_websocket()`.
+Assuming `Driver.login()` was called, connect the websocket to the Mattermost server using `Driver.start_websocket()`.
 
 Example with synchronous driver:
 
 ```python
-from asyncio import AbstractEventLoop
-
-loop: AbstractEventLoop = driver.init_websocket()
-driver.start_websocket(handle_new_post, loop=loop)
+driver.start_websocket(handle_new_post)
 ```
 
 Example with asynchronous driver:
 
 ```python
-await driver.init_websocket()
 await driver.start_websocket(handle_new_post)
 ```
 
