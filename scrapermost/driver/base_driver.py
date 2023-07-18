@@ -58,6 +58,11 @@ class BaseDriver(ABC):
         ...
 
     @property
+    def websocket(self) -> Websocket | None:
+        """Get the websocket object."""
+        return self._websocket
+
+    @property
     def users(self) -> Users:
         """Get API endpoint for users.
 
