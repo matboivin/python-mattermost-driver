@@ -48,7 +48,7 @@ def _ret_json(
         """Run the asynchronous function."""
         return await func
 
-    async def wrapper(*args: str, **kwargs: int) -> Any | Response:
+    async def wrapper(*args, **kwargs) -> Any | Response:  # type: ignore
         """Return the JSON-encoded content of the response.
 
         Returns

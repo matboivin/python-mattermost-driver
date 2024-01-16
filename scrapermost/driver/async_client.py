@@ -56,7 +56,7 @@ def _check_response(
 
     """
 
-    async def wrapper(*args: str, **kwargs: int) -> Response:
+    async def wrapper(*args, **kwargs) -> Response:  # type: ignore
         try:
             response: Response = await async_func(*args, **kwargs)
 

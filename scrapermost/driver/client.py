@@ -54,7 +54,7 @@ def _check_response(func: Callable[..., Response]) -> Callable[..., Response]:
 
     """
 
-    def wrapper(*args: str, **kwargs: int) -> Response:
+    def wrapper(*args, **kwargs) -> Response:  # type: ignore
         try:
             response: Response = func(*args, **kwargs)
 
