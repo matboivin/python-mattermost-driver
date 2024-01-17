@@ -113,8 +113,25 @@ class Client(BaseClient):
 
     Attributes
     ----------
-    client : httpx.Client
+    _httpx_client : httpx.Client
         The underlying httpx client object.
+
+    Properties
+    ----------
+    httpx_client : httpx.Client
+        The underlying httpx client object.
+    url : str
+        The Mattermost server's URL.
+    user_id : str
+        The logged-in user's ID.
+    username : str
+        The logged-in user's username.
+    auth : Any, optional
+        The authentication class used by the httpx client
+    token : str, optional
+        The user's token.
+    cookies : Any, optional
+        The user' session cookies.
 
     Methods
     -------

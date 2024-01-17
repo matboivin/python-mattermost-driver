@@ -20,6 +20,13 @@ class BaseDriver(ABC):
 
     Attributes
     ----------
+    _login_id : str, default=None
+        The user account's email address or username.
+    _password : str, default=None
+        The user's password.
+    _mfa_token : Any, default=None
+        The Multi-Factor Authentication token. If MFA is enabled, the user has
+        to provide a secure one-time code.
     _websocket : websocket.Websocket, default=None
         The websocket to listen to Mattermost events.
     options : options.DriverOptions
@@ -43,6 +50,9 @@ class BaseDriver(ABC):
             The options as a dict.
 
         """
+        self._login_id: str | None = options.get("login_id")
+        self._password: str | None = options.get("password")
+        self._mfa_token: str | None = options.get("mfa_token")
         self._websocket: Websocket | None = None
         self.options: DriverOptions = DriverOptions(options)
 
@@ -55,12 +65,83 @@ class BaseDriver(ABC):
     @property
     def client(self):  # type: ignore
         """Get the underlying Mattermost client."""
-        ...
+        ...  # Implemented in concrete driver classes.
+
+    @property
+    def login_id(self) -> str | None:
+        """Get the user's login ID (email address).
+
+        Returns
+        -------
+        str
+
+        """
+        return self._login_id
+
+    @login_id.setter
+    def login_id(self, login_id: str) -> None:
+        """Set the user's login ID (email address).
+
+        Parameters
+        ----------
+        login_id : str
+            The new login ID value.
+
+        """
+        self._login_id = login_id
+
+    @property
+    def password(self) -> str | None:
+        """Get the user's password.
+
+        Returns
+        -------
+        str
+
+        """
+        return self._password
+
+    @password.setter
+    def password(self, password: str) -> None:
+        """Set the user's password.
+
+        Parameters
+        ----------
+        password : str
+            The new password value.
+
+        """
+        self._password = password
+
+    @property
+    def mfa_token(self) -> str | None:
+        """Get the user's Multi-Factor Authentication token.
+
+        Returns
+        -------
+        str
+
+        """
+        return self._mfa_token
+
+    @mfa_token.setter
+    def mfa_token(self, mfa_token: str) -> None:
+        """Set the user's Multi-Factor Authentication token.
+
+        Parameters
+        ----------
+        mfa_token : str
+            The new Multi-Factor Authentication token value.
+
+        """
+        self._mfa_token = mfa_token
 
     @property
     def websocket(self) -> Websocket | None:
         """Get the websocket object."""
         return self._websocket
+
+    # API routes ##############################################################
 
     @property
     def users(self) -> Users:

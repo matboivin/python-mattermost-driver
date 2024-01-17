@@ -21,9 +21,9 @@ class BaseClient(ABC):
     ----------
     _url : str
         URL to make API requests. Example: 'https://server.com/api/v4'.
-    _user_id : str, default=None
+    _user_id : str, default=''
         Mattermost user ID.
-    _username : str, default=None
+    _username : str, default=''
         Mattermost username.
     _auth : Any, default=None
         An authentication class used by the httpx client when sending requests.
@@ -62,7 +62,7 @@ class BaseClient(ABC):
         self._user_id: str = ""
         self._username: str = ""
         self._auth: Any | None = options.auth
-        self._token: str = ""
+        self._token: str | None = options.token
         self._cookies: Any | None = None
 
         if options.debug:
@@ -89,7 +89,7 @@ class BaseClient(ABC):
 
     @property
     def user_id(self) -> str:
-        """Get the user ID of the logged-in user.
+        """Get the logged-in user's ID.
 
         Returns
         -------
@@ -100,7 +100,7 @@ class BaseClient(ABC):
 
     @user_id.setter
     def user_id(self, user_id: str) -> None:
-        """Set the user ID of the logged-in user.
+        """Set the logged-in user's ID.
 
         Parameters
         ----------
@@ -112,7 +112,7 @@ class BaseClient(ABC):
 
     @property
     def username(self) -> str:
-        """Get the username of the logged-in user.
+        """Get the logged-in user's username.
 
         Returns
         -------
@@ -124,7 +124,7 @@ class BaseClient(ABC):
 
     @username.setter
     def username(self, username: str) -> None:
-        """Set the username of the logged-in user.
+        """Set the logged-in user's username.
 
         Parameters
         ----------
@@ -146,7 +146,7 @@ class BaseClient(ABC):
         return self._auth
 
     @property
-    def token(self) -> str:
+    def token(self) -> str | None:
         """Get the token for the login.
 
         Returns
@@ -157,7 +157,7 @@ class BaseClient(ABC):
         return self._token
 
     @token.setter
-    def token(self, token: str) -> None:
+    def token(self, token: str | None) -> None:
         """Set the token for the login.
 
         Parameters
