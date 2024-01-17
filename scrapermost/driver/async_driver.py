@@ -14,8 +14,21 @@ class AsyncDriver(BaseDriver):
 
     Attributes
     ----------
-    client : client.AsyncClient
+    _client : client.AsyncClient
         The Mattermost client to interact with Web Service API.
+
+    Properties
+    ----------
+    client : client.Client
+        The Mattermost client to interact with Web Service API.
+    login_id : str, optional
+        The user account's email address or username.
+    password : str, optional
+        The user's password.
+    mfa_token : Any, optional
+        The Multi-Factor Authentication token.
+    websocket : websocket.Websocket, optional
+        The websocket to listen to Mattermost events.
 
     Methods
     -------
@@ -133,23 +146,28 @@ class AsyncDriver(BaseDriver):
             The json-encoded content of the response if any.
             Otherwise, the raw response.
 
+        Raises
+        ------
+        requests.exceptions.HTTPError
+            If the connection failed.
+
         """
-        if self.options.token:
-            self.client.token = self.options.token
+        if self.client.token:
             result: Any | Response = await self.users.get_user("me")
 
         else:
             response: Response = await self.users.login_user(
                 {
-                    "login_id": self.options.login_id,
-                    "password": self.options.password,
-                    "token": self.options.mfa_token,
+                    "login_id": self.login_id,
+                    "password": self.password,
+                    "token": self.mfa_token,
                 }
             )
+            if response.status_code != 200:
+                response.raise_for_status()
 
-            if response.status_code == 200:
-                self.client.token = response.headers["Token"]
-                self.client.cookies = response.cookies
+            self.client.token = response.headers["Token"]
+            self.client.cookies = response.cookies
 
             try:
                 result = response.json()
